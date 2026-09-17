@@ -1,0 +1,8 @@
+server/node_modules/
+client/node_modules/
+server/dist/
+client/dist/
+server/.env
+client/.env
+*.tsbuildinfo
+.DS_Store

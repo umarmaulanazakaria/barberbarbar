@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { ambilPelangganBerdasarkanId, ambilSemuaPelanggan, blokirPelanggan, bukaBlokirPelanggan, hapusPelanggan, tambahPelanggan, ubahPelanggan } from "../controllers/pelanggan.controller.js";
+import { hanyaAdmin } from "../middleware/role.middleware.js";
+const routerPelanggan = Router();
+routerPelanggan.get("/", ambilSemuaPelanggan);
+routerPelanggan.post("/", tambahPelanggan);
+routerPelanggan.get("/:id", ambilPelangganBerdasarkanId);
+routerPelanggan.patch("/:id", ubahPelanggan);
+routerPelanggan.delete("/:id", hanyaAdmin, hapusPelanggan);
+routerPelanggan.patch("/:id/blokir", blokirPelanggan);
+routerPelanggan.patch("/:id/buka-blokir", bukaBlokirPelanggan);
+export default routerPelanggan;

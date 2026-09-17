@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Pelanggan {
+  id           Int             @id @default(autoincrement())
+  nama         String
+  nomorTelepon String          @unique
+  alamat       String?
+  dibuatPada   DateTime        @default(now())
+  status       StatusPelanggan @default(AKTIF)
+  membership   Membership?
+  pesanan      Pesanan[]
+}
+
+enum StatusPelanggan {
+  AKTIF
+  DIBLOKIR
+}
+
+model Membership {
+  id              Int       @id @default(autoincrement())
+  pelangganId     Int       @unique
+  pelanggan       Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Cascade)
+  memberCode      String    @unique
+  discountPercent Int       @default(10)
+  isActive        Boolean   @default(true)
+  joinedAt        DateTime  @default(now())
+}
+
+model Pengguna {
+  id             Int                     @id @default(autoincrement())
+  name           String
+  email          String                  @unique
+  passwordHash   String
+  role           Role                    @default(STAFF)
+  createdAt      DateTime                @default(now())
+  riwayatStatus  RiwayatStatusPesanan[]
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+model Barber {
+  id           Int       @id @default(autoincrement())
+  nama         String
+  nomorTelepon String?   @unique
+  aktif        Boolean   @default(true)
+  dibuatPada   DateTime  @default(now())
+  pesanan      Pesanan[]
+}
+
+model Layanan {
+  id           Int           @id @default(autoincrement())
+  nama         String
+  durasiMenit  Int
+  harga        Int
+  aktif        Boolean       @default(true)
+  dibuatPada   DateTime      @default(now())
+  itemPesanan  ItemPesanan[]
+}
+
+model Pesanan {
+  id                Int                @id @default(autoincrement())
+  nomorPesanan      String             @unique
+  pelangganId       Int
+  barberId          Int
+  status            StatusPesanan      @default(WAITING)
+  statusPembayaran  StatusPembayaran   @default(UNPAID)
+  checkInTime       DateTime           @default(now())
+  catatan           String?
+  subtotal          Int
+  discountPercent   Int                @default(0)
+  diskon            Int                @default(0)
+  total             Int
+  dibuatPada        DateTime           @default(now())
+  diperbaruiPada    DateTime           @updatedAt
+  pelanggan         Pelanggan          @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  barber            Barber             @relation(fields: [barberId], references: [id], onDelete: Restrict)
+  items             ItemPesanan[]
+  pembayaran        Pembayaran?
+  riwayatStatus     RiwayatStatusPesanan[]
+
+  @@index([status])
+  @@index([statusPembayaran])
+  @@index([dibuatPada])
+}
+
+enum StatusPesanan {
+  WAITING
+  IN_SERVICE
+  COMPLETED
+  CANCELLED
+}
+
+enum StatusPembayaran {
+  UNPAID
+  PAID
+}
+
+model ItemPesanan {
+  id                 Int       @id @default(autoincrement())
+  pesananId          Int
+  layananId          Int
+  namaLayanan        String
+  durasiMenit        Int
+  harga              Int
+  qty                Int       @default(1)
+  subtotal           Int
+  pesanan            Pesanan   @relation(fields: [pesananId], references: [id], onDelete: Cascade)
+  layanan            Layanan   @relation(fields: [layananId], references: [id], onDelete: Restrict)
+
+  @@index([pesananId])
+  @@index([layananId])
+}
+
+model Pembayaran {
+  id              Int                @id @default(autoincrement())
+  pesananId       Int                @unique
+  nomorInvoice    String             @unique
+  metode          MetodePembayaran
+  jumlahDiterima  Int
+  kembalian       Int                @default(0)
+  catatan         String?
+  dibayarPada     DateTime           @default(now())
+  pesanan         Pesanan            @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+
+  @@index([dibayarPada])
+}
+
+enum MetodePembayaran {
+  CASH
+  QRIS
+  CARD
+  TRANSFER
+  OTHER
+}
+
+model RiwayatStatusPesanan {
+  id          Int           @id @default(autoincrement())
+  pesananId   Int
+  status      StatusPesanan
+  penggunaId  Int?
+  diubahPada  DateTime      @default(now())
+  pesanan     Pesanan       @relation(fields: [pesananId], references: [id], onDelete: Cascade)
+  pengguna    Pengguna?     @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
+
+  @@index([pesananId])
+}

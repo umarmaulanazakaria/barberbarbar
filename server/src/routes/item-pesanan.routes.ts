@@ -1,0 +1,1 @@
+import { Router } from "express";import { ambilPerPesanan,tambah,ubah,hapus } from "../controllers/item-pesanan.controller.js";const router=Router();router.get("/order/:orderId",ambilPerPesanan);router.post("/",tambah);router.patch("/:id",ubah);router.delete("/:id",hapus);export default router;

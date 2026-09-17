@@ -1,0 +1,21 @@
+BARBERSHOP PROJECT 3 - START HERE
+
+IMPORTANT: Copy your existing server/.env into this completed project (or create it from .env.example).
+
+BACKEND terminal:
+cd server
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run seed
+npm run dev
+
+FRONTEND terminal:
+cd client
+npm install
+npm run dev
+
+Open: http://localhost:5173
+ADMIN LOGIN: admin@barber.com / admin123
+
+Full instructions: README.md

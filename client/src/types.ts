@@ -1,12 +1,17 @@
 export type Role = "ADMIN" | "STAFF";
+
 export type StatusPelanggan = "AKTIF" | "DIBLOKIR";
+
 export type StatusPesanan =
   | "WAITING"
   | "IN_SERVICE"
   | "COMPLETED"
   | "CANCELLED";
+
 export type StatusPembayaran = "UNPAID" | "PAID";
+
 export type MetodePembayaran = "CASH" | "QRIS" | "CARD" | "TRANSFER" | "OTHER";
+
 export interface User {
   id: number;
   name: string;
@@ -14,6 +19,7 @@ export interface User {
   role: Role;
   createdAt?: string;
 }
+
 export interface Membership {
   id: number;
   pelangganId: number;
@@ -23,6 +29,7 @@ export interface Membership {
   joinedAt: string;
   pelanggan?: Pelanggan;
 }
+
 export interface Pelanggan {
   id: number;
   nama: string;
@@ -32,6 +39,7 @@ export interface Pelanggan {
   status: StatusPelanggan;
   membership?: Membership | null;
 }
+
 export interface Barber {
   id: number;
   nama: string;
@@ -39,6 +47,11 @@ export interface Barber {
   aktif: boolean;
   dibuatPada: string;
 }
+
+export interface BarberWithAccount extends Barber {
+  pengguna: Pick<User, "id" | "name" | "email" | "role" | "createdAt"> | null;
+}
+
 export interface Layanan {
   id: number;
   nama: string;
@@ -47,6 +60,7 @@ export interface Layanan {
   aktif: boolean;
   dibuatPada: string;
 }
+
 export interface ItemPesanan {
   id: number;
   pesananId: number;
@@ -58,6 +72,7 @@ export interface ItemPesanan {
   subtotal: number;
   layanan?: Layanan;
 }
+
 export interface Pembayaran {
   id: number;
   pesananId: number;
@@ -68,12 +83,15 @@ export interface Pembayaran {
   catatan: string | null;
   dibayarPada: string;
 }
+
 export interface RiwayatStatus {
   id: number;
   status: StatusPesanan;
   diubahPada: string;
+
   pengguna?: Pick<User, "id" | "name" | "role"> | null;
 }
+
 export interface Pesanan {
   id: number;
   nomorPesanan: string;
@@ -95,9 +113,11 @@ export interface Pesanan {
   pembayaran: Pembayaran | null;
   riwayatStatus?: RiwayatStatus[];
 }
+
 export interface Invoice extends Pembayaran {
   pesanan: Pesanan;
 }
+
 export interface DashboardData {
   waiting: number;
   inService: number;
@@ -109,6 +129,7 @@ export interface DashboardData {
   revenueToday: number;
   pesananTerbaru: Pesanan[];
 }
+
 export interface ReportData {
   jumlahPesanan: number;
   selesai: number;

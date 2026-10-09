@@ -43,8 +43,6 @@ export const ambilPelangganBerdasarkanId = async (
   return res.json(data);
 };
 
-//video
-
 export const ubahPelanggan = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (Number.isNaN(id))
@@ -91,6 +89,9 @@ export const hapusPelanggan = async (req: Request, res: Response) => {
       DIBLOKIR: "Pelanggan diblokir dan tidak dapat dihapus",
       PUNYA_RIWAYAT:
         "Pelanggan memiliki riwayat pesanan dan tidak dapat dihapus",
+      PUNYA_AKUN: "Pelanggan memiliki akun customer dan tidak dapat dihapus",
+      PUNYA_PERMOHONAN:
+        "Pelanggan memiliki riwayat permohonan pengaitan akun dan tidak dapat dihapus",
     }[hasil.alasan];
     return res
       .status(hasil.alasan === "TIDAK_DITEMUKAN" ? 404 : 409)

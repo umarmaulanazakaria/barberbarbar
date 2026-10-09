@@ -63,7 +63,17 @@ export const ubahDataPelanggan = async (
 export const hapusDataPelanggan = async (idPelanggan: number) => {
   const pelanggan = await basisData.pelanggan.findUnique({
     where: { id: idPelanggan },
-    include: { _count: { select: { pesanan: true } } },
+    include: {
+      _count: {
+        select: {
+          pesanan: true,
+          permohonanPengaitan: true,
+        },
+      },
+      akunPelanggan: {
+        select: { id: true },
+      },
+    },
   });
 
   if (!pelanggan)
@@ -72,6 +82,13 @@ export const hapusDataPelanggan = async (idPelanggan: number) => {
     return { berhasil: false, alasan: "DIBLOKIR" } as const;
   if (pelanggan._count.pesanan > 0)
     return { berhasil: false, alasan: "PUNYA_RIWAYAT" } as const;
+  if (pelanggan.akunPelanggan) {
+    return { berhasil: false, alasan: "PUNYA_AKUN" } as const;
+  }
+
+  if (pelanggan._count.permohonanPengaitan > 0) {
+    return { berhasil: false, alasan: "PUNYA_PERMOHONAN" } as const;
+  }
 
   await basisData.pelanggan.delete({ where: { id: idPelanggan } });
   return { berhasil: true } as const;

@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Pelanggan {
-  id            Int             @id @default(autoincrement())
-  nama          String
-  nomorTelepon  String          @unique
-  alamat        String?
-  dibuatPada    DateTime        @default(now())
-  status        StatusPelanggan @default(AKTIF)
-  membership    Membership?
-  pesanan       Pesanan[]
-  akunPelanggan AkunPelanggan?
+  id                  Int                       @id @default(autoincrement())
+  nama                String
+  nomorTelepon        String                    @unique
+  alamat              String?
+  dibuatPada          DateTime                  @default(now())
+  status              StatusPelanggan           @default(AKTIF)
+  membership          Membership?
+  pesanan             Pesanan[]
+  akunPelanggan       AkunPelanggan?
+  permohonanPengaitan PermohonanPengaitanAkun[]
 }
 
 enum StatusPelanggan {
@@ -35,15 +36,16 @@ model Membership {
 }
 
 model Pengguna {
-  id            Int                    @id @default(autoincrement())
-  name          String
-  email         String                 @unique
-  passwordHash  String
-  role          Role                   @default(STAFF)
-  createdAt     DateTime               @default(now())
-  barberId      Int?                   @unique
-  barber        Barber?                @relation(fields: [barberId], references: [id], onDelete: Cascade)
-  riwayatStatus RiwayatStatusPesanan[]
+  id                 Int                       @id @default(autoincrement())
+  name               String
+  email              String                    @unique
+  passwordHash       String
+  role               Role                      @default(STAFF)
+  createdAt          DateTime                  @default(now())
+  barberId           Int?                      @unique
+  barber             Barber?                   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  riwayatStatus      RiwayatStatusPesanan[]
+  keputusanPengaitan PermohonanPengaitanAkun[]
 }
 
 enum Role {
@@ -183,4 +185,31 @@ model PasswordResetToken {
 
   @@index([akunPelangganId])
   @@index([kedaluwarsaPada])
+}
+
+model PermohonanPengaitanAkun {
+  id               Int                       @id @default(autoincrement())
+  pelangganId      Int
+  namaPendaftar    String
+  nomorTelepon     String
+  email            String
+  passwordHash     String
+  status           StatusPermohonanPengaitan @default(MENUNGGU)
+  diputuskanOlehId Int?
+  catatanKeputusan String?
+  dibuatPada       DateTime                  @default(now())
+  diputuskanPada   DateTime?
+
+  pelanggan      Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  diputuskanOleh Pengguna? @relation(fields: [diputuskanOlehId], references: [id], onDelete: SetNull)
+
+  @@index([pelangganId, status])
+  @@index([email])
+  @@index([status, dibuatPada])
+}
+
+enum StatusPermohonanPengaitan {
+  MENUNGGU
+  DISETUJUI
+  DITOLAK
 }

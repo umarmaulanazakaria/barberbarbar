@@ -17,11 +17,17 @@ import { perbaruiProfilPelanggan } from "../controllers/auth-pelanggan.controlle
 
 import { autentikasi } from "../middleware/auth.middleware.js";
 import { hanyaAdmin } from "../middleware/role.middleware.js";
+import {
+  lupaPasswordPelanggan,
+  aturUlangPasswordPelanggan,
+} from "../controllers/reset-password-pelanggan.controller.js";
 
 const routerAuthPelanggan = Router();
 
 routerAuthPelanggan.post("/register", daftarPelanggan);
 routerAuthPelanggan.post("/login", masukPelanggan);
+routerAuthPelanggan.post("/forgot-password", lupaPasswordPelanggan);
+routerAuthPelanggan.post("/reset-password", aturUlangPasswordPelanggan);
 
 routerAuthPelanggan.get(
   "/requests",

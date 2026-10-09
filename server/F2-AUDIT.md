@@ -5,7 +5,8 @@ Tanggal: 9 Oktober 2026. Branch: `feature/project5-integration`.
 **Status: F2 belum ditutup.** Seluruh pengujian fungsi dan perbaikan baru lulus,
 tetapi pemeriksaan read-only menemukan **2 permohonan existing** yang sudah
 diputuskan dan masih menyimpan hash password. Pemilik data memilih **menunda
-pembersihan data existing**; script penerapan tidak dijalankan. Tidak ada
+pembersihan data existing** pada audit sebelumnya. Persiapan terbaru di bawah
+telah selesai; script penerapan belum dijalankan dan menunggu persetujuan baru. Tidak ada
 migration, reset database, push atau merge.
 
 ## Hasil fitur
@@ -67,8 +68,15 @@ migration, reset database, push atau merge.
 - `scripts/test-fondasi-pelanggan.mjs`: integrasi HTTP, concurrency, role, profil,
   blokir, pencabutan JWT, retensi hash baru, deletion dan rate limit dengan fixture lokal.
 - `scripts/bersihkan-hash-permohonan.mjs`: default read-only, hanya count;
-  `--terapkan` mengosongkan passwordHash permohonan DISETUJUI/DITOLAK secara atomik
-  menggunakan updateMany. Tidak menyentuh akun, keputusan, identitas atau riwayat.
+  juga menampilkan ID/status dan hubungan akun tanpa hash. `--terapkan --rencana`
+  mensyaratkan backup terverifikasi dan snapshot yang belum berubah; hanya dua ID
+  final yang disetujui di-update. Sidik akun/pelanggan/operator/keputusan diverifikasi
+  dalam transaksi Serializable; kegagalan menyebabkan rollback.
+- `scripts/util-audit-hash-permohonan.mjs`: snapshot read-only dan pemeriksaan
+  hubungan akun tanpa menampilkan hash password atau identitas kontak.
+- `scripts/cadangkan-database-f2.mjs`: backup custom PostgreSQL di luar repository,
+  verifikasi daftar isi dan dekompresi seluruh arsip tanpa restore; SHA-256 serta
+  rencana target disimpan tanpa credential koneksi.
 - `scripts/RESET-PASSWORD-CUSTOMER.md`: memperbarui keterangan pencabutan JWT
   dan rate limit setelah perbaikan audit.
 - `F2-AUDIT.md`: laporan ini.
@@ -99,7 +107,7 @@ suite lain yang membuat fixture operator secara paralel dapat memicu false failu
 ## Penutupan dan keterbatasan
 
 1. **Wajib diselesaikan sebelum penutupan:** persetujuan baru untuk pembersihan dua hash lama,
-   lalu jalankan `node scripts/bersihkan-hash-permohonan.mjs --terapkan` dan verifikasi
+   lalu jalankan `node scripts/bersihkan-hash-permohonan.mjs --terapkan --rencana <file-rencana>` dan verifikasi
    ulang dengan mode read-only (hasil harus 0). Script sudah konkret dan tersedia,
    pemilik data memilih menunda penerapan. Jangan menjalankan mode `--terapkan`
    sampai ada persetujuan baru yang eksplisit. Temuan retensi hash tetap terbuka.
@@ -121,3 +129,42 @@ suite lain yang membuat fixture operator secara paralel dapat memicu false failu
 
 Commit audit dan status Git akhir dicantumkan pada laporan akhir percakapan;
 gunakan `git log -1` dan `git status --short --branch` untuk pemeriksaan ulang.
+
+## Persiapan penyelesaian temuan lama — 9 Oktober 2026
+
+**Belum ada perubahan database.** Persetujuan baru diminta setelah audit dan
+backup berikut selesai. Hash password tidak ditampilkan.
+
+| ID permohonan | Status final | Pelanggan | ADMIN | Akun terkait | Hasil pemeriksaan |
+| --- | --- | --- | --- | --- | --- |
+| 1 | DISETUJUI | 39 / AKTIF | 1 | 2 | Hash login ada pada AkunPelanggan secara terpisah; hash permohonan sama dengan hash akun |
+| 2 | DITOLAK | 40 / AKTIF | 1 | Tidak ada | Tidak ada akun customer yang perlu diubah |
+
+Kedua record memiliki waktu keputusan; layanan persetujuan terbaru menyalin hash
+ke akun sebelum mengosongkan permohonan. Login membaca `AkunPelanggan.passwordHash`,
+bukan hash permohonan. Pengosongan hanya pada record permohonan tidak mengubah
+hash login, sidik JWT, akun aktif, pelanggan, ADMIN atau riwayat keputusan.
+
+Backup terbaru (di luar repository):
+`../backup-database/f2-hash-2026-10-09T14-06-18-023Z/database.dump`
+(path relatif dari root repository). Ukuran: **50.867 byte**.
+SHA-256: `394165f18f4b13ec5e0256155fcb4f307fc176aadd5862cf3df9d3d71fca4f51`.
+`pg_dump`/`pg_restore` PostgreSQL 18.6: PASS format custom, daftar TABLE DATA
+empat tabel terkait tersedia, seluruh arsip dibaca/dekompresi menjadi SQL yang
+dibuang. Tidak dilakukan restore ke database. Snapshot tabel terkait sama
+sebelum dan setelah backup. Ini verifikasi arsip, bukan uji pemulihan ke database.
+
+Rencana konkret: verifikasi checksum backup dan snapshot ulang, kemudian satu
+transaksi Serializable mengubah **hanya passwordHash menjadi string kosong**
+pada ID 1/DISETUJUI dan ID 2/DITOLAK. Harus tepat dua update dan nol hash final
+tersisa. Sidik seluruh akun, pelanggan, operator dan metadata keputusan harus
+tetap identik; jika tidak, rollback. Tidak ada record yang dihapus.
+
+Sesudah persetujuan dan penerapan: ulangi audit read-only, uji login HTTP customer
+dengan fixture dummy yang dibersihkan, dan bandingkan sidik akun existing.
+Password asli akun existing tidak tersedia; jangan menyebut login akun asli
+teruji tanpa credential sah. Saat ini target nol hash masih **belum tercapai**.
+
+Verifikasi persiapan terbaru: TypeScript PASS, build backend PASS, syntax tiga
+script PASS, guard penerapan tanpa file rencana PASS (ditolak sebelum transaksi
+perubahan), audit read-only tetap dua target. `src/lib/prisma.ts` tetap utuh.

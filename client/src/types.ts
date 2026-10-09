@@ -96,7 +96,7 @@ export interface Pesanan {
   id: number;
   nomorPesanan: string;
   pelangganId: number;
-  barberId: number;
+  barberId: number | null;
   status: StatusPesanan;
   statusPembayaran: StatusPembayaran;
   checkInTime: string;
@@ -108,7 +108,7 @@ export interface Pesanan {
   dibuatPada: string;
   diperbaruiPada: string;
   pelanggan: Pelanggan;
-  barber: Barber;
+  barber: Barber | null;
   items: ItemPesanan[];
   pembayaran: Pembayaran | null;
   riwayatStatus?: RiwayatStatus[];

@@ -155,7 +155,11 @@ export default function ReportsPage() {
                 <defs>
                   <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#6366f1" stopOpacity="0.20" />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0.02" />
+                    <stop
+                      offset="100%"
+                      stopColor="#6366f1"
+                      stopOpacity="0.02"
+                    />
                   </linearGradient>
                 </defs>
 
@@ -179,7 +183,9 @@ export default function ReportsPage() {
                         textAnchor="end"
                         className="fill-slate-400 text-[9px]"
                       >
-                        {value >= 1000 ? `${Math.round(value / 1000)}k` : Math.round(value)}
+                        {value >= 1000
+                          ? `${Math.round(value / 1000)}k`
+                          : Math.round(value)}
                       </text>
                     </g>
                   );
@@ -267,7 +273,7 @@ export default function ReportsPage() {
                   <td className="p-3 font-bold">{order.nomorPesanan}</td>
                   <td>{tanggal(order.dibuatPada)}</td>
                   <td>{order.pelanggan.nama}</td>
-                  <td>{order.barber.nama}</td>
+                  <td>{order.barber?.nama ?? "Belum ditentukan"}</td>
                   <td>
                     <StatusBadge value={order.status} />
                   </td>

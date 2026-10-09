@@ -26,10 +26,14 @@ export default function OrderDetailModal({
   const [printMode, setPrintMode] = useState<PrintMode>(null);
   const open = orderId !== null;
 
-  const { data: order, isLoading, isError, refetch } = useQuery({
+  const {
+    data: order,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["order", orderId],
-    queryFn: async () =>
-      (await api.get<Pesanan>(`/orders/${orderId}`)).data,
+    queryFn: async () => (await api.get<Pesanan>(`/orders/${orderId}`)).data,
     enabled: open,
   });
 
@@ -56,11 +60,7 @@ export default function OrderDetailModal({
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Escape" &&
-        !statusMutation.isPending &&
-        !paymentOpen
-      ) {
+      if (event.key === "Escape" && !statusMutation.isPending && !paymentOpen) {
         onClose();
       }
     };
@@ -165,7 +165,9 @@ export default function OrderDetailModal({
 
                   <div>
                     <div className="text-[10px] text-slate-400">Barber</div>
-                    <b className="text-sm">{order.barber.nama}</b>
+                    <b className="text-sm">
+                      {order.barber?.nama ?? "Belum ditentukan"}
+                    </b>
                   </div>
 
                   <div>
@@ -195,7 +197,9 @@ export default function OrderDetailModal({
                           <td className="px-2 py-3 font-semibold">
                             {item.namaLayanan}
                           </td>
-                          <td className="text-center">{item.durasiMenit} min</td>
+                          <td className="text-center">
+                            {item.durasiMenit} min
+                          </td>
                           <td className="text-center">{rupiah(item.harga)}</td>
                           <td className="text-center">{item.qty}</td>
                           <td className="px-2 text-right">
@@ -358,7 +362,9 @@ export default function OrderDetailModal({
                       <>
                         <div className="flex justify-between gap-4">
                           <span>Method</span>
-                          <b className="text-slate-800">{order.pembayaran.metode}</b>
+                          <b className="text-slate-800">
+                            {order.pembayaran.metode}
+                          </b>
                         </div>
                         <div className="flex justify-between gap-4">
                           <span>Invoice</span>
@@ -396,12 +402,32 @@ export default function OrderDetailModal({
           <div className="print-divider" />
 
           <div className="print-info-grid">
-            <div><span>Order</span><b>{order.nomorPesanan}</b></div>
-            <div><span>Customer</span><b>{order.pelanggan.nama}</b></div>
-            <div><span>Phone</span><b>{order.pelanggan.nomorTelepon}</b></div>
-            <div><span>Barber</span><b>{order.barber.nama}</b></div>
-            <div><span>Check-in</span><b>{tanggal(order.checkInTime)} {waktu(order.checkInTime)}</b></div>
-            <div><span>Status</span><b>{order.status.replace("_", " ")}</b></div>
+            <div>
+              <span>Order</span>
+              <b>{order.nomorPesanan}</b>
+            </div>
+            <div>
+              <span>Customer</span>
+              <b>{order.pelanggan.nama}</b>
+            </div>
+            <div>
+              <span>Phone</span>
+              <b>{order.pelanggan.nomorTelepon}</b>
+            </div>
+            <div>
+              <span>Barber</span>
+              <b>{order.barber?.nama ?? "Belum ditentukan"}</b>
+            </div>
+            <div>
+              <span>Check-in</span>
+              <b>
+                {tanggal(order.checkInTime)} {waktu(order.checkInTime)}
+              </b>
+            </div>
+            <div>
+              <span>Status</span>
+              <b>{order.status.replace("_", " ")}</b>
+            </div>
           </div>
 
           <div className="print-divider" />
@@ -427,19 +453,34 @@ export default function OrderDetailModal({
           </table>
 
           <div className="print-divider" />
-          <div className="print-total-row"><span>Total Duration</span><b>{duration} min</b></div>
-          <div className="print-total-row"><span>Subtotal</span><b>{rupiah(order.subtotal)}</b></div>
+          <div className="print-total-row">
+            <span>Total Duration</span>
+            <b>{duration} min</b>
+          </div>
+          <div className="print-total-row">
+            <span>Subtotal</span>
+            <b>{rupiah(order.subtotal)}</b>
+          </div>
           {order.diskon > 0 && (
-            <div className="print-total-row"><span>Member Discount ({order.discountPercent}%)</span><b>-{rupiah(order.diskon)}</b></div>
+            <div className="print-total-row">
+              <span>Member Discount ({order.discountPercent}%)</span>
+              <b>-{rupiah(order.diskon)}</b>
+            </div>
           )}
-          <div className="print-grand-total"><span>Total</span><b>{rupiah(order.total)}</b></div>
+          <div className="print-grand-total">
+            <span>Total</span>
+            <b>{rupiah(order.total)}</b>
+          </div>
 
           {order.catatan && (
-            <div className="print-note"><b>Notes:</b> {order.catatan}</div>
+            <div className="print-note">
+              <b>Notes:</b> {order.catatan}
+            </div>
           )}
 
           <div className="print-footer">
-            Thank you for visiting Barber Barbar.<br />
+            Thank you for visiting Barber Barbar.
+            <br />
             Not Cutting Heads, Just Hair
           </div>
         </div>
@@ -452,7 +493,9 @@ export default function OrderDetailModal({
               <img src="/barber-barbar-icon.png" alt="Barber Barbar" />
               <div>
                 <div className="print-brand-name">BARBER BARBAR</div>
-                <div className="print-tagline">Not Cutting Heads, Just Hair</div>
+                <div className="print-tagline">
+                  Not Cutting Heads, Just Hair
+                </div>
               </div>
             </div>
             <div className="invoice-heading">
@@ -470,12 +513,17 @@ export default function OrderDetailModal({
             </div>
             <div>
               <span>Payment Detail</span>
-              <b>{tanggal(order.pembayaran.dibayarPada)} {waktu(order.pembayaran.dibayarPada)}</b>
-              <small>{order.pembayaran.metode} · Order {order.nomorPesanan}</small>
+              <b>
+                {tanggal(order.pembayaran.dibayarPada)}{" "}
+                {waktu(order.pembayaran.dibayarPada)}
+              </b>
+              <small>
+                {order.pembayaran.metode} · Order {order.nomorPesanan}
+              </small>
             </div>
             <div>
               <span>Barber</span>
-              <b>{order.barber.nama}</b>
+              <b>{order.barber?.nama ?? "Belum ditentukan"}</b>
               <small>Service completed</small>
             </div>
           </div>
@@ -502,22 +550,40 @@ export default function OrderDetailModal({
           </table>
 
           <div className="invoice-totals">
-            <div><span>Subtotal</span><b>{rupiah(order.subtotal)}</b></div>
+            <div>
+              <span>Subtotal</span>
+              <b>{rupiah(order.subtotal)}</b>
+            </div>
             {order.diskon > 0 && (
-              <div><span>Member Discount ({order.discountPercent}%)</span><b>-{rupiah(order.diskon)}</b></div>
+              <div>
+                <span>Member Discount ({order.discountPercent}%)</span>
+                <b>-{rupiah(order.diskon)}</b>
+              </div>
             )}
-            <div className="invoice-total-final"><span>Total</span><b>{rupiah(order.total)}</b></div>
-            <div><span>Amount Received</span><b>{rupiah(order.pembayaran.jumlahDiterima)}</b></div>
-            <div><span>Change</span><b>{rupiah(order.pembayaran.kembalian)}</b></div>
+            <div className="invoice-total-final">
+              <span>Total</span>
+              <b>{rupiah(order.total)}</b>
+            </div>
+            <div>
+              <span>Amount Received</span>
+              <b>{rupiah(order.pembayaran.jumlahDiterima)}</b>
+            </div>
+            <div>
+              <span>Change</span>
+              <b>{rupiah(order.pembayaran.kembalian)}</b>
+            </div>
           </div>
 
           {order.pembayaran.catatan && (
-            <div className="print-note"><b>Payment Notes:</b> {order.pembayaran.catatan}</div>
+            <div className="print-note">
+              <b>Payment Notes:</b> {order.pembayaran.catatan}
+            </div>
           )}
 
           <div className="invoice-paid-stamp">PAID</div>
           <div className="print-footer">
-            Thank you for trusting Barber Barbar.<br />
+            Thank you for trusting Barber Barbar.
+            <br />
             Not Cutting Heads, Just Hair
           </div>
         </div>

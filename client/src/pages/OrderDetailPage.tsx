@@ -57,7 +57,7 @@ export default function OrderDetailPage() {
             </div>
             <div>
               <div className="text-[10px] text-slate-400">Barber</div>
-              <b className="text-sm">{o.barber.nama}</b>
+              <b className="text-sm">{o.barber?.nama ?? "Belum ditentukan"}</b>
             </div>
             <div>
               <div className="text-[10px] text-slate-400">Check-in</div>
@@ -217,7 +217,7 @@ export default function OrderDetailPage() {
             Customer: <b>{o.pelanggan.nama}</b>
           </div>
           <div>
-            Barber: <b>{o.barber.nama}</b>
+            Barber: <b>{o.barber?.nama ?? "Belum ditentukan"}</b>
           </div>
           <div>
             Date:{" "}

@@ -339,7 +339,7 @@ export default function CustomersPage() {
                             </p>
                             <p className="mt-1 text-[11px] text-slate-400">
                               {tanggal(order.diperbaruiPada)} ·{" "}
-                              {order.barber.nama}
+                              {order.barber?.nama ?? "Belum ditentukan"}
                             </p>
                           </div>
                           <div className="shrink-0 text-right">

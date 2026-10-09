@@ -6,6 +6,8 @@ import { Prisma } from "../generated/prisma/client.js";
 import { skemaLoginPelanggan } from "../schemas/auth-pelanggan.schema.js";
 import { loginPelanggan } from "../services/auth-pelanggan.service.js";
 import { ambilProfilPelanggan } from "../services/auth-pelanggan.service.js";
+import { skemaUbahProfilPelanggan } from "../schemas/auth-pelanggan.schema.js";
+import { ubahProfilPelanggan } from "../services/auth-pelanggan.service.js";
 
 export const daftarPelanggan = async (
   permintaan: Request,
@@ -110,6 +112,47 @@ export const profilPelanggan = async (
 
     return respon.status(200).json({
       akun,
+    });
+  } catch (kesalahan) {
+    lanjut(kesalahan);
+  }
+};
+
+export const perbaruiProfilPelanggan = async (
+  permintaan: Request,
+  respon: Response,
+  lanjut: NextFunction,
+) => {
+  if (!permintaan.akunPelanggan) {
+    return respon.status(401).json({
+      pesan: "Pelanggan belum login",
+    });
+  }
+
+  const validasi = skemaUbahProfilPelanggan.safeParse(permintaan.body);
+
+  if (!validasi.success) {
+    return respon.status(400).json({
+      pesan: "Data profil tidak valid",
+      kesalahan: validasi.error.issues,
+    });
+  }
+
+  try {
+    const pelanggan = await ubahProfilPelanggan(
+      permintaan.akunPelanggan.id,
+      validasi.data,
+    );
+
+    if (!pelanggan) {
+      return respon.status(401).json({
+        pesan: "Akun pelanggan tidak aktif atau tidak ditemukan",
+      });
+    }
+
+    return respon.status(200).json({
+      pesan: "Profil pelanggan berhasil diperbarui",
+      pelanggan,
     });
   } catch (kesalahan) {
     lanjut(kesalahan);

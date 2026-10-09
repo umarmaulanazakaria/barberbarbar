@@ -4,6 +4,7 @@ import basisData from "../lib/prisma.js";
 import type { DataRegistrasiPelanggan } from "../schemas/auth-pelanggan.schema.js";
 import jwt from "jsonwebtoken";
 import type { DataLoginPelanggan } from "../schemas/auth-pelanggan.schema.js";
+import type { DataUbahProfilPelanggan } from "../schemas/auth-pelanggan.schema.js";
 
 export const registrasiPelanggan = async (data: DataRegistrasiPelanggan) => {
   const email = data.email.trim().toLowerCase();
@@ -176,6 +177,40 @@ export const ambilProfilPelanggan = async (idAkun: number) => {
           status: true,
         },
       },
+    },
+  });
+};
+
+export const ubahProfilPelanggan = async (
+  idAkun: number,
+  data: DataUbahProfilPelanggan,
+) => {
+  const akun = await basisData.akunPelanggan.findUnique({
+    where: { id: idAkun },
+    select: {
+      pelangganId: true,
+      pelanggan: {
+        select: { status: true },
+      },
+    },
+  });
+
+  if (!akun || akun.pelanggan.status !== "AKTIF") {
+    return null;
+  }
+
+  return basisData.pelanggan.update({
+    where: { id: akun.pelangganId },
+    data: {
+      ...(data.nama !== undefined && { nama: data.nama }),
+      ...(data.alamat !== undefined && { alamat: data.alamat }),
+    },
+    select: {
+      id: true,
+      nama: true,
+      nomorTelepon: true,
+      alamat: true,
+      status: true,
     },
   });
 };

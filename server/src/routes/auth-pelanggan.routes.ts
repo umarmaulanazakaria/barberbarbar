@@ -13,6 +13,7 @@ import {
 
 import { autentikasiPelanggan } from "../middleware/auth-pelanggan.middleware.js";
 import { profilPelanggan } from "../controllers/auth-pelanggan.controller.js";
+import { perbaruiProfilPelanggan } from "../controllers/auth-pelanggan.controller.js";
 
 import { autentikasi } from "../middleware/auth.middleware.js";
 import { hanyaAdmin } from "../middleware/role.middleware.js";
@@ -44,5 +45,7 @@ routerAuthPelanggan.post(
 );
 
 routerAuthPelanggan.get("/me", autentikasiPelanggan, profilPelanggan);
+
+routerAuthPelanggan.patch("/me", autentikasiPelanggan, perbaruiProfilPelanggan);
 
 export default routerAuthPelanggan;

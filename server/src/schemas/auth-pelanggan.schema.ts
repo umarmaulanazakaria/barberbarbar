@@ -23,3 +23,16 @@ export const skemaLoginPelanggan = z.object({
 });
 
 export type DataLoginPelanggan = z.infer<typeof skemaLoginPelanggan>;
+
+export const skemaUbahProfilPelanggan = z
+  .object({
+    nama: z.string().trim().min(2).max(100).optional(),
+    alamat: z.string().trim().max(500).nullable().optional(),
+  })
+  .strict()
+  .refine(
+    (data) => Object.keys(data).length > 0,
+    "Minimal satu data profil harus diisi",
+  );
+
+export type DataUbahProfilPelanggan = z.infer<typeof skemaUbahProfilPelanggan>;

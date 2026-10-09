@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Pelanggan {
-  id           Int             @id @default(autoincrement())
-  nama         String
-  nomorTelepon String          @unique
-  alamat       String?
-  dibuatPada   DateTime        @default(now())
-  status       StatusPelanggan @default(AKTIF)
-  membership   Membership?
-  pesanan      Pesanan[]
+  id            Int             @id @default(autoincrement())
+  nama          String
+  nomorTelepon  String          @unique
+  alamat        String?
+  dibuatPada    DateTime        @default(now())
+  status        StatusPelanggan @default(AKTIF)
+  membership    Membership?
+  pesanan       Pesanan[]
+  akunPelanggan AkunPelanggan?
 }
 
 enum StatusPelanggan {
@@ -27,21 +28,21 @@ model Membership {
   id              Int       @id @default(autoincrement())
   pelangganId     Int       @unique
   pelanggan       Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Cascade)
-  memberCode      String     @unique
-  discountPercent Int        @default(10)
-  isActive        Boolean    @default(true)
-  joinedAt        DateTime   @default(now())
+  memberCode      String    @unique
+  discountPercent Int       @default(10)
+  isActive        Boolean   @default(true)
+  joinedAt        DateTime  @default(now())
 }
 
 model Pengguna {
-  id            Int                     @id @default(autoincrement())
+  id            Int                    @id @default(autoincrement())
   name          String
-  email         String                  @unique
+  email         String                 @unique
   passwordHash  String
-  role          Role                    @default(STAFF)
-  createdAt     DateTime                @default(now())
-  barberId      Int?                    @unique
-  barber        Barber?                 @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  role          Role                   @default(STAFF)
+  createdAt     DateTime               @default(now())
+  barberId      Int?                   @unique
+  barber        Barber?                @relation(fields: [barberId], references: [id], onDelete: Cascade)
   riwayatStatus RiwayatStatusPesanan[]
 }
 
@@ -61,32 +62,32 @@ model Barber {
 }
 
 model Layanan {
-  id           Int           @id @default(autoincrement())
-  nama         String
-  durasiMenit  Int
-  harga        Int
-  aktif        Boolean       @default(true)
-  dibuatPada   DateTime      @default(now())
-  itemPesanan  ItemPesanan[]
+  id          Int           @id @default(autoincrement())
+  nama        String
+  durasiMenit Int
+  harga       Int
+  aktif       Boolean       @default(true)
+  dibuatPada  DateTime      @default(now())
+  itemPesanan ItemPesanan[]
 }
 
 model Pesanan {
-  id               Int                      @id @default(autoincrement())
-  nomorPesanan     String                   @unique
+  id               Int                    @id @default(autoincrement())
+  nomorPesanan     String                 @unique
   pelangganId      Int
   barberId         Int
-  status           StatusPesanan            @default(WAITING)
-  statusPembayaran StatusPembayaran         @default(UNPAID)
-  checkInTime      DateTime                 @default(now())
+  status           StatusPesanan          @default(WAITING)
+  statusPembayaran StatusPembayaran       @default(UNPAID)
+  checkInTime      DateTime               @default(now())
   catatan          String?
   subtotal         Int
-  discountPercent  Int                      @default(0)
-  diskon           Int                      @default(0)
+  discountPercent  Int                    @default(0)
+  diskon           Int                    @default(0)
   total            Int
-  dibuatPada       DateTime                 @default(now())
-  diperbaruiPada   DateTime                 @updatedAt
-  pelanggan        Pelanggan                @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
-  barber           Barber                   @relation(fields: [barberId], references: [id], onDelete: Restrict)
+  dibuatPada       DateTime               @default(now())
+  diperbaruiPada   DateTime               @updatedAt
+  pelanggan        Pelanggan              @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  barber           Barber                 @relation(fields: [barberId], references: [id], onDelete: Restrict)
   items            ItemPesanan[]
   pembayaran       Pembayaran?
   riwayatStatus    RiwayatStatusPesanan[]
@@ -109,31 +110,31 @@ enum StatusPembayaran {
 }
 
 model ItemPesanan {
-  id           Int      @id @default(autoincrement())
-  pesananId    Int
-  layananId    Int
-  namaLayanan  String
-  durasiMenit  Int
-  harga        Int
-  qty          Int      @default(1)
-  subtotal     Int
-  pesanan      Pesanan  @relation(fields: [pesananId], references: [id], onDelete: Cascade)
-  layanan      Layanan  @relation(fields: [layananId], references: [id], onDelete: Restrict)
+  id          Int     @id @default(autoincrement())
+  pesananId   Int
+  layananId   Int
+  namaLayanan String
+  durasiMenit Int
+  harga       Int
+  qty         Int     @default(1)
+  subtotal    Int
+  pesanan     Pesanan @relation(fields: [pesananId], references: [id], onDelete: Cascade)
+  layanan     Layanan @relation(fields: [layananId], references: [id], onDelete: Restrict)
 
   @@index([pesananId])
   @@index([layananId])
 }
 
 model Pembayaran {
-  id             Int               @id @default(autoincrement())
-  pesananId      Int               @unique
-  nomorInvoice   String            @unique
+  id             Int              @id @default(autoincrement())
+  pesananId      Int              @unique
+  nomorInvoice   String           @unique
   metode         MetodePembayaran
   jumlahDiterima Int
-  kembalian      Int               @default(0)
+  kembalian      Int              @default(0)
   catatan        String?
-  dibayarPada    DateTime          @default(now())
-  pesanan        Pesanan           @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+  dibayarPada    DateTime         @default(now())
+  pesanan        Pesanan          @relation(fields: [pesananId], references: [id], onDelete: Restrict)
 
   @@index([dibayarPada])
 }
@@ -156,4 +157,30 @@ model RiwayatStatusPesanan {
   pengguna   Pengguna?     @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
 
   @@index([pesananId])
+}
+
+model AkunPelanggan {
+  id             Int      @id @default(autoincrement())
+  pelangganId    Int      @unique
+  email          String   @unique
+  passwordHash   String
+  dibuatPada     DateTime @default(now())
+  diperbaruiPada DateTime @updatedAt
+
+  pelanggan  Pelanggan            @relation(fields: [pelangganId], references: [id], onDelete: Cascade)
+  tokenReset PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id              Int       @id @default(autoincrement())
+  akunPelangganId Int
+  tokenHash       String    @unique
+  kedaluwarsaPada DateTime
+  digunakanPada   DateTime?
+  dibuatPada      DateTime  @default(now())
+
+  akunPelanggan AkunPelanggan @relation(fields: [akunPelangganId], references: [id], onDelete: Cascade)
+
+  @@index([akunPelangganId])
+  @@index([kedaluwarsaPada])
 }

@@ -16,3 +16,10 @@ export const skemaRegistrasiPelanggan = z.object({
 });
 
 export type DataRegistrasiPelanggan = z.infer<typeof skemaRegistrasiPelanggan>;
+
+export const skemaLoginPelanggan = z.object({
+  identitas: z.string().trim().min(1, "Email atau nomor telepon wajib diisi"),
+  password: z.string().min(1, "Password wajib diisi"),
+});
+
+export type DataLoginPelanggan = z.infer<typeof skemaLoginPelanggan>;

@@ -10,7 +10,10 @@ export const skemaRegistrasiPelanggan = z.object({
 
   email: z.email("Email tidak valid").trim().toLowerCase(),
 
-  password: z.string().min(8).max(72),
+  password: z.string().min(8).max(72).refine(
+    (password) => Buffer.byteLength(password, "utf8") <= 72,
+    "Password maksimal 72 byte",
+  ),
 
   alamat: z.string().trim().max(500).optional(),
 });

@@ -17,6 +17,7 @@ import { perbaruiProfilPelanggan } from "../controllers/auth-pelanggan.controlle
 
 import { autentikasi } from "../middleware/auth.middleware.js";
 import { hanyaAdmin } from "../middleware/role.middleware.js";
+import { batasiPercobaanPelanggan } from "../middleware/batas-percobaan-pelanggan.middleware.js";
 import {
   lupaPasswordPelanggan,
   aturUlangPasswordPelanggan,
@@ -24,10 +25,10 @@ import {
 
 const routerAuthPelanggan = Router();
 
-routerAuthPelanggan.post("/register", daftarPelanggan);
-routerAuthPelanggan.post("/login", masukPelanggan);
-routerAuthPelanggan.post("/forgot-password", lupaPasswordPelanggan);
-routerAuthPelanggan.post("/reset-password", aturUlangPasswordPelanggan);
+routerAuthPelanggan.post("/register", batasiPercobaanPelanggan(20), daftarPelanggan);
+routerAuthPelanggan.post("/login", batasiPercobaanPelanggan(20), masukPelanggan);
+routerAuthPelanggan.post("/forgot-password", batasiPercobaanPelanggan(10), lupaPasswordPelanggan);
+routerAuthPelanggan.post("/reset-password", batasiPercobaanPelanggan(30), aturUlangPasswordPelanggan);
 
 routerAuthPelanggan.get(
   "/requests",

@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 
 import basisData from "../lib/prisma.js";
+import { Prisma } from "../generated/prisma/client.js";
+import { sidikKredensialPelanggan } from "../lib/kredensial-pelanggan.js";
 import type { DataRegistrasiPelanggan } from "../schemas/auth-pelanggan.schema.js";
 import jwt from "jsonwebtoken";
 import type { DataLoginPelanggan } from "../schemas/auth-pelanggan.schema.js";
@@ -8,95 +10,48 @@ import type { DataUbahProfilPelanggan } from "../schemas/auth-pelanggan.schema.j
 
 export const registrasiPelanggan = async (data: DataRegistrasiPelanggan) => {
   const email = data.email.trim().toLowerCase();
-
-  const akunTerdaftar = await basisData.akunPelanggan.findFirst({
-    where: {
-      email: {
-        equals: email,
-        mode: "insensitive",
-      },
-    },
-    select: { id: true },
-  });
-
-  if (akunTerdaftar) {
-    return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
-  }
-
-  const pelangganExisting = await basisData.pelanggan.findUnique({
-    where: { nomorTelepon: data.nomorTelepon },
-    select: {
-      id: true,
-      status: true,
-      akunPelanggan: {
-        select: { id: true },
-      },
-    },
-  });
-
-  if (
-    pelangganExisting?.status === "DIBLOKIR" ||
-    pelangganExisting?.akunPelanggan
-  ) {
-    return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
-  }
-
   const passwordHash = await bcrypt.hash(data.password, 12);
-
-  if (pelangganExisting) {
-    const permohonanAktif = await basisData.permohonanPengaitanAkun.findFirst({
-      where: {
-        status: "MENUNGGU",
-        OR: [
-          { pelangganId: pelangganExisting.id },
-          {
-            email: {
-              equals: email,
-              mode: "insensitive",
-            },
-          },
-        ],
-      },
-      select: { id: true },
-    });
-
-    if (permohonanAktif) {
+  try {
+    // Serializable melindungi predikat email/permohonan tanpa unique index baru.
+    return await basisData.$transaction(async (transaksi) => {
+      const akunTerdaftar = await transaksi.akunPelanggan.findFirst({
+        where: { email: { equals: email, mode: "insensitive" } }, select: { id: true },
+      });
+      if (akunTerdaftar) return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
+      const pelangganExisting = await transaksi.pelanggan.findUnique({
+        where: { nomorTelepon: data.nomorTelepon },
+        include: { akunPelanggan: { select: { id: true } } },
+      });
+      if (pelangganExisting?.status === "DIBLOKIR" || pelangganExisting?.akunPelanggan) {
+        return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
+      }
+      const permohonanAktif = await transaksi.permohonanPengaitanAkun.findFirst({
+        where: { status: "MENUNGGU", OR: [
+          ...(pelangganExisting ? [{ pelangganId: pelangganExisting.id }] : []),
+          { email: { equals: email, mode: "insensitive" } },
+        ] }, select: { id: true },
+      });
+      if (permohonanAktif) return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
+      if (pelangganExisting) {
+        await transaksi.permohonanPengaitanAkun.create({ data: {
+          pelangganId: pelangganExisting.id, namaPendaftar: data.nama,
+          nomorTelepon: data.nomorTelepon, email, passwordHash,
+        } });
+        return { status: "MENUNGGU_PERSETUJUAN" } as const;
+      }
+      await transaksi.pelanggan.create({ data: {
+        nama: data.nama, nomorTelepon: data.nomorTelepon, alamat: data.alamat ?? null,
+        akunPelanggan: { create: { email, passwordHash } },
+      } });
+      return { status: "BERHASIL" } as const;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  } catch (kesalahan) {
+    if (kesalahan instanceof Prisma.PrismaClientKnownRequestError &&
+        (kesalahan.code === "P2002" || kesalahan.code === "P2034")) {
       return { status: "REGISTRASI_TIDAK_TERSEDIA" } as const;
     }
-
-    await basisData.permohonanPengaitanAkun.create({
-      data: {
-        pelangganId: pelangganExisting.id,
-        namaPendaftar: data.nama,
-        nomorTelepon: data.nomorTelepon,
-        email,
-        passwordHash,
-      },
-    });
-
-    return { status: "MENUNGGU_PERSETUJUAN" } as const;
+    throw kesalahan;
   }
-
-  // Pembuatan pelanggan dan akun harus berhasil bersama-sama.
-  await basisData.$transaction(async (transaksi) => {
-    const pelangganBaru = await transaksi.pelanggan.create({
-      data: {
-        nama: data.nama,
-        nomorTelepon: data.nomorTelepon,
-        alamat: data.alamat ?? null,
-      },
-    });
-
-    await transaksi.akunPelanggan.create({
-      data: {
-        pelangganId: pelangganBaru.id,
-        email,
-        passwordHash,
-      },
-    });
-  });
-
-  return { status: "BERHASIL" } as const;
 };
 
 export const loginPelanggan = async (data: DataLoginPelanggan) => {
@@ -143,6 +98,7 @@ export const loginPelanggan = async (data: DataLoginPelanggan) => {
     {
       id: akun.id,
       tipe: "CUSTOMER",
+      kredensial: sidikKredensialPelanggan(akun.passwordHash, jwtSecret),
     },
     jwtSecret,
     {

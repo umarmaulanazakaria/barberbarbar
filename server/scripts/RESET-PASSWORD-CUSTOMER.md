@@ -38,6 +38,10 @@ Jangan merekam terminal, mengarahkan output ke file, atau menyimpan token ke Git
 Tidak menerima email account existing. Mode pengujian otomatis tidak mencetak
 token/password. Jalankan kembali build setelah perubahan source.
 
-Sesi JWT customer yang telah diterbitkan tetap mengikuti perilaku autentikasi
-existing; fitur ini tidak menambahkan revocation JWT. Rate limit dan integrasi
-pengiriman perlu disiapkan sebelum akses reset untuk customer sungguhan.
+Reset password mencabut seluruh JWT customer lama melalui sidik kredensial
+HMAC yang diperiksa terhadap hash password saat ini. JWT customer sebelum
+perubahan sidik juga ditolak dan memerlukan login ulang; JWT ADMIN/STAFF tetap.
+Rate limit customer berlaku per IP per 15 menit: login/register 20 percobaan,
+forgot 10, reset 30. Counter lokal satu proses; deployment multi-instance
+memerlukan limiter bersama. Integrasi pengiriman masih diperlukan sebelum
+akses reset untuk customer sungguhan. Lihat `../F2-AUDIT.md` untuk hasil audit.

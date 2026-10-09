@@ -4,6 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 import basisData from "../lib/prisma.js";
+import { sidikKredensialPelanggan } from "../lib/kredensial-pelanggan.js";
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -52,13 +53,15 @@ export const autentikasiPelanggan = async (
       select: {
         id: true,
         pelangganId: true,
+        passwordHash: true,
         pelanggan: {
           select: { status: true },
         },
       },
     });
 
-    if (!akun || akun.pelanggan.status !== "AKTIF") {
+    if (!akun || akun.pelanggan.status !== "AKTIF" ||
+        dataToken.kredensial !== sidikKredensialPelanggan(akun.passwordHash, jwtSecret)) {
       return respon.status(401).json({
         pesan: "Akun pelanggan tidak aktif atau tidak ditemukan",
       });

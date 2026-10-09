@@ -85,6 +85,7 @@ export const setujuiPengaitanAkun = async (
           status: "DISETUJUI",
           diputuskanOlehId: idAdmin,
           diputuskanPada: new Date(),
+          passwordHash: "",
         },
       });
 
@@ -101,7 +102,7 @@ export const setujuiPengaitanAkun = async (
       });
 
       return { status: "BERHASIL" } as const;
-    });
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   } catch (kesalahan) {
     if (
       kesalahan instanceof Prisma.PrismaClientKnownRequestError &&
@@ -129,6 +130,7 @@ export const tolakPengaitanAkun = async (
       diputuskanOlehId: idAdmin,
       diputuskanPada: new Date(),
       catatanKeputusan: catatanKeputusan ?? null,
+      passwordHash: "",
     },
   });
 

@@ -4,8 +4,9 @@ Tanggal: 9 Oktober 2026. Branch: `feature/project5-integration`.
 
 **Status: F2 belum ditutup.** Seluruh pengujian fungsi dan perbaikan baru lulus,
 tetapi pemeriksaan read-only menemukan **2 permohonan existing** yang sudah
-diputuskan dan masih menyimpan hash password. Pembersihan data existing menunggu
-persetujuan pemilik data. Tidak ada migration, reset database, push atau merge.
+diputuskan dan masih menyimpan hash password. Pemilik data memilih **menunda
+pembersihan data existing**; script penerapan tidak dijalankan. Tidak ada
+migration, reset database, push atau merge.
 
 ## Hasil fitur
 
@@ -97,10 +98,11 @@ suite lain yang membuat fixture operator secara paralel dapat memicu false failu
 
 ## Penutupan dan keterbatasan
 
-1. **Wajib diselesaikan sebelum penutupan:** persetujuan pembersihan dua hash lama,
+1. **Wajib diselesaikan sebelum penutupan:** persetujuan baru untuk pembersihan dua hash lama,
    lalu jalankan `node scripts/bersihkan-hash-permohonan.mjs --terapkan` dan verifikasi
    ulang dengan mode read-only (hasil harus 0). Script sudah konkret dan tersedia,
-   penerapan belum diotorisasi saat laporan ini dibuat.
+   pemilik data memilih menunda penerapan. Jangan menjalankan mode `--terapkan`
+   sampai ada persetujuan baru yang eksplisit. Temuan retensi hash tetap terbuka.
 2. Forgot-password belum dapat dipakai customer sungguhan: belum ada pengiriman
    token email/WhatsApp. Simulasi hanya akun dummy; token tidak dikembalikan API.
 3. Rate limiter menggunakan memori satu proses. Counter hilang saat restart dan

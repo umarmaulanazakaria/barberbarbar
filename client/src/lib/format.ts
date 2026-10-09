@@ -15,12 +15,3 @@ export const tanggal = (value: string) =>
     month: "short",
     year: "numeric",
   }).format(new Date(value));
-const statusLabels: Record<string, string> = {
-  WAITING: "Waiting",
-  IN_SERVICE: "In Service",
-  COMPLETED: "Completed",
-  CANCELLED: "Cancelled",
-  UNPAID: "Unpaid",
-  PAID: "Paid",
-};
-export const labelStatus = (value: string) => statusLabels[value] ?? value;

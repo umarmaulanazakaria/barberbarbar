@@ -8,6 +8,7 @@ import routerPesanan from "./routes/pesanan.routes.js";
 import routerInvoice from "./routes/invoice.routes.js";
 import routerDashboard from "./routes/dashboard.routes.js";
 import routerItemPesanan from "./routes/item-pesanan.routes.js";
+import routerAuthPelanggan from "./routes/auth-pelanggan.routes.js";
 import { autentikasi } from "./middleware/auth.middleware.js";
 import {
   tidakDitemukan,
@@ -20,6 +21,7 @@ aplikasi.get("/", (_req, res) =>
   res.json({ pesan: "Barbershop Management API berjalan" }),
 );
 aplikasi.use("/auth", routerAuth);
+aplikasi.use("/auth/customer", routerAuthPelanggan);
 aplikasi.use("/pelanggan", autentikasi, routerPelanggan);
 aplikasi.use("/customers", autentikasi, routerPelanggan);
 aplikasi.use("/barbers", autentikasi, routerBarber);

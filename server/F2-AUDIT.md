@@ -2,12 +2,13 @@
 
 Tanggal: 9 Oktober 2026. Branch: `feature/project5-integration`.
 
-**Status: F2 belum ditutup.** Seluruh pengujian fungsi dan perbaikan baru lulus,
-tetapi pemeriksaan read-only menemukan **2 permohonan existing** yang sudah
-diputuskan dan masih menyimpan hash password. Pemilik data memilih **menunda
-pembersihan data existing** pada audit sebelumnya. Persiapan terbaru di bawah
-telah selesai; script penerapan belum dijalankan dan menunggu persetujuan baru. Tidak ada
-migration, reset database, push atau merge.
+**Status: temuan terakhir retensi hash F2 selesai.** Setelah persetujuan eksplisit
+pemilik data, hanya `passwordHash` permohonan ID 1 dan ID 2 dikosongkan dalam
+satu transaksi Serializable. Audit terakhir menunjukkan **0 hash pada permohonan
+final**. Akun termasuk hash login, pelanggan, operator dan metadata keputusan
+tetap identik dengan snapshot awal. Seluruh pengujian relevan lulus. Fondasi F2
+terverifikasi untuk integrasi lokal; keterbatasan produksi tetap tercantum di bawah.
+Tidak ada migration, reset database, push atau merge.
 
 ## Hasil fitur
 
@@ -45,7 +46,7 @@ migration, reset database, push atau merge.
 | JWT aktif setelah reset | PASS | Semua JWT CUSTOMER lama ditolak; login baru berhasil |
 | Password/JWT operator setelah reset | PASS | Hash ADMIN/STAFF tetap; JWT operator masih berlaku |
 | Retensi hash keputusan baru | PASS | Hash disalin ke akun lalu dikosongkan pada permohonan dalam transaksi; penolakan mengosongkan hash |
-| Retensi hash keputusan existing | **FAIL / terbuka** | 2 baris masih menyimpan hash; belum diubah karena membutuhkan persetujuan |
+| Retensi hash keputusan existing | **PASS / selesai** | Dua hash ID 1/2 dikosongkan setelah persetujuan; audit final 0; sidik data lainnya identik |
 | Penghapusan customer existing | PASS | Endpoint operator menolak penghapusan pemilik akun/riwayat pengaitan; FK permohonan Restrict |
 | Rate limit empat endpoint | PASS lokal | Register/login 20, forgot 10, reset 30 per IP per 15 menit; HTTP 429 dan Retry-After |
 | Rate-limit expiry/IP spoof | PASS | Jendela kembali setelah 15 menit; IP berbeda terpisah; X-Forwarded-For tidak melewati batas |
@@ -99,18 +100,17 @@ node scripts/bersihkan-hash-permohonan.mjs
 
 TypeScript dan build: PASS. Suite fondasi: 24 kelompok PASS, termasuk cleanup.
 Regresi reset: 11 kelompok PASS. Regresi API publik: PASS kedua endpoint,
-proteksi operator dan kontrak STAFF. Pemeriksaan retensi existing: 2 baris terbuka.
-Seluruh fixture dibersihkan berdasarkan ID/penanda proses; data existing tidak diubah.
+proteksi operator dan kontrak STAFF. Pemeriksaan retensi existing: **0 baris terbuka**.
+Seluruh fixture dibersihkan berdasarkan ID/penanda proses. Perubahan data existing
+hanya `passwordHash` ID 1/2 yang disetujui; akun aktif dan data lainnya tetap utuh.
 Jalankan suite berurutan: reset memeriksa sidik seluruh password operator existing;
 suite lain yang membuat fixture operator secara paralel dapat memicu false failure.
 
 ## Penutupan dan keterbatasan
 
-1. **Wajib diselesaikan sebelum penutupan:** persetujuan baru untuk pembersihan dua hash lama,
-   lalu jalankan `node scripts/bersihkan-hash-permohonan.mjs --terapkan --rencana <file-rencana>` dan verifikasi
-   ulang dengan mode read-only (hasil harus 0). Script sudah konkret dan tersedia,
-   pemilik data memilih menunda penerapan. Jangan menjalankan mode `--terapkan`
-   sampai ada persetujuan baru yang eksplisit. Temuan retensi hash tetap terbuka.
+1. **Selesai:** pembersihan dua hash lama telah disetujui dan diterapkan. Hasil
+   read-only 0; hanya ID 1/2 berubah pada kolom passwordHash. Jangan menjalankan
+   ulang penerapan: snapshot awal sudah berubah sesuai tujuan dan guard akan menolak.
 2. Forgot-password belum dapat dipakai customer sungguhan: belum ada pengiriman
    token email/WhatsApp. Simulasi hanya akun dummy; token tidak dikembalikan API.
 3. Rate limiter menggunakan memori satu proses. Counter hilang saat restart dan
@@ -132,8 +132,9 @@ gunakan `git log -1` dan `git status --short --branch` untuk pemeriksaan ulang.
 
 ## Persiapan penyelesaian temuan lama — 9 Oktober 2026
 
-**Belum ada perubahan database.** Persetujuan baru diminta setelah audit dan
-backup berikut selesai. Hash password tidak ditampilkan.
+Bagian ini mencatat persiapan **sebelum penerapan**. Saat persetujuan diminta,
+belum ada perubahan database. Hasil penerapan aktual tercantum pada bagian akhir.
+Hash password tidak ditampilkan.
 
 | ID permohonan | Status final | Pelanggan | ADMIN | Akun terkait | Hasil pemeriksaan |
 | --- | --- | --- | --- | --- | --- |
@@ -163,8 +164,43 @@ tetap identik; jika tidak, rollback. Tidak ada record yang dihapus.
 Sesudah persetujuan dan penerapan: ulangi audit read-only, uji login HTTP customer
 dengan fixture dummy yang dibersihkan, dan bandingkan sidik akun existing.
 Password asli akun existing tidak tersedia; jangan menyebut login akun asli
-teruji tanpa credential sah. Saat ini target nol hash masih **belum tercapai**.
+teruji tanpa credential sah. Saat persiapan, target nol hash masih belum tercapai;
+setelah persetujuan, target berhasil dicapai sebagaimana hasil berikut.
 
 Verifikasi persiapan terbaru: TypeScript PASS, build backend PASS, syntax tiga
 script PASS, guard penerapan tanpa file rencana PASS (ditolak sebelum transaksi
 perubahan), audit read-only tetap dua target. `src/lib/prisma.ts` tetap utuh.
+
+## Hasil penerapan yang disetujui — 9 Oktober 2026
+
+Pemilik data menyetujui pembersihan hanya passwordHash ID 1 dan ID 2 sesuai
+rencana. Sebelum eksekusi, checksum backup diperiksa kembali dan cocok dengan
+SHA-256 di atas; seluruh arsip kembali dibaca menggunakan `pg_restore --file=-`
+ke output yang dibuang, tanpa restore. Snapshot dalam transaksi identik dengan
+file rencana sebelum update. Semua pemeriksaan PASS; tidak ada rollback yang
+diperlukan pada penerapan aktual.
+
+| Verifikasi aktual | Hasil |
+| --- | --- |
+| Backup/checksum dan pembacaan penuh arsip sebelum penerapan | PASS |
+| Snapshot target dan data terkait sebelum update | PASS, identik dengan rencana |
+| Satu transaksi Serializable | PASS, tepat 2 record diperbarui |
+| PasswordHash ID 1/DISETUJUI dan ID 2/DITOLAK | PASS, keduanya string kosong |
+| Akun aktif, hash login, pelanggan, operator dan metadata keputusan | PASS, sidik identik sebelum/sesudah dalam transaksi |
+| Audit read-only setelah commit database | PASS, 0 hash permohonan final |
+| TypeScript dan build backend | PASS |
+| Integrasi fondasi customer | PASS, 24 kelompok termasuk login email/telepon, profil, role, concurrency, limiter dan cleanup |
+| Regresi reset password | PASS, 11 kelompok termasuk login password baru, token sekali pakai dan rollback fault injection pada dummy |
+| API publik dan kontrak operator | PASS, kedua endpoint publik tanpa JWT, hanya aktif, whitelist field dan proteksi operator |
+| Cleanup fixture | PASS, seluruh fixture ketiga suite dibersihkan |
+| Verifikasi independen sesudah seluruh pengujian | PASS, target tetap kosong, 0 hash final, sidik akun/pelanggan/operator/keputusan identik dengan rencana awal |
+
+Login HTTP customer diuji menggunakan akun dummy dengan password yang diketahui.
+Login akun existing ID 2 tidak diklaim diuji dengan password asli; keutuhan seluruh
+record akun beserta hash login dan status pelanggan dibuktikan lewat perbandingan
+sidik terhadap snapshot sebelum pembersihan. Tidak ada password/hash login yang
+diubah atau direset pada akun existing. Tidak ada record permohonan/pelanggan
+yang dihapus oleh transaksi pembersihan.
+
+Backup dan file rencana tetap disimpan di luar repository. `src/lib/prisma.ts`
+tidak disentuh; commit tindak lanjut hanya mengubah dokumentasi laporan ini.

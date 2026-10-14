@@ -1,12 +1,15 @@
-# BARBER BARBAR â€” Paket F7 Midtrans & Refund (PARSIAL)
+# BARBER BARBAR - Paket F7 Midtrans & Refund (PARSIAL)
 
 14 Oktober 2026 Â· feature/project5-integration Â· baseline F6
 44c4be8bfcf0e9600c7d47d2d763fd8820e34655.
 
 Kode Snap/webhook/refund ADMIN dan integrasi F5 tersedia, 12 kelompok MOCK PASS.
-Snap Sandbox nyata belum berhasil (SDK/provider HTTP500, endpoint503), sehingga
-settlement/refund end-to-end nyata DEFERRED. Jangan menyebut F7 atau F5 selesai
-penuh. Laporan aktual: server/F7-AUDIT.md; panduan: server/F7-SANDBOX.md.
+Diagnosis lanjutan: Snap201, webhook settlement DP5000 dan integrasi operasional
+F5 PASS dengan provider Sandbox nyata. HTTP500 lama tidak lagi reproducible;
+penyebab internal historis belum pasti, payment-domain tidak diubah spekulatif.
+Refund QRIS2000 diterima202 tetapi belum bank-confirmed; final refund dan pelunasan
+online nyata masih DEFERRED. F7 belum selesai penuh. Laporan: server/F7-AUDIT.md;
+panduan: server/F7-SANDBOX.md. Tidak ada dependency/migration baru pada diagnosis.
 
 ## Penerapan
 
@@ -101,7 +104,7 @@ menggunakan key acak di proses, tidak mengubah .env. Untuk provider nyata gunaka
 harness test-sandbox-f7.mjs dan panduan F7-SANDBOX. Checkout URL/token sementara
 hanya digunakan interaktif, jangan disimpan ke Git/ZIP. Tidak memakai Production.
 
-## Daftar 26 file ZIP
+## Daftar 27 file ZIP
 
 Struktur prefix barberbarbar/; source lengkap berikut:
 
@@ -115,6 +118,7 @@ server/prisma/schema.prisma
 server/prisma/migrations/20261014112500_tambah_midtrans_refund_f7/migration.sql
 server/prisma/migrations/20261014114000_rekonsiliasi_kredit_dp_terlambat_f7/migration.sql
 server/scripts/backup-f7.mjs
+server/scripts/diagnosis-midtrans-sandbox.mjs
 server/scripts/test-midtrans-f7.mjs
 server/scripts/test-sandbox-f7.mjs
 server/scripts/test-operasional-f5.mjs

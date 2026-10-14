@@ -4,7 +4,55 @@
 44c4be8bfcf0e9600c7d47d2d763fd8820e34655. Master PRD v2.0 lengkap tidak ditemukan;
 implementasi memakai prompt F7 pengguna, F5/F6-AUDIT dan source aktual.
 
-**F7 belum selesai penuh.** 12 kelompok mock/integrasi lokal PASS. Percobaan Snap
+## Pembaruan diagnosis dan bukti provider nyata
+
+14 Oktober 2026, pengujian lanjutan setelah commit cecaf4495b1ea1b743f21578f1da8d32aa7c692f:
+
+- Snap SDK minimal dan HTTP native mendapat201 dari host Sandbox; header
+  server istio-envoy, JSON token/redirect hadir (nilainya tidak dicetak).
+- Varian expiry, page_expiry, keduanya, minute/minutes semuanya201. Tidak ada
+  proxy environment aktif, mode false, format key Sandbox benar. Endpoint DP
+  booking dummy Rp5000 juga berhasil tanpa perubahan kode/config pembayaran.
+- HTTP500 sebelumnya dilaporkan MidtransError/httpStatusCode upstream, backend
+  sengaja merespons503. Tidak lagi reproducible. Metadata respons500 lama tidak
+  lengkap sehingga penyebab internal provider/jaringan historis belum pasti;
+  tidak menyatakan key salah, payload salah atau perbaikan kode sebagai akar solusi.
+- User menyelesaikan simulasi checkout melalui QRIS. Ledger DP5000 SUCCEEDED,
+  statusProvider settlement, attestation MIDTRANS_STATUS_V1 tercatat **sebelum
+  sinkronisasi dilakukan oleh agent**: webhook provider nyata lulus verifikasi.
+- Replay tiga payload GetStatus dengan signature **asli provider**, HTTP200/200/200,
+  kredit DP tetap satu. Tidak membuat signature/status settlement sintetis.
+- ADMIN dummy melakukan check-in/start HTTP200; satu Pesanan, IN_SERVICE. Layanan
+  dummy diturunkan ke3000 via API operasional sehingga paid5000, excess2000,
+  refund request2000 PENDING_APPROVAL; COMPLETED HTTP200.
+- ADMIN approve refund: provider202, request PROCESSING; GetStatus masih settlement
+  dan refunds kosong, bank-confirmed belum tersedia. Jumlah refund ledger tetap0,
+  paid5000. **Refund final DEFERRED**, bukan sukses.
+- Pelunasan online provider nyata belum diuji pada jalur ini (sisa0 setelah harga
+  dummy turun); mock tetap PASS. F7 masih parsial sampai refund/pelunasan nyata
+  tervalidasi. Bagian F5 check-in/barber/start/Pesanan/service/complete sudah PASS
+  dengan bukti DP provider nyata, bukan hanya mock.
+
+Perubahan terbatas pada diagnostic developer tersanitasi dan harness checkout
+lokal: tidak mencetak token/redirect provider lagi, hanya link redirect localhost.
+Tidak ada dependency, schema/migration, auth atau payment-domain perubahan baru.
+Script diagnosis tidak memproses settlement dan tidak mengubah database; Snap
+diagnostic tidak dibayar, tidak menjadi bukti ledger. Core pembayaran tidak diubah
+secara spekulatif. Jika500 muncul lagi, gunakan metadata request ID/server/date
+tersanitasi untuk eskalasi Midtrans, tanpa key/raw response/Authorization.
+
+Regresi F2–F7, TypeScript/build/Prisma/Git diperiksa ulang dan PASS. Sesudah
+pemeriksaan akhir refund (masih PROCESSING/settlement tanpa bank-confirmed),
+fixture lokal dibersihkan, backend/tunnel/redirect lokal ditutup. Snapshot22 model
+existing kembali identik dengan manifest backup, checksum backup valid. Riwayat
+Snap diagnostic dan QRIS/refund Sandbox tetap di dashboard provider; fixture
+lokalnya sudah tidak tersedia untuk webhook lanjutan. Uji refund berikutnya harus
+memakai fixture baru dan mempertahankan harness sampai provider final.
+
+Bagian berikut adalah
+hasil audit pertama sebelum keberhasilan DP Sandbox dan disimpan sebagai riwayat.
+
+**Audit pertama: F7 belum selesai penuh.** 12 kelompok mock/integrasi lokal PASS. Percobaan Snap
 Sandbox nyata FAIL: HTTP500 dari SDK/provider, direspons endpoint503; tidak
 mengakui pembayaran berhasil. Sudah dicoba di dalam dan di luar sandbox eksekusi.
 Tidak ada Snap URL berhasil diperoleh untuk pembayaran manual. Settlement,

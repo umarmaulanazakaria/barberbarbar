@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import {randomBytes,randomUUID} from "node:crypto";
 import {once} from "node:events";
 import {createInterface} from "node:readline";
+import {createServer} from "node:http";
 import bcrypt from "bcrypt";
 if(process.env.MIDTRANS_IS_PRODUCTION!=="false" || !["localhost","127.0.0.1","[::1]"].includes(new URL(process.env.DATABASE_URL??"").hostname))throw new Error("Hanya Sandbox/database lokal");
 const {default:db}=await import("../dist/lib/prisma.js"),{default:app}=await import("../dist/app.js");
 const {loginPelanggan}=await import("../dist/services/auth-pelanggan.service.js");
 const tanda=`sandbox-f7-${randomUUID()}`,password=randomBytes(24).toString("hex");
-let p,admin,barber,layanan,b,server,alamat;
+let p,admin,barber,layanan,b,server,alamat,checkoutServer,checkoutUrl;
+const localNonce=randomBytes(24).toString("hex");
 const utc=kerja=>db.$transaction(async tx=>{await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;return kerja(tx);});
 const http=async(path,method="GET",body,token)=>{const r=await fetch(`${alamat}${path}`,{method,headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return{status:r.status,body:await r.json()};};
 try{
@@ -24,8 +26,13 @@ try{
  assert.equal(r.status,201);b=r.body.booking;assert.equal((await http(`/bookings/${b.id}/confirm`,"POST",{},admin.token)).status,200);
  const snap=await http(`/customer/bookings/${b.id}/payments/dp`,"POST",{kunciIdempotensi:randomUUID()},p.token);
  if(snap.status!==200){const kode=/\((HTTP_\d{3}|NETWORK_OR_INVALID_RESPONSE)\)/.exec(snap.body.pesan??"")?.[1]??"UNCLASSIFIED";console.log(`Diagnosis provider: ${kode}`);throw new Error(`Snap HTTP ${snap.status}`);}
- console.log("PASS SANDBOX: Snap DP5000 dibuat provider nyata. URL checkout sementara (developer only; jangan disimpan Git/ZIP):");
- console.log(snap.body.redirect_url);
+ checkoutUrl=snap.body.redirect_url;
+ checkoutServer=createServer((req,res)=>{
+  if(req.url!==`/${localNonce}`){res.writeHead(404);res.end();return;}
+  res.writeHead(302,{Location:checkoutUrl,"Cache-Control":"no-store"});res.end();
+ });checkoutServer.listen(0,"127.0.0.1");await once(checkoutServer,"listening");
+ console.log("PASS SANDBOX: Snap DP5000 dibuat provider nyata; token/redirect provider tidak dicetak.");
+ console.log(`Checkout lokal developer: http://127.0.0.1:${checkoutServer.address().port}/${localNonce}`);
  const input=createInterface({input:process.stdin,output:process.stdout});
  console.log("Perintah: sync, start, complete, settlement, cancel, refund, finish. Tidak ada command paid/fixture proof.");
  for await(const baris of input){
@@ -43,7 +50,7 @@ try{
    hasil=await http(`/bookings/${b.id}/complete`,"POST",{},admin.token);console.log(`Complete HTTP ${hasil.status}`);
   }else if(aksi==="settlement"){
    hasil=await http(`/customer/bookings/${b.id}/payments/online-settlement`,"POST",{kunciIdempotensi:randomUUID()},p.token);
-   console.log(`Snap pelunasan HTTP ${hasil.status}`);if(hasil.status===200)console.log(hasil.body.redirect_url);
+   console.log(`Snap pelunasan HTTP ${hasil.status}`);if(hasil.status===200){checkoutUrl=hasil.body.redirect_url;console.log("Checkout lokal developer kini mengarah ke pelunasan.");}
   }else if(aksi==="cancel"){
    hasil=await http(`/customer/bookings/${b.id}/cancel`,"POST",{},p.token);console.log(`Cancel HTTP ${hasil.status}`);
   }else if(aksi==="refund"){
@@ -62,5 +69,5 @@ finally{
     await tx.booking.deleteMany({where:{id:{in:ids}}});await tx.pembayaran.deleteMany({where:{pesananId:{in:orders}}});await tx.pesanan.deleteMany({where:{id:{in:orders}}});await tx.pelanggan.delete({where:{id:p.id}});});}
   if(admin)await db.pengguna.delete({where:{id:admin.id}});if(layanan)await db.layanan.delete({where:{id:layanan.id}});if(barber)await db.barber.delete({where:{id:barber.id}});
   console.log("Fixture Sandbox lokal dibersihkan; transaksi pada dashboard Sandbox provider tetap sebagai riwayat pengujian.");
- }finally{try{if(server)await new Promise(resolve=>server.close(resolve));}finally{await db.$disconnect();}}
+ }finally{try{if(checkoutServer)await new Promise(resolve=>checkoutServer.close(resolve));if(server)await new Promise(resolve=>server.close(resolve));}finally{await db.$disconnect();}}
 }

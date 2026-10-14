@@ -44,9 +44,10 @@ node scripts/test-sandbox-f7.mjs
 ```
 
 Harness memegang port3000 sesuai env, akun/customer/operator/layanan dummy acak,
-tidak menerima ID existing. Bila Snap berhasil, checkout URL sementara ditampilkan
-hanya pada output developer untuk dibuka manual. Jangan menyalinnya ke dokumentasi/
-Git/ZIP. Pilih metode Sandbox yang supported refund, misalnya GoPay, lalu gunakan
+tidak menerima ID existing. Bila Snap berhasil, hanya tautan redirect localhost
+yang ditampilkan; token/URL Snap provider tidak dicetak. Server redirect ephemeral
+terikat127.0.0.1, memiliki path nonce acak, no-store, dan ditutup saat finish.
+Pilih metode Sandbox yang supported refund, misalnya GoPay, lalu gunakan
 simulator Sandbox; jangan membayar dengan akun/card sungguhan.
 
 Commands harness:
@@ -64,10 +65,26 @@ jalur refund. Transaksi provider Sandbox tetap di dashboard sebagai riwayat, tid
 dihapus oleh cleanup lokal. Tanpa finish, fixture masih diperlukan untuk webhook;
 jangan menutup proses atau menghapus record saat pembayaran sedang diuji.
 
-Pada audit14 Oktober, Snap create gagal HTTP500 bahkan di luar sandbox eksekusi;
+Pada audit pertama14 Oktober, Snap create gagal HTTP500 bahkan di luar sandbox eksekusi;
 tidak ada URL/settlement/refund provider nyata yang PASS. Periksa status layanan
 Sandbox/akun di dashboard, lalu ulang harness setelah penyebab terselesaikan.
 Jangan regenerate/menyalin key otomatis atau membuka Production sebagai jalan pintas.
+
+Diagnosis lanjutan pada tanggal yang sama: Snap201 dan webhook/settlement DP5000
+nyata berhasil, tanpa perubahan payment-domain. QRIS refund request2000 diterima
+202 tetapi belum bank-confirmed; tetap PROCESSING, jangan menandainya sukses.
+Penyebab internal500 historis belum pasti karena tidak lagi dapat direproduksi.
+
+Untuk observabilitas metadata aman (tidak mencetak token/key/body mentah):
+
+```powershell
+node scripts/diagnosis-midtrans-sandbox.mjs
+```
+
+Script menguji Snap SDK/native minimal dan varian expiry; tiap request mempunyai
+order dummy unik. Tidak ada pembayaran, ledger settlement atau personal data.
+Hasil Snap diagnostic tidak boleh dipakai sebagai bukti paid. Metadata request ID
+dan status dapat dipakai saat eskalasi Midtrans jika500 berulang.
 
 Refund `UNSUPPORTED` berarti butuh keputusan policy manual (kasir/bank transfer/
 metode tanpa fasilitas refund/partial yang tidak didukung), bukan uang sudah kembali.

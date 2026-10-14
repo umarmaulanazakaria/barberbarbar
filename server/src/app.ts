@@ -10,6 +10,8 @@ import routerDashboard from "./routes/dashboard.routes.js";
 import routerItemPesanan from "./routes/item-pesanan.routes.js";
 import routerAuthPelanggan from "./routes/auth-pelanggan.routes.js";
 import routerPublik from "./routes/publik.routes.js";
+import routerMembershipPelanggan from "./routes/membership-pelanggan.routes.js";
+import routerPermohonanMembership from "./routes/permohonan-membership.routes.js";
 import { autentikasi } from "./middleware/auth.middleware.js";
 import {
   tidakDitemukan,
@@ -24,6 +26,8 @@ aplikasi.get("/", (_req, res) =>
 aplikasi.use("/auth", routerAuth);
 aplikasi.use("/auth/customer", routerAuthPelanggan);
 aplikasi.use("/public", routerPublik);
+aplikasi.use("/customer/membership", routerMembershipPelanggan);
+aplikasi.use("/membership-requests", routerPermohonanMembership);
 aplikasi.use("/pelanggan", autentikasi, routerPelanggan);
 aplikasi.use("/customers", autentikasi, routerPelanggan);
 aplikasi.use("/barbers", autentikasi, routerBarber);

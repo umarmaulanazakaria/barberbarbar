@@ -18,6 +18,7 @@ model Pelanggan {
   pesanan             Pesanan[]
   akunPelanggan       AkunPelanggan?
   permohonanPengaitan PermohonanPengaitanAkun[]
+  permohonanMembership PermohonanMembership[]
 }
 
 enum StatusPelanggan {
@@ -46,6 +47,7 @@ model Pengguna {
   barber             Barber?                   @relation(fields: [barberId], references: [id], onDelete: Cascade)
   riwayatStatus      RiwayatStatusPesanan[]
   keputusanPengaitan PermohonanPengaitanAkun[]
+  keputusanMembership PermohonanMembership[]
 }
 
 enum Role {
@@ -212,4 +214,25 @@ enum StatusPermohonanPengaitan {
   MENUNGGU
   DISETUJUI
   DITOLAK
+}
+
+model PermohonanMembership {
+  id                  Int @id @default(autoincrement())
+  pelangganId         Int
+  status              StatusPermohonanMembership @default(PENDING_APPROVAL)
+  dibuatPada          DateTime @default(now())
+  diputuskanPada      DateTime?
+  diputuskanOlehId     Int?
+  catatanKeputusan    String?
+  pelanggan           Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  diputuskanOleh       Pengguna? @relation(fields: [diputuskanOlehId], references: [id], onDelete: SetNull)
+
+  @@index([pelangganId, dibuatPada])
+  @@index([status, dibuatPada])
+}
+
+enum StatusPermohonanMembership {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
 }

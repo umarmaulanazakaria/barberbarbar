@@ -52,6 +52,7 @@ model Pengguna {
   keputusanBooking Booking[]
   usulanBarber UsulanBarberBooking[]
   riwayatBooking RiwayatBooking[]
+  transaksiBooking TransaksiPembayaranBooking[]
 }
 
 enum Role {
@@ -149,6 +150,7 @@ model Pembayaran {
   catatan        String?
   dibayarPada    DateTime         @default(now())
   pesanan        Pesanan          @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+  invoiceBooking InvoiceBooking?
 
   @@index([dibayarPada])
 }
@@ -278,6 +280,7 @@ model Booking {
   checkInPada           DateTime? @db.Timestamptz(3)
   layananMulaiPada      DateTime? @db.Timestamptz(3)
   layananSelesaiPada    DateTime? @db.Timestamptz(3)
+  deadlinePelunasan     DateTime? @db.Timestamptz(3)
   diputuskanOlehId      Int?
   alasanPenolakan       String?
   pelanggan             Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
@@ -289,6 +292,8 @@ model Booking {
   items                 ItemBooking[]
   usulanBarber          UsulanBarberBooking[]
   riwayat               RiwayatBooking[]
+  transaksiPembayaran   TransaksiPembayaranBooking[]
+  invoice               InvoiceBooking?
 
   @@index([mulaiPada, selesaiPada])
   @@index([pelangganId, status])
@@ -356,4 +361,75 @@ model RiwayatBooking {
   pengguna Pengguna? @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
   akunPelanggan AkunPelanggan? @relation(fields: [akunPelangganId], references: [id], onDelete: SetNull)
   @@index([bookingId, dibuatPada])
+}
+
+model TransaksiPembayaranBooking {
+  id Int @id @default(autoincrement())
+  bookingId Int
+  tujuan TujuanPembayaranBooking
+  kanal KanalPembayaranBooking
+  status StatusTransaksiBooking @default(PENDING)
+  nominal Int
+  mataUang String @default("IDR")
+  metode MetodePembayaran?
+  jumlahDiterima Int?
+  kembalian Int?
+  kunciIdempotensi String @unique
+  sidikPermintaan String
+  referensiProvider String? @unique
+  roundKonfirmasiPada DateTime? @db.Timestamptz(3)
+  deadlinePada DateTime? @db.Timestamptz(3)
+  dibayarPada DateTime? @db.Timestamptz(3)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  penggunaId Int?
+  transaksiAsalId Int?
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  pengguna Pengguna? @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
+  buktiProvider BuktiProviderBooking?
+  transaksiAsal TransaksiPembayaranBooking? @relation("RefundTransaksiBooking", fields: [transaksiAsalId], references: [id], onDelete: Restrict)
+  refund TransaksiPembayaranBooking[] @relation("RefundTransaksiBooking")
+  @@index([bookingId, status, tujuan])
+}
+
+model BuktiProviderBooking {
+  id Int @id @default(autoincrement())
+  transaksiId Int @unique
+  referensiProvider String @unique
+  nominal Int
+  mataUang String @default("IDR")
+  fingerprintPayload String
+  terverifikasiPada DateTime @db.Timestamptz(3)
+  transaksi TransaksiPembayaranBooking @relation(fields: [transaksiId], references: [id], onDelete: Cascade)
+}
+
+model InvoiceBooking {
+  id Int @id @default(autoincrement())
+  bookingId Int @unique
+  nomorInvoice String @unique
+  subtotal Int
+  discountPercent Int
+  diskon Int
+  total Int
+  jumlahDibayar BigInt
+  kelebihan BigInt
+  pembayaranLegacyId Int? @unique
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  pembayaranLegacy Pembayaran? @relation(fields: [pembayaranLegacyId], references: [id], onDelete: Restrict)
+}
+
+enum TujuanPembayaranBooking {
+  DP
+  PELUNASAN
+  REFUND
+}
+enum KanalPembayaranBooking {
+  MIDTRANS
+  KASIR
+}
+enum StatusTransaksiBooking {
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
 }

@@ -96,6 +96,9 @@ export const jawabUsulanBarber = (id: number, usulanId: number, pelangganId: num
 export const rescheduleBooking = (id: number, pelangganId: number, akunPelangganId: number, data: { mulaiPada: string; barberPilihanId?: number | null | undefined }) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id, pelangganId);
   if (booking.status !== "CONFIRMED" || booking.pesananId !== null) return tolak();
+  if (await tx.transaksiPembayaranBooking.count({ where: { bookingId: id, status: "SUCCEEDED" } })) {
+    return tolak("Reschedule setelah pembayaran valid membutuhkan rekonsiliasi pada F7");
+  }
   const usulan = await tx.usulanBarberBooking.findFirst({ where: { bookingId: id }, orderBy: { id: "desc" } });
   if (usulan?.status !== "REJECTED" || !usulan.diputuskanPada || !booking.dikonfirmasiPada ||
       usulan.diputuskanPada < booking.dikonfirmasiPada) {
@@ -122,7 +125,7 @@ export const checkInBooking = (id: number) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "CONFIRMED") return tolak();
   await pastikanCustomerAktif(tx, booking);
-  return tolak("Check-in memerlukan bukti DP terverifikasi; integrasi pembayaran tersedia pada F6");
+  return tolak("Check-in memerlukan bukti DP terverifikasi; integrasi provider tersedia pada F7");
 });
 export const mulaiLayananBooking = (id: number, barberId: number) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
@@ -132,17 +135,19 @@ export const mulaiLayananBooking = (id: number, barberId: number) => transaksiBo
   const pilihan = booking.barberDisetujuiId ?? booking.barberPilihanId;
   if (pilihan !== null && pilihan !== barberId) return tolak("Barber belum disetujui customer");
   await validasiSlot(tx, booking, booking.mulaiPada, booking.selesaiPada, barberId);
-  return tolak("IN_SERVICE memerlukan bukti DP terverifikasi; integrasi pembayaran tersedia pada F6");
+  return tolak("IN_SERVICE memerlukan bukti DP terverifikasi; integrasi provider tersedia pada F7");
 });
 export const selesaikanBooking = (id: number, penggunaId: number) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "IN_SERVICE") return tolak();
-  await tx.booking.update({ where: { id }, data: { status: "COMPLETED", layananSelesaiPada: new Date() } });
+  const selesaiPada = new Date();
+  await tx.booking.update({ where: { id }, data: { status: "COMPLETED", layananSelesaiPada: selesaiPada,
+    deadlinePelunasan: new Date(selesaiPada.getTime() + 3600000) } });
   await catat(tx, booking, "COMPLETE", "COMPLETED", { penggunaId });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
 export const ubahLayananBooking = (id: number) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "IN_SERVICE") return tolak();
-  return tolak("Pembuatan Pesanan dan perubahan item booking ditunda sampai F6 sesuai kebijakan integrasi pembayaran");
+  return tolak("Pembuatan Pesanan dan perubahan item booking tetap menunggu bukti DP provider F7");
 });

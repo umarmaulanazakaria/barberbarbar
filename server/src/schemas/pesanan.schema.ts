@@ -22,4 +22,5 @@ export const skemaPembayaran = z.object({
   metode: z.enum(["CASH", "QRIS", "CARD", "TRANSFER", "OTHER"]),
   jumlahDiterima: z.number().int().nonnegative(),
   catatan: z.string().max(500).optional(),
+  kunciIdempotensi: z.string().min(8).max(128).regex(/^[a-zA-Z0-9_-]+$/).optional(),
 });

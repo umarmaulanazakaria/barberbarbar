@@ -1,4 +1,5 @@
 import basisData from "../lib/prisma.js";
+import { bayarPelunasanKasirBooking, KesalahanPembayaranBooking } from "./pembayaran-booking.service.js";
 type StatusPesanan = "WAITING" | "IN_SERVICE" | "COMPLETED" | "CANCELLED";
 type MetodePembayaran = "CASH" | "QRIS" | "CARD" | "TRANSFER" | "OTHER";
 
@@ -137,10 +138,24 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
 
 export const bayarPesanan = async (
   id: number,
-  data: { metode: MetodePembayaran; jumlahDiterima: number; catatan?: string | undefined },
+  data: { metode: MetodePembayaran; jumlahDiterima: number; catatan?: string | undefined; kunciIdempotensi?: string | undefined },
+  penggunaId?: number,
 ) => {
   const pesanan = await basisData.pesanan.findUnique({ where: { id } });
   if (!pesanan) return { berhasil: false, alasan: "TIDAK_DITEMUKAN" } as const;
+  const booking = await basisData.booking.findUnique({ where: { pesananId: id }, select: { id: true } });
+  if (booking) {
+    if (!penggunaId) throw new KesalahanPembayaranBooking(401, "Operator belum login");
+    const hasil = await bayarPelunasanKasirBooking(booking.id, penggunaId, { ...data,
+      kunciIdempotensi: data.kunciIdempotensi ?? `legacy_order_${id}` }, data.kunciIdempotensi !== undefined);
+    const pembayaranId = hasil.ringkasan.invoice?.pembayaranLegacyId;
+    if (!pembayaranId) throw new KesalahanPembayaranBooking(409, "Invoice booking tidak terhubung dengan kasir");
+    const [pembayaran, pesananBaru] = await Promise.all([
+      basisData.pembayaran.findUniqueOrThrow({ where: { id: pembayaranId } }),
+      basisData.pesanan.findUniqueOrThrow({ where: { id }, include: detailPesanan }),
+    ]);
+    return { berhasil: true, data: { pembayaran, pesanan: pesananBaru } } as const;
+  }
   if (pesanan.status !== "COMPLETED") return { berhasil: false, alasan: "BELUM_SELESAI" } as const;
 
   const hasil = await basisData.$transaction(async (tx) => {
@@ -157,6 +172,11 @@ export const bayarPesanan = async (
 
     if (dikunci.count !== 1) {
       return { tipe: "SUDAH_DIBAYAR" } as const;
+    }
+    // Jika F7 mengaitkan booking ketika request legacy sedang menunggu row lock,
+    // jangan masuk ke pencatatan kasir biasa yang belum memahami DP.
+    if (await tx.booking.findUnique({ where: { pesananId: id }, select: { id: true } })) {
+      throw new KesalahanPembayaranBooking(409, "Pembayaran booking harus menghitung DP dan balance pada ledger");
     }
 
     const pesananTerkini = await tx.pesanan.findUniqueOrThrow({

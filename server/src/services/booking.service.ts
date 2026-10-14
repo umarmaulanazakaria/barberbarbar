@@ -9,7 +9,7 @@ export const kolomBooking = {
   durasiMenit: true, barberPilihanId: true, pesananId: true, subtotal: true, membershipAktif: true,
   discountPercent: true, diskon: true, total: true, dpPersen: true, nominalDp: true, catatan: true,
   dibuatPada: true, diperbaruiPada: true, dikonfirmasiPada: true, ditolakPada: true, dibatalkanPada: true,
-  deadlineDp: true, checkInPada: true, layananMulaiPada: true, layananSelesaiPada: true,
+  deadlineDp: true, deadlinePelunasan: true, checkInPada: true, layananMulaiPada: true, layananSelesaiPada: true,
   alasanPenolakan: true, barberDisetujuiId: true, barberFinalId: true,
   usulanBarber: { select: { id: true, barberId: true, alasan: true, status: true, dibuatPada: true, diputuskanPada: true }, orderBy: { id: "desc" as const } },
   riwayat: { select: { aksi: true, statusSebelum: true, statusSetelah: true, rincian: true, dibuatPada: true }, orderBy: { id: "asc" as const } },

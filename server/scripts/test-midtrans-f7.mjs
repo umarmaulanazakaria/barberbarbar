@@ -91,6 +91,10 @@ try{
  const starts=await Promise.all([http(`/bookings/${ba.id}/start`,"POST",{barberId:barber.id},staff.token),http(`/bookings/${ba.id}/start`,"POST",{barberId:barber.id},admin.token)]);
  assert.deepEqual(starts.map(r=>r.status).sort(),[200,409]);
  assert.equal(await db.pesanan.count({where:{pelangganId:a.id}}),1);
+ const terkait=await db.booking.findUniqueOrThrow({where:{id:ba.id},select:{pesananId:true}});
+ const detailWeb=await http(`/orders/${terkait.pesananId}`,"GET",undefined,staff.token);
+ assert.equal(detailWeb.status,200);assert.deepEqual(detailWeb.body.booking,{id:ba.id,nomorBooking:ba.nomorBooking});
+ assert.ok(!JSON.stringify(detailWeb.body).includes("passwordHash"));
  assert.equal((await http(`/bookings/${ba.id}/services`,"PUT",{items:[{layananId:layanan.id,qty:2}]},staff.token)).status,200);
  assert.equal((await ringkas(ba,a)).body.ringkasan.balance,135000);
  assert.equal((await http(`/bookings/${ba.id}/complete`,"POST",{},staff.token)).status,200);
@@ -114,9 +118,12 @@ try{
  assert.equal((await ringkas(bb,b)).body.ringkasan.jumlahRefund,50000);assert.equal((await ringkas(bb,b)).body.ringkasan.balance,0);
  const count=refundCount;assert.equal((await http(`/refund-requests/${rb.id}/retry`,"POST",{},admin.token)).status,409);assert.equal(refundCount,count);
  pass("Cancel>=1jam refund DP100%, ADMIN tunggal, STAFF403/CUSTOMER401, gagal tidak debit, retry key tetap dan bank-confirmed sukses");
- const bc=await buat(c,3);await lunasiDp(bc,c);await utc(tx=>tx.booking.update({where:{id:bc.id},data:{mulaiPada:new Date(Math.floor(Date.now()/60000)*60000+30*60000),selesaiPada:new Date(Math.floor(Date.now()/60000)*60000+60*60000)}}));
+ // Fixture layanan sudah lewat memakai jam operasional valid. Relatif now+30/+60
+ // dapat melampaui23.00 ketika suite dijalankan malam. Hanya booking dummy ini.
+ const lampau=new Date(hari(-1)),akhirLampau=new Date(lampau.getTime()+30*60000);
+ const bc=await buat(c,3);await lunasiDp(bc,c);await utc(tx=>tx.booking.update({where:{id:bc.id},data:{mulaiPada:lampau,selesaiPada:akhirLampau}}));
  assert.equal((await http(`/customer/bookings/${bc.id}/cancel`,"POST",{},c.token)).status,200);assert.equal(await db.permohonanRefundBooking.count({where:{bookingId:bc.id}}),0);
- const bd=await buat(d,4);await lunasiDp(bd,d);await utc(tx=>tx.booking.update({where:{id:bd.id},data:{mulaiPada:new Date(Math.floor(Date.now()/60000)*60000-60*60000),selesaiPada:new Date(Math.floor(Date.now()/60000)*60000-30*60000)}}));
+ const bd=await buat(d,4);await lunasiDp(bd,d);await utc(tx=>tx.booking.update({where:{id:bd.id},data:{mulaiPada:lampau,selesaiPada:akhirLampau}}));
  assert.equal((await http(`/bookings/${bd.id}/no-show`,"POST",{},staff.token)).status,200);assert.equal((await ringkas(bd,d)).body.ringkasan.balance,0);
  assert.equal(await db.permohonanRefundBooking.count({where:{bookingId:bd.id}}),0);
  pass("Cancel<1jam/NO_SHOW DP hangus, tanpa refund dan tanpa kewajiban pelunasan");

@@ -12,6 +12,9 @@ import HistoryPage from "./pages/HistoryPage";
 import InvoicesPage from "./pages/InvoicesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import BookingPage from "./pages/BookingPage";
+import DetailBookingPage from "./pages/DetailBookingPage";
+import RefundPage from "./pages/RefundPage";
 export default function App() {
   return (
     <Routes>
@@ -25,6 +28,9 @@ export default function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/bookings" element={<BookingPage />} />
+        <Route path="/bookings/:id" element={<DetailBookingPage />} />
+        <Route path="/refunds" element={<RefundPage />} />
         <Route path="/orders/new" element={<Navigate to="/orders" replace />} />
         <Route path="/orders/:id" element={<Navigate to="/orders" replace />} />
         <Route

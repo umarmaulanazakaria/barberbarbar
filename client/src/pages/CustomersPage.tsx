@@ -6,6 +6,7 @@ import type { Pelanggan, Pesanan } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import ConfirmDialog from "../components/ConfirmDialog";
+import PermohonanPengaitanAdmin from "../components/PermohonanPengaitanAdmin";
 import { rupiah, tanggal } from "../lib/format";
 import {
   Button,
@@ -192,6 +193,7 @@ export default function CustomersPage() {
 
   return (
     <>
+      {user?.role === "ADMIN" && <PermohonanPengaitanAdmin />}
       <PageTitle
         title="Customers"
         subtitle="Customer information and blocked customers"

@@ -8,6 +8,7 @@ import { rupiah, tanggal, waktu } from "../lib/format";
 import type { Pesanan, StatusPesanan } from "../types";
 import { Button, Card, ErrorState, LoadingState, StatusBadge } from "./ui";
 import PaymentModal from "./PaymentModal";
+import { Link } from "react-router-dom";
 
 type OrderDetailModalProps = {
   orderId: number | null;
@@ -274,7 +275,8 @@ export default function OrderDetailModal({
                     </span>
                   </div>
 
-                  {order.status === "WAITING" && (
+                  {order.booking && <Link className="block rounded-lg bg-indigo-50 p-3 text-sm font-bold text-indigo-700" onClick={onClose} to={`/bookings/${order.booking.id}`}>Kelola booking, layanan dan pelunasan {order.booking.nomorBooking}</Link>}
+                  {!order.booking && order.status === "WAITING" && (
                     <Button
                       className="w-full"
                       disabled={statusMutation.isPending}
@@ -284,7 +286,7 @@ export default function OrderDetailModal({
                     </Button>
                   )}
 
-                  {order.status === "IN_SERVICE" && (
+                  {!order.booking && order.status === "IN_SERVICE" && (
                     <Button
                       variant="success"
                       className="w-full"
@@ -295,7 +297,7 @@ export default function OrderDetailModal({
                     </Button>
                   )}
 
-                  {order.status === "COMPLETED" &&
+                  {!order.booking && order.status === "COMPLETED" &&
                     order.statusPembayaran === "UNPAID" && (
                       <Button
                         className="w-full"

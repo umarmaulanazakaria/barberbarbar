@@ -4,6 +4,7 @@ type StatusPesanan = "WAITING" | "IN_SERVICE" | "COMPLETED" | "CANCELLED";
 type MetodePembayaran = "CASH" | "QRIS" | "CARD" | "TRANSFER" | "OTHER";
 
 const detailPesanan = {
+  booking: { select: { id: true, nomorBooking: true } },
   pelanggan: { include: { membership: true } },
   barber: true,
   items: { include: { layanan: true } },

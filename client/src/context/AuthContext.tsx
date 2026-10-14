@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(Boolean(token));
 
   const logout = useCallback(() => {
+    window.dispatchEvent(new Event("auth:session-changing"));
     localStorage.removeItem("barber_token");
 
     localStorage.removeItem("barber_user");
@@ -73,21 +74,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       return;
     }
+    const pengendali = new AbortController();
+    let aktif = true;
 
     api
       .get<{
         pengguna: User;
-      }>("/auth/me")
+      }>("/auth/me", { signal: pengendali.signal })
 
       .then(({ data }) => {
+        if (!aktif) return;
         setUser(data.pengguna);
 
         localStorage.setItem("barber_user", JSON.stringify(data.pengguna));
       })
 
-      .catch(() => logout())
+      .catch(() => { if (aktif) logout(); })
 
-      .finally(() => setLoading(false));
+      .finally(() => { if (aktif) setLoading(false); });
+    return () => { aktif = false; pengendali.abort(); };
   }, [logout, token]);
 
   const login = useCallback(
@@ -97,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
       });
 
+      window.dispatchEvent(new Event("auth:session-changing"));
       queryClient.clear();
 
       localStorage.setItem("barber_token", data.token);

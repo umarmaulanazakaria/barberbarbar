@@ -12,6 +12,7 @@ import { useState } from "react";
 import NewOrderModal from "../components/NewOrderModal";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { api } from "../lib/api";
+import RingkasanBookingDashboard from "../components/RingkasanBookingDashboard";
 import type { DashboardData } from "../types";
 import { rupiah, waktu } from "../lib/format";
 import {
@@ -51,6 +52,7 @@ export default function DashboardPage() {
         }
       />
 
+      <RingkasanBookingDashboard />
       {isLoading ? (
         <Card>
           <LoadingState text="Loading dashboard..." />

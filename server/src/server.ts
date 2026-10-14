@@ -2,6 +2,8 @@ import "dotenv/config";
 import aplikasi from "./app.js";
 import basisData from "./lib/prisma.js";
 import { mulaiSchedulerBooking } from "./lib/scheduler-booking.js";
+import { createServer } from "node:http";
+import { pasangRealtime } from "./realtime/server.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
 
@@ -11,14 +13,16 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65_535) {
 
 // Scanner hanya didaftarkan oleh entrypoint, bukan import app pada test HTTP.
 let scheduler: ReturnType<typeof mulaiSchedulerBooking> | undefined;
-const server = aplikasi.listen(PORT, () => {
+const server = createServer(aplikasi);
+const realtime = pasangRealtime(server);
+server.listen(PORT, () => {
   scheduler = mulaiSchedulerBooking();
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
 
 server.on("error", (error) => {
   console.error(`Server gagal listen pada port ${PORT}:`, error);
-  process.exitCode = 1;
+  hentikanServer("LISTEN_ERROR", 1);
 });
 
 let sedangBerhenti = false;
@@ -34,14 +38,12 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
   }, 30_000);
   paksaBerhenti.unref();
 
-  server.close(async (error) => {
-    if (error) {
-      console.error("Gagal menutup HTTP server:", error);
-      kodeKeluar = 1;
-    }
-
+  void (async () => {
     try {
       await scheduler?.hentikan();
+      // io.close menutup socket/HTTP yang sama; jangan menunggu HTTP drain
+      // sebelum menutup koneksi WebSocket yang berumur panjang.
+      await realtime.hentikan();
       await basisData.$disconnect();
     } catch (errorDatabase) {
       console.error("Gagal memutus koneksi database:", errorDatabase);
@@ -50,7 +52,7 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
       clearTimeout(paksaBerhenti);
       process.exit(kodeKeluar);
     }
-  });
+  })();
 };
 
 process.on("SIGINT", () => hentikanServer("SIGINT"));

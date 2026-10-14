@@ -3,6 +3,7 @@ import basisData from "../lib/prisma.js";
 import { kapasitasBookingCukup, validasiWaktuBooking, zonaBooking } from "../lib/jadwal-booking.js";
 import type { DataBuatBooking } from "../schemas/booking.schema.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
+import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export const kolomBooking = {
   id: true, nomorBooking: true, status: true, mulaiPada: true, selesaiPada: true, zonaWaktu: true,
@@ -24,7 +25,7 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
     await kunciJadwalBooking(transaksi);
     // Semua penulis booking F5+ wajib memakai lock yang sama sebelum validasi.
     // READ COMMITTED membaca hasil commit request sebelumnya setelah menunggu lock.
-    const sekarang = new Date();
+    const sekarang = await waktuDatabaseBooking(transaksi);
     const pelanggan = await transaksi.pelanggan.findUnique({ where: { id: pelangganId }, include: { membership: true } });
     if (!pelanggan || pelanggan.status !== "AKTIF") return { status: "AKUN_TIDAK_AKTIF" } as const;
     const layanan = await transaksi.layanan.findMany({ where: { id: { in: data.items.map(item => item.layananId) }, aktif: true } });
@@ -60,7 +61,7 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
       return { status: "DATA_TIDAK_VALID" } as const;
     }
     const booking = await transaksi.booking.create({ data: {
-      nomorBooking: `BKG-${randomUUID()}`, pelangganId, barberPilihanId: data.barberPilihanId ?? null,
+      nomorBooking: `BKG-${randomUUID()}`, pelangganId, dibuatPada: sekarang, barberPilihanId: data.barberPilihanId ?? null,
       mulaiPada, selesaiPada, zonaWaktu: zonaBooking, durasiMenit, subtotal, membershipAktif,
       discountPercent, diskon, total, dpPersen: 50, nominalDp, catatan: data.catatan ?? null,
       items: { create: items },

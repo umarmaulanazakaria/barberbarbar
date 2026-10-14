@@ -3,6 +3,7 @@ import { z } from "zod";
 import basisData from "../lib/prisma.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
+import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 import { gerbangMidtrans, KesalahanMidtrans, merchantSandbox, skemaStatusMidtrans,
   verifikasiSignatureMidtrans, type StatusMidtrans } from "../lib/midtrans.js";
 import { ambilBookingPembayaran, bacaRingkasanPembayaran, finalisasiInvoiceDalamTransaksi,
@@ -24,7 +25,7 @@ const nominal = (angka: string) => {
   if (!Number.isSafeInteger(hasil) || hasil < 0) return gagal("Nominal provider tidak valid", 400);
   return hasil;
 };
-export const pastikanDpProviderSah = async (tx: Prisma.TransactionClient, bookingId: number) => {
+export const dpProviderSah = async (tx: Prisma.TransactionClient, bookingId: number) => {
   const booking = await ambilBookingPembayaran(tx, bookingId);
   const dp = await tx.transaksiPembayaranBooking.findMany({ where: { bookingId, tujuan: "DP", kanal: "MIDTRANS", status: "SUCCEEDED",
     buktiProvider: { metodeVerifikasi: "MIDTRANS_STATUS_V1" } }, include: { refund: { where: { status: "SUCCEEDED" } }, buktiProvider: true } });
@@ -32,18 +33,20 @@ export const pastikanDpProviderSah = async (tx: Prisma.TransactionClient, bookin
     t.dibayarPada && t.deadlinePada && t.dibayarPada <= t.deadlinePada &&
     (t.roundKonfirmasiPada?.getTime() === booking.dikonfirmasiPada?.getTime() ||
       (booking.dpDibawaDariRound !== null && t.roundKonfirmasiPada?.getTime() === booking.dpDibawaDariRound.getTime())));
-  if (!sah.length || sah.reduce((n,t) => n + t.nominal - t.refund.reduce((r,f) => r + f.nominal, 0), 0) < booking.nominalDp) {
-    return gagal("Layanan wajib bukti DP sah hasil verifikasi Midtrans");
-  }
+  return sah.length > 0 && sah.reduce((n,t) => n + t.nominal - t.refund.reduce((r,f) => r + f.nominal, 0), 0) >= booking.nominalDp;
+};
+export const pastikanDpProviderSah = async (tx: Prisma.TransactionClient, bookingId: number) => {
+  if (!await dpProviderSah(tx, bookingId)) return gagal("Layanan wajib bukti DP sah hasil verifikasi Midtrans");
 };
 
 export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "DP" | "PELUNASAN", key: string) => {
   merchantSandbox(); // fail closed sebelum mutasi saat konfigurasi salah
   const persiapan = await transaksiKeuanganBooking(async tx => {
     const booking = await ambilBookingPembayaran(tx, id, pelangganId);
+    const sekarang = await waktuDatabaseBooking(tx);
     const ringkas = await bacaRingkasanPembayaran(tx, booking);
     if (tujuan === "DP") {
-      if (booking.status !== "CONFIRMED" || !booking.dikonfirmasiPada || !booking.deadlineDp || new Date() > booking.deadlineDp) return gagal("DP di luar status/deadline konfirmasi");
+      if (booking.status !== "CONFIRMED" || !booking.dikonfirmasiPada || !booking.deadlineDp || sekarang >= booking.deadlineDp) return gagal("DP di luar status/deadline konfirmasi");
       if (ringkas.dpTerverifikasi) return gagal("DP sudah dibayar");
     } else {
       if (booking.status !== "COMPLETED" || (booking.pesanan && booking.pesanan.status !== "COMPLETED")) return gagal("Pelunasan hanya setelah COMPLETED");
@@ -64,7 +67,7 @@ export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "
     const orderId = `BBF7-${tujuan}-${ledger.id}-${randomUUID().replaceAll("-","").slice(0,16)}`;
     await tx.transaksiPembayaranBooking.update({ where: { id: ledger.id }, data: { referensiProvider: orderId } });
     const attempt = await tx.percobaanSnapBooking.create({ data: { transaksiId: ledger.id, orderId } });
-    return { baru: true as const, attempt, transaksiId: ledger.id, jumlah, menit: tujuan === "DP" ? Math.max(1, Math.ceil((booking.deadlineDp!.getTime() - Date.now()) / 60000)) : 60 };
+    return { baru: true as const, attempt, transaksiId: ledger.id, jumlah, menit: tujuan === "DP" ? Math.max(1, Math.ceil((booking.deadlineDp!.getTime() - sekarang.getTime()) / 60000)) : 60 };
   });
   if (!persiapan.baru) {
     if (persiapan.attempt.status !== "READY") return gagal("Pembuatan Snap sedang diproses/belum pasti; lakukan sinkronisasi sebelum mengulang", 503);
@@ -130,7 +133,7 @@ const catatRefundTerverifikasi = async (tx: Prisma.TransactionClient, t: { id: n
     await tx.permohonanRefundBooking.update({ where: { id: r.id }, data: { status: "SUCCEEDED", transaksiRefundId: tr.id, kodeProvider: data.status_code, fingerprintProvider: sidik(data) } });
   }
 };
-const terapkanStatus = (data: StatusMidtrans) => transaksiKeuanganBooking(async tx => {
+const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true) => transaksiKeuanganBooking(async tx => {
   const t = await tx.transaksiPembayaranBooking.findUnique({ where: { referensiProvider: data.order_id } });
   if (!t || t.kanal !== "MIDTRANS" || t.tujuan === "REFUND") return gagal("Transaksi provider tidak ditemukan", 404);
   cocok(data, t);
@@ -144,9 +147,13 @@ const terapkanStatus = (data: StatusMidtrans) => transaksiKeuanganBooking(async 
         buktiProvider: { create: { referensiProvider: data.order_id, nominal: t.nominal, fingerprintPayload: sidik(data),
           terverifikasiPada: new Date(), metodeVerifikasi: "MIDTRANS_STATUS_V1" } } } });
     } else await tx.transaksiPembayaranBooking.update({ where: { id: t.id }, data: { statusProvider: data.transaction_status } });
-    await catatRefundTerverifikasi(tx, t, data);
+    if (rekonsiliasiRefund) await catatRefundTerverifikasi(tx, t, data);
     const b = await ambilBookingPembayaran(tx, t.bookingId);
-    if (b.status === "REJECTED" || b.status === "CANCELLED" && b.dibatalkanPada && b.mulaiPada.getTime()-b.dibatalkanPada.getTime() >= 3600000) {
+    const timeoutSistem = b.status === "CANCELLED" && await tx.riwayatBooking.findFirst({ where: { bookingId: b.id,
+      aksi: { in: ["TIMEOUT_CONFIRMATION", "TIMEOUT_RESCHEDULE", "TIMEOUT_DP"] }, statusSetelah: "CANCELLED" }, select: { id: true } });
+    if (timeoutSistem && t.tujuan === "DP") {
+      await mintaRefundDalamTransaksi(tx, b.id, t.nominal, `SYSTEM-TIMEOUT-${b.id}`, "DP terverifikasi setelah pembatalan sistem", true);
+    } else if (b.status === "REJECTED" || b.status === "CANCELLED" && b.dibatalkanPada && b.mulaiPada.getTime()-b.dibatalkanPada.getTime() >= 3600000) {
       await mintaRefundDalamTransaksi(tx, b.id, t.nominal, `TERMINAL-${b.id}-${t.id}`, "Pembayaran booking yang dibatalkan tepat waktu/ditolak", true);
     } else if (t.tujuan === "DP" && t.deadlinePada && waktuProvider(data.settlement_time ?? data.transaction_time) > t.deadlinePada) {
       await mintaRefundDalamTransaksi(tx, b.id, t.nominal, `LATE-${t.id}`, "DP dibayar setelah deadline", true);
@@ -175,6 +182,16 @@ export const sinkronkanPembayaran = async (id: number, pelangganId?: number) => 
   const parsed = skemaStatusMidtrans.safeParse(await gerbangMidtrans.status(t.referensiProvider));
   if (!parsed.success) return gagal("Status provider tidak memenuhi kontrak",502);
   return terapkanStatus(parsed.data);
+};
+// Hanya kredit DP yang belum final; scanner tidak memproses refund provider.
+// Panggilan jaringan dilakukan di luar lock transaksi jadwal.
+export const sinkronkanDpUntukDeadline = async (id: number) => {
+  const t = await basisData.transaksiPembayaranBooking.findFirst({ where: { id, kanal: "MIDTRANS", tujuan: "DP", status: "PENDING" },
+    select: { referensiProvider: true } });
+  if (!t?.referensiProvider) return;
+  const parsed = skemaStatusMidtrans.safeParse(await gerbangMidtrans.status(t.referensiProvider));
+  if (!parsed.success) return gagal("Status provider tidak memenuhi kontrak",502);
+  return terapkanStatus(parsed.data, false);
 };
 const skemaNotifikasi = z.object({ order_id: z.string().min(1).max(128), transaction_id: z.string().min(1).max(128),
   merchant_id: z.string().min(1).max(128), status_code: z.string().regex(/^\d{3}$/),

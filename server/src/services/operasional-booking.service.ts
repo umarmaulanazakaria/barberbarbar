@@ -6,6 +6,7 @@ import type { Booking, Prisma } from "../generated/prisma/client.js";
 import { kapasitasBookingCukup, validasiWaktuBooking } from "../lib/jadwal-booking.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { kolomBooking, statusMenahanBooking } from "./booking.service.js";
+import { batasKonfirmasiBooking, menitNoShow, waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export class KesalahanOperasionalBooking extends Error {
   constructor(public kode: number, public pesan: string) { super(pesan); }
@@ -16,10 +17,10 @@ const ambil = async (tx: Prisma.TransactionClient, id: number, pelangganId?: num
   if (!booking) return tolak("Booking tidak ditemukan", 404);
   return booking;
 };
-const catat = (tx: Prisma.TransactionClient, booking: Booking, aksi: string, status: Booking["status"],
+const catat = async (tx: Prisma.TransactionClient, booking: Booking, aksi: string, status: Booking["status"],
   aktor: { penggunaId: number } | { akunPelangganId: number }, rincian?: Prisma.InputJsonObject) =>
   tx.riwayatBooking.create({ data: { bookingId: booking.id, aksi, statusSebelum: booking.status,
-    statusSetelah: status, ...aktor, ...(rincian === undefined ? {} : { rincian }) } });
+    statusSetelah: status, dibuatPada: await waktuDatabaseBooking(tx), ...aktor, ...(rincian === undefined ? {} : { rincian }) } });
 const transaksiBooking = <T>(aksi: (tx: Prisma.TransactionClient) => Promise<T>) => basisData.$transaction(async tx => {
   await kunciJadwalBooking(tx);
   return aksi(tx);
@@ -46,11 +47,14 @@ export const detailBookingOperator = (id: number) => basisData.booking.findUniqu
   where: { id }, select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } } },
 });
 
-export const putuskanBooking = (id: number, penggunaId: number, setuju: boolean, alasan?: string) => transaksiBooking(async tx => {
+export const putuskanBooking = (id: number, penggunaId: number, setuju: boolean, alasan?: string, waktuUji?: Date) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (setuju ? booking.status !== "PENDING_CONFIRMATION" : !["PENDING_CONFIRMATION","CONFIRMED","CHECKED_IN"].includes(booking.status)) return tolak();
   if (!setuju && booking.status !== "PENDING_CONFIRMATION") await pastikanDpProviderSah(tx, id);
-  const sekarang = new Date();
+  const sekarang = waktuUji ?? await waktuDatabaseBooking(tx);
+  if (booking.status === "PENDING_CONFIRMATION" && sekarang >= (await batasKonfirmasiBooking(tx, booking)).deadline) {
+    return tolak("Batas waktu konfirmasi sudah terlewati");
+  }
   if (setuju) {
     await pastikanCustomerAktif(tx, booking);
     if (booking.mulaiPada <= sekarang) return tolak("Jadwal booking sudah lewat");
@@ -122,7 +126,7 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
   if(uangBaru && (uangBaru.subtotal>2147483647 || pengganti!.some(i=>i.subtotal>2147483647)))return tolak("Nominal melampaui batas",400);
   const durasi=pengganti?pengganti.reduce((n,i)=>n+i.durasiMenit*i.qty,0):booking.durasiMenit;
   const mulai = new Date(data.mulaiPada);
-  const selesai = validasiWaktuBooking(mulai, durasi);
+  const selesai = validasiWaktuBooking(mulai, durasi, await waktuDatabaseBooking(tx));
   if (!selesai) return tolak("Waktu booking tidak memenuhi ketentuan operasional", 400);
   const barberId = data.barberPilihanId === undefined ? booking.barberPilihanId : data.barberPilihanId;
   await validasiSlot(tx, booking, mulai, selesai, barberId);
@@ -146,13 +150,17 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
 
-export const checkInBooking = (id: number, penggunaId?: number) => transaksiBooking(async tx => {
+export const checkInBooking = (id: number, penggunaId?: number, waktuUji?: Date) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "CONFIRMED") return tolak();
+  const sekarang = waktuUji ?? await waktuDatabaseBooking(tx);
+  if (sekarang.getTime() >= booking.mulaiPada.getTime() + menitNoShow * 60_000) {
+    return tolak("Batas waktu check-in sudah terlewati");
+  }
   await pastikanCustomerAktif(tx, booking);
   await pastikanDpProviderSah(tx, id);
   if (!penggunaId) return tolak("Operator belum login",401);
-  await tx.booking.update({ where: { id }, data: { status: "CHECKED_IN", checkInPada: new Date() } });
+  await tx.booking.update({ where: { id }, data: { status: "CHECKED_IN", checkInPada: sekarang } });
   await catat(tx, booking, "CHECK_IN", "CHECKED_IN", { penggunaId });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
@@ -172,14 +180,14 @@ export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: n
     barberId, status: "IN_SERVICE", subtotal: booking.subtotal, discountPercent: booking.discountPercent, diskon: booking.diskon,
     total: booking.total, items: { create: sumber.items.map(({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal }) =>
       ({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal })) }, riwayatStatus: { create: { status: "IN_SERVICE", penggunaId } } } });
-  await tx.booking.update({ where: { id }, data: { status: "IN_SERVICE", barberFinalId: barberId, pesananId: pesanan.id, layananMulaiPada: new Date() } });
+  await tx.booking.update({ where: { id }, data: { status: "IN_SERVICE", barberFinalId: barberId, pesananId: pesanan.id, layananMulaiPada: await waktuDatabaseBooking(tx) } });
   await catat(tx, booking, "START", "IN_SERVICE", { penggunaId }, { barberId, pesananId: pesanan.id });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
 export const selesaikanBooking = (id: number, penggunaId: number) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "IN_SERVICE") return tolak();
-  const selesaiPada = new Date();
+  const selesaiPada = await waktuDatabaseBooking(tx);
   await tx.booking.update({ where: { id }, data: { status: "COMPLETED", layananSelesaiPada: selesaiPada,
     deadlinePelunasan: new Date(selesaiPada.getTime() + 3600000) } });
   if (booking.pesananId !== null) {
@@ -215,7 +223,7 @@ export const ubahLayananBooking = (id: number, items?: { layananId: number; qty:
 export const batalkanBooking = (id: number, pelangganId: number, akunPelangganId: number) => transaksiBooking(async tx=>{
   const b=await ambil(tx,id,pelangganId);
   if (!["PENDING_CONFIRMATION","CONFIRMED","CHECKED_IN"].includes(b.status) || b.pesananId!==null) return tolak();
-  const sekarang=new Date();
+  const sekarang=await waktuDatabaseBooking(tx);
   await tx.booking.update({where:{id},data:{status:"CANCELLED",dibatalkanPada:sekarang}});
   if(b.mulaiPada.getTime()-sekarang.getTime()>=3600000){
     const paid=await tx.transaksiPembayaranBooking.aggregate({where:{bookingId:id,tujuan:"DP",status:"SUCCEEDED"},_sum:{nominal:true}});
@@ -226,7 +234,7 @@ export const batalkanBooking = (id: number, pelangganId: number, akunPelangganId
 });
 export const tandaiNoShowBooking = (id:number,penggunaId:number) => transaksiBooking(async tx=>{
   const b=await ambil(tx,id);
-  if(b.status!=="CONFIRMED" || b.mulaiPada>new Date() || b.pesananId!==null) return tolak();
+  if(b.status!=="CONFIRMED" || b.mulaiPada>await waktuDatabaseBooking(tx) || b.pesananId!==null) return tolak();
   await tx.booking.update({where:{id},data:{status:"NO_SHOW"}});
   await catat(tx,b,"NO_SHOW","NO_SHOW",{penggunaId});
   return tx.booking.findUniqueOrThrow({where:{id},select:kolomBooking});

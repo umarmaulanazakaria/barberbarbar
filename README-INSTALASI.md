@@ -1,4 +1,77 @@
-# BARBER BARBAR - Paket F7 Midtrans & Refund (PARSIAL)
+# BARBER BARBAR - Scheduler booking otomatis
+
+14 Oktober 2026. F8 selesai secara independen; refund F7 Rp2.000 tetap pending
+eksternal dan F7 masih parsial. Detail: server/F8-AUDIT.md. Source langsung
+diterapkan di workspace, ZIP hanya cadangan, tidak perlu replace ulang.
+
+## Menjalankan scheduler
+
+Tidak ada instalasi/dependency, Redis/queue, schema atau migration baru.
+Gunakan backend existing baseline 9bdf29f387e2711f7ddb2ddf51997dbfc8efa319.
+Jalankan dari barberbarbar/server:
+
+```powershell
+npm.cmd run build
+npm.cmd start
+# Atau development: npm.cmd run dev
+```
+
+Runner otomatis aktif pada entrypoint server setelah listen, scan langsung saat
+startup dan setiap15detik setelah scan sebelumnya selesai. Deadline persisten
+di PostgreSQL; restart/hot reload membaca kembali yang terlewat. Multiple
+instance memakai lock transaksi existing. App import oleh test HTTP tidak
+mendaftarkan runner. Backend harus aktif; tidak membutuhkan browser Project4/5.
+
+Pengaturan opsional, masukkan manual ke environment proses/server/.env jika
+diperlukan; tidak ada credential baru dan .env tidak masuk commit/ZIP:
+
+```dotenv
+SCHEDULER_BOOKING_AKTIF=true
+SCHEDULER_BOOKING_INTERVAL_MS=15000
+```
+
+Default true/15000 bila tidak diisi. Interval integer1000-60000ms. SIGINT/SIGTERM
+menghentikan HTTP/timer, menunggu scanner lalu disconnect DB (grace30detik).
+Waktu keputusan memakai clock DB/UTC; jadwal operasional Asia/Jakarta. Evaluasi
+dapat sedikit terlambat karena interval/scan/provider, deadline tetap timestamp
+kejadian. Confirmation/reschedule30menit, DP1jam, no-show15menit, overdue1jam
+sesudah COMPLETED. OVERDUE tidak menonaktifkan pelunasan lewat Midtrans/kasir.
+
+Pembatalan sistem mempertahankan kredit DP dan membuat permohonan refund100%
+wajib approval ADMIN; tidak mengirim refund otomatis. NO_SHOW menghanguskan DP
+dan tidak menagih sisa50%. Refund historis F7 tidak di-retry/reconcile otomatis.
+
+## Pengujian dan rollback scheduler
+
+```powershell
+node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit --incremental false --noUnusedLocals --noUnusedParameters
+npm.cmd run build
+node node_modules/prisma/build/index.js validate
+node scripts/test-scheduler-booking.mjs
+```
+
+Suite memakai DB lokal tanpa booking existing, fixture acak/clock injectable,
+provider mock dan subprocess backend. Menolak jika ada booking asli. Tidak
+mengubah jam OS, tidak memanggil refund provider dan tidak memakai merchant key
+nyata. Helper jalankan-server-uji-scheduler.mjs hanya subprocess IPC pengujian,
+bukan endpoint publik.26 kelompok scheduler dan regresi F2-F7 PASS; lihat audit.
+
+Rollback runtime: set SCHEDULER_BOOKING_AKTIF=false lalu restart backend.
+Itu menghentikan automatic jobs; deadline guard operator dan histori yang sudah
+commit tetap dipertahankan. Tidak ada rollback database/migration yang diperlukan.
+Jika harus membatalkan kode, buat commit pembalikan baru atas commit scheduler,
+dengan judul Bahasa Indonesia tanpa fase/prefix; jangan reset database, hapus
+riwayat/ledger, force-push atau checkout file Prisma historis. Review terlebih
+dahulu jika ada pengembangan lanjutan yang bergantung pada scheduler.
+
+ZIP BARBERBARBAR-F8-SCHEDULER.zip disimpan di Stage2, berisi12 file lengkap yang
+dibuat/diubah dengan prefix barberbarbar/; daftar di server/F8-AUDIT.md.
+Checksum arsip dan setiap entry ada pada BARBERBARBAR-F8-SCHEDULER.sha256.txt.
+Membutuhkan source baseline existing, .env/dependency terpasang dan database
+existing; tidak menyertakan rahasia/dump/file lokal dilindungi. F9 menambahkan
+Socket.IO/event publisher berikutnya; belum diimplementasikan di paket ini.
+
+## Riwayat paket Midtrans & Refund (PARSIAL)
 
 14 Oktober 2026 Â· feature/project5-integration Â· baseline F6
 44c4be8bfcf0e9600c7d47d2d763fd8820e34655.

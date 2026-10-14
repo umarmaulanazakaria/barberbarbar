@@ -1,6 +1,7 @@
 import "dotenv/config";
 import aplikasi from "./app.js";
 import basisData from "./lib/prisma.js";
+import { mulaiSchedulerBooking } from "./lib/scheduler-booking.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
 
@@ -8,7 +9,10 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65_535) {
   throw new Error("PORT harus berupa angka antara 1 dan 65535");
 }
 
+// Scanner hanya didaftarkan oleh entrypoint, bukan import app pada test HTTP.
+let scheduler: ReturnType<typeof mulaiSchedulerBooking> | undefined;
 const server = aplikasi.listen(PORT, () => {
+  scheduler = mulaiSchedulerBooking();
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
 
@@ -25,9 +29,9 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
   console.log(`Menghentikan server (${alasan})...`);
 
   const paksaBerhenti = setTimeout(() => {
-    console.error("Server tidak berhenti dalam 10 detik; proses dihentikan paksa.");
+    console.error("Server tidak berhenti dalam 30 detik; proses dihentikan paksa.");
     process.exit(1);
-  }, 10_000);
+  }, 30_000);
   paksaBerhenti.unref();
 
   server.close(async (error) => {
@@ -37,6 +41,7 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
     }
 
     try {
+      await scheduler?.hentikan();
       await basisData.$disconnect();
     } catch (errorDatabase) {
       console.error("Gagal memutus koneksi database:", errorDatabase);

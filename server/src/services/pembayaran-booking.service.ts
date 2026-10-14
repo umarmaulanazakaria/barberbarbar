@@ -3,6 +3,7 @@ import basisData from "../lib/prisma.js";
 import type { Prisma, MetodePembayaran } from "../generated/prisma/client.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { hitungUangBooking } from "../lib/uang-booking.js";
+import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export class KesalahanPembayaranBooking extends Error {
   constructor(public kode: number, public pesan: string) { super(pesan); }
@@ -22,7 +23,8 @@ export const ambilBookingPembayaran = async (tx: Prisma.TransactionClient, id: n
 };
 const ambil = ambilBookingPembayaran;
 type DataBooking = Awaited<ReturnType<typeof ambil>>;
-export const bacaRingkasanPembayaran = async (tx: Prisma.TransactionClient, booking: DataBooking, sekarang = new Date()) => {
+export const bacaRingkasanPembayaran = async (tx: Prisma.TransactionClient, booking: DataBooking, waktuUji?: Date) => {
+  const sekarang = waktuUji ?? await waktuDatabaseBooking(tx);
   const transaksi = await tx.transaksiPembayaranBooking.findMany({ where: { bookingId: booking.id }, include: { buktiProvider: true }, orderBy: { id: "asc" } });
   const valid = transaksi.filter(t => t.status === "SUCCEEDED" &&
     (t.kanal === "KASIR" ? t.tujuan === "PELUNASAN" && t.jumlahDiterima !== null && t.kembalian !== null :
@@ -38,7 +40,7 @@ export const bacaRingkasanPembayaran = async (tx: Prisma.TransactionClient, book
   const deadline = booking.status === "COMPLETED" ? booking.deadlinePelunasan ??
     (booking.layananSelesaiPada ? new Date(booking.layananSelesaiPada.getTime() + 3600000) : null) : null;
   const paid = valid.length > 0 && uang.balance === 0;
-  const statusPembayaran = paid ? "PAID" : booking.status === "COMPLETED" && deadline && sekarang > deadline ? "OVERDUE" :
+  const statusPembayaran = paid ? "PAID" : booking.status === "COMPLETED" && deadline && sekarang >= deadline ? "OVERDUE" :
     booking.status === "COMPLETED" ? uang.jumlahDibayar > 0 ? "PARTIALLY_PAID" : "UNPAID" : dpTerverifikasi ? "DP_PAID" : "AWAITING_DP";
   const invoice = await tx.invoiceBooking.findUnique({ where: { bookingId: booking.id }, select: kolomInvoice });
   const terminal = ["CANCELLED", "REJECTED", "NO_SHOW"].includes(booking.status);
@@ -62,7 +64,7 @@ export const buatIntentDpBooking = (id: number, pelangganId: number, kunci: stri
   await kunciJadwalBooking(tx);
   const booking = await ambil(tx, id, pelangganId);
   if (booking.status !== "CONFIRMED" || !booking.dikonfirmasiPada || !booking.deadlineDp) return gagal("DP hanya tersedia setelah booking dikonfirmasi");
-  if (new Date() > booking.deadlineDp) return gagal("Deadline DP telah lewat");
+  if (await waktuDatabaseBooking(tx) >= booking.deadlineDp) return gagal("Deadline DP telah lewat");
   if (booking.nominalDp <= 0) return gagal("DP bernilai nol memerlukan kebijakan provider F7; tidak ditandai paid otomatis");
   const ringkasan = await bacaRingkasan(tx, booking);
   if (ringkasan.dpTerverifikasi) return gagal("DP sudah terverifikasi");
@@ -123,7 +125,7 @@ export const bayarPelunasanKasirBooking = (id: number, penggunaId: number, data:
   const kembali = data.jumlahDiterima - ringkasan.balance;
   const transaksi = await tx.transaksiPembayaranBooking.create({ data: { bookingId: id, tujuan: "PELUNASAN", kanal: "KASIR",
     status: "SUCCEEDED", nominal: ringkasan.balance, metode: data.metode, jumlahDiterima: data.jumlahDiterima,
-    kembalian: kembali, kunciIdempotensi: kunci, sidikPermintaan: sidik, penggunaId, dibayarPada: new Date() }, select: kolomTransaksi });
+    kembalian: kembali, kunciIdempotensi: kunci, sidikPermintaan: sidik, penggunaId, dibayarPada: await waktuDatabaseBooking(tx) }, select: kolomTransaksi });
   const sesudah = await bacaRingkasan(tx, booking);
   await finalisasi(tx, booking, sesudah, kembali);
   return { transaksi, ringkasan: await bacaRingkasan(tx, booking) };

@@ -1,45 +1,55 @@
-# BARBER BARBAR — Paket F6 Payment Foundation
+# BARBER BARBAR â€” Paket F7 Midtrans & Refund (PARSIAL)
 
-14 Oktober 2026 · branch `feature/project5-integration` · baseline F5
-`507c0bccfdf7f92726c9620d3ccf80885a798ef0` dan seluruh migration F2–F5.
+14 Oktober 2026 Â· feature/project5-integration Â· baseline F6
+44c4be8bfcf0e9600c7d47d2d763fd8820e34655.
 
-Domain pembayaran F6 sudah diterapkan pada backend Project3. Midtrans, webhook
-dan refund nyata belum tersedia (F7). Check-in, IN_SERVICE, barber final,
-pembuatan Pesanan dari booking dan perubahan layanan tetap terkunci sampai F7.
-F5 belum selesai penuh. Lihat `server/F6-AUDIT.md` untuk bukti pengujian.
+Kode Snap/webhook/refund ADMIN dan integrasi F5 tersedia, 12 kelompok MOCK PASS.
+Snap Sandbox nyata belum berhasil (SDK/provider HTTP500, endpoint503), sehingga
+settlement/refund end-to-end nyata DEFERRED. Jangan menyebut F7 atau F5 selesai
+penuh. Laporan aktual: server/F7-AUDIT.md; panduan: server/F7-SANDBOX.md.
 
-## Instalasi dan migration
+## Penerapan
 
-Ekstrak `BARBERBARBAR-F6-PAYMENT.zip` ke **Stage 2**, parent `barberbarbar`.
-Isinya file lengkap, bukan patch. Working tree ini sudah diterapkan dan dimigrasi;
-tidak perlu replace ulang. Pada checkout tujuan, backup source, periksa perubahan
-lokal dan pastikan baseline F5 sebelum replace. File dilindungi tidak disertakan:
-`server/src/lib/prisma.ts` dan Project4 `src/layar/LayarTambahPelanggan.tsx`.
+ZIP BARBERBARBAR-F7-MIDTRANS-REFUND.zip diekstrak ke **Stage 2**, parent barberbarbar.
+Berisi file lengkap, bukan patch. Working tree ini sudah diterapkan/migrasi;
+tidak perlu replace ulang. Checkout tujuan wajib baseline F6, backup source dan
+periksa perubahan lokal sebelum replace. ZIP F3â€“F6 lama tidak dihapus.
 
-Tidak ada dependency, software, extension, secret atau konfigurasi baru.
-Gunakan dependency, PostgreSQL, DATABASE_URL dan JWT_SECRET existing.
-Generated Prisma dan dist tidak masuk ZIP; buat ulang di tujuan.
+Jangan mengganti dua file dilindungi yang tidak masuk paket:
+server/src/lib/prisma.ts dan Project4 src/layar/LayarTambahPelanggan.tsx.
+Jangan menyalin .env dari mesin lain atau memasukkan key ke chat/source/ZIP.
 
-Sebelum migration, buat pg_dump custom terbaru di luar Git, verifikasi
-`pg_restore --list`, pembacaan penuh arsip tanpa restore, dan SHA256.
-Script lokal `node scripts/backup-f6.mjs` menggunakan build existing dan menyimpan
-dump/manifest ke `Stage 2/backup-database`; credential tidak dicetak atau menjadi
-argumen pg_dump. Dump mencakup seluruh DB, termasuk tabel F6 jika sudah tersedia;
-manifest mempunyai snapshot row17 model existing.
+Dependency midtrans-client1.4.3 dan @types1.4.0 sudah disetujui/terpasang.
+Lockfile memuat patch proxy-addr2.0.8, menutup critical Express. Tidak ada upgrade
+major. Sisa audit14 package (0 critical) wajib ditinjau pada F7-AUDIT, bukan
+klaim semua dependency aman. Pada checkout tujuan jalankan npm.cmd ci hanya
+setelah kebutuhan instalasi lokal ditinjau/disetujui. Tidak ada extension baru.
 
-Review dua SQL sebelum deploy:
+Isi manual empat variabel di server/.env: MIDTRANS_MERCHANT_ID,
+MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY, MIDTRANS_IS_PRODUCTION=false.
+DATABASE_URL/JWT_SECRET existing tetap. Runtime hanya menerima Sandbox.
 
-- `20261014100314_tambah_ledger_pembayaran_booking_f6`: tiga enum, tiga tabel,
-  deadlinePelunasan nullable, FK, unique/index, CHECK, trigger evidence/refund.
-- `20261014100735_perketat_kuitansi_kasir_booking_f6`: CHECK tender/kembalian
-  kasir wajib nonnull, karena PostgreSQL CHECK menerima ekspresi null.
+## Database
 
-Keduanya dibuat create-only, ditinjau, lalu diterapkan dengan migrate deploy.
-Tidak ada UPDATE/DELETE data existing, drop, reset, backfill atau force db push.
-Pertahankan partial unique index, CHECK dan constraint trigger pada migration
-berikutnya; fitur SQL ini tidak seluruhnya direpresentasikan Prisma schema.
+Sebelum migrate, buat pg_dump custom di luar Git, verifikasi pg_restore --list,
+pembacaan seluruh arsip tanpa restore, dan SHA256. Script lokal backup-f7.mjs
+memakai build existing dan menghasilkan dump/manifest22 model di backup-database.
+Credential tidak menjadi argumen command atau output. Backup sebelum dua
+migration dan checksum aktual tercatat di server/F7-AUDIT.md.
 
-Dari `barberbarbar/server`:
+SQL-only create reviewed sebelum deploy:
+
+- 20261014112500_tambah_midtrans_refund_f7: dua tabel, enum/nullable metadata,
+  NO_SHOW, evidence attestation/DP carried round, FK/unique/CHECK/trigger immutable.
+- 20261014114000_rekonsiliasi_kredit_dp_terlambat_f7: mengganti predicate satu
+  pending DP per round; satu pending settlement online. DROP INDEX hanya
+  mengganti index, tidak menghapus data/history. Kredit provider nyata terlambat
+  harus direkam dan diproses refund bila berlebih.
+
+Tidak ada reset/drop schema/tabel atau migrasi data. Custom CHECK/index/trigger
+harus dipertahankan pada migration selanjutnya, tidak semuanya tercermin di Prisma.
+
+Dari barberbarbar/server:
 
 ```powershell
 node node_modules/prisma/build/index.js validate
@@ -50,65 +60,35 @@ node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit --incremental fal
 npm.cmd run build
 ```
 
-Restart backend melalui flow existing. Transaksi booking UTC, operasional Jakarta.
-Jangan menjalankan migrate reset. Backup F3/F4/F5 tidak dihapus.
+Restart backend setelah deploy. Jangan migrate reset/force db push. Semua transaksi
+jadwal/keuangan memakai lock advisory yang sama dan SET LOCAL UTC.
 
-## Kontrak API
+## API dan batas
 
-JWT CUSTOMER, hanya booking sendiri:
+Kontrak lengkap/body/auth tercantum di F7-AUDIT. CUSTOMER mempunyai Snap DP,
+online settlement, payment sync, daftar refund sendiri, cancel dan reschedule.
+Webhook POST /midtrans/notifications wajib signature+GetStatus/merchant/identity/
+amount/IDR/status; tidak ada callback frontend paid. ADMIN-only /refund-requests
+list/approve/reject/retry; STAFF403. Semua source refund memerlukan approval ADMIN.
 
-- `GET /customer/bookings/:id/payments`: `{ringkasan}` authoritative, amounts,
-  status, deadline, riwayat transaksi, invoice sementara/final dan perluRefund.
-- `POST /customer/bookings/:id/payments/dp-intent`: body
-  `{"kunciIdempotensi":"nonce-intent-unik"}`. Hanya CONFIRMED/sebelum deadlineDP.
-  Mengembalikan transaksi **PENDING** dan `integrasiProvider: "DEFERRED_F7"`;
-  belum Snap/URL pembayaran/paid. Satu intent aktif per round, retry tidak ganda.
+F5 check-in/start/Pesanan/barber final/item dibuka hanya bila evidence resmi dan
+net DP cukup. Paid/booking/service terpisah. Pelunasan hanya COMPLETED; kasir
+menolak bila online masih pending. Service/reschedule turun membuat request,
+bukan refund otomatis. DP cancel<1jam/NO_SHOW hangus tanpa sisa pelunasan.
 
-JWT operator ADMIN/STAFF:
+Refund yang belum bank-confirmed tidak sukses. Metode non-supported/sumber kasir
+UNSUPPORTED tanpa call Midtrans; prosedur pengembalian manual membutuhkan keputusan
+policy/bukti terpisah. Refund retry key sama; jangan mengganti key setelah outcome
+tidak pasti. Snap UNCERTAIN tetap reserved untuk reconcile/expiry, tidak create
+charge baru diam-diam. F8 akan menangani scheduler/notifikasi/timeouts/reconcile
+berkala. UI/device Project4/5 tidak diubah; kompatibilitas HTTP kasir diuji.
 
-- `GET /bookings/:id/payments`: ringkasan operasional.
-- `POST /bookings/:id/payments/settlement`: body
-  `{"metode":"CASH","jumlahDiterima":60000,"kunciIdempotensi":"nonce-kasir-unik"}`.
-  Hanya COMPLETED dengan DP provider terverifikasi. Kredit ditentukan dari balance;
-  tender berlebih menjadi kembalian. DP manual ditolak. Key8–128 karakter
-  alfanumerik/underscore/hyphen. Retry payload sama mengembalikan transaksi asli;
-  payload berbeda dengan key sama409. `catatan` opsional masuk fingerprint request,
-  tidak menjadi field riwayat finansial publik.
-- `POST /bookings/:id/payments/finalize-invoice`: body `{}`; hanya COMPLETED,
-  PAID dan DP terverifikasi. Idempotent, tidak menulis kredit pembayaran.
-
-Kasir Project3/4 `POST /orders/:id/payment` menerima payload/envelope existing
-`{data:{pembayaran,pesanan}}`. Walk-in memakai flow existing. Linked Booking memakai
-DP/balance ledger, tidak mengkredit total ulang. Key opsional untuk caller baru;
-caller legacy tanpa key tetap mendapat409 saat mengulang pembayaran. Purpose DP
-eksplisit ditolak. Invoice existing memakai satu Pembayaran legacy sebagai artefak
-final; metode OTHER berarti gabungan DP+pelunasan. Rincian tender/metode sebenarnya
-ada pada ledger. Artefak ini tidak dihitung sebagai kredit kedua.
-
-## Perhitungan dan batas fase
-
-Rupiah integer, kalkulasi BigInt dan guard safe-number. Snapshot Booking F4
-0/10%, floor diskon, ceil DP50% setelah diskon. Item booking atau Pesanan terhubung
-menjadi sumber total; perubahan tidak menghapus paid. `nominalDpAwal` adalah DP
-awal; `nominalDp` pada ringkasan50% total saat ini. Bukti DP memakai snapshot intent.
-
-PAID/OVERDUE tidak mengubah booking/layanan. Deadline pelunasan COMPLETED+1jam;
-GET menghitung OVERDUE tanpa block akun/cancel. Scheduler/notifikasi otomatis F8.
-Excess menjadi perluRefund, tidak ada refund otomatis/endpoint refund F6.
-
-F7 satu-satunya writer BuktiProviderBooking setelah signature, merchant/order,
-nominal, IDR, status provider, purpose dan round tervalidasi. Constraint matching
-record bukan verifikasi kriptografis. Tidak ada writer bukti melalui API F6.
-F7 harus menggunakan lock booking yang sama, idempotency/ref unique, webhook
-dedup, validasi approval/refund/provider asal dan rekonsiliasi deadline. DP nol
-diblokir eksplisit sampai kebijakan provider tersedia, tidak ditandai paid otomatis.
-Database saat audit tidak memiliki layanan aktif gratis.
-
-## Pengujian lokal developer
+## Pengujian
 
 ```powershell
-node scripts/test-payment-f6.mjs
+node scripts/test-midtrans-f7.mjs
 node scripts/test-operasional-f5.mjs
+node scripts/test-payment-f6.mjs
 node scripts/test-booking-f4.mjs
 node scripts/test-membership-f3.mjs
 node scripts/test-fondasi-pelanggan.mjs
@@ -116,38 +96,45 @@ node scripts/test-reset-password-pelanggan.mjs
 node scripts/test-api-publik.mjs
 ```
 
-Suite F6 hanya DB lokal dan akun/booking acak milik proses. Bukti provider adalah
-simulasi private sink khusus fixture, tidak menerima ID/email existing/argumen
-untuk menandai paid. Fixture IN_SERVICE/COMPLETED/linked Pesanan langsung DB tidak
-membuktikan lifecycle F5/Midtrans nyata. Cleanup menghapus hanya data suite.
-Jangan menjalankan suite pada database produksi.
+Suite dummy hanya DB lokal; tidak menerima ID existing dan cleanup aman. Mock
+menggunakan key acak di proses, tidak mengubah .env. Untuk provider nyata gunakan
+harness test-sandbox-f7.mjs dan panduan F7-SANDBOX. Checkout URL/token sementara
+hanya digunakan interaktif, jangan disimpan ke Git/ZIP. Tidak memakai Production.
 
-## Daftar file paket (19 file)
+## Daftar 26 file ZIP
 
-Semua path berikut berada di dalam `barberbarbar/`:
+Struktur prefix barberbarbar/; source lengkap berikut:
 
 ```text
 README-INSTALASI.md
-server/F6-AUDIT.md
+server/F7-AUDIT.md
+server/F7-SANDBOX.md
+server/package.json
+server/package-lock.json
 server/prisma/schema.prisma
-server/prisma/migrations/20261014100314_tambah_ledger_pembayaran_booking_f6/migration.sql
-server/prisma/migrations/20261014100735_perketat_kuitansi_kasir_booking_f6/migration.sql
-server/scripts/backup-f6.mjs
-server/scripts/test-payment-f6.mjs
-server/src/controllers/pembayaran-booking.controller.ts
-server/src/controllers/pesanan.controller.ts
-server/src/lib/uang-booking.ts
+server/prisma/migrations/20261014112500_tambah_midtrans_refund_f7/migration.sql
+server/prisma/migrations/20261014114000_rekonsiliasi_kredit_dp_terlambat_f7/migration.sql
+server/scripts/backup-f7.mjs
+server/scripts/test-midtrans-f7.mjs
+server/scripts/test-sandbox-f7.mjs
+server/scripts/test-operasional-f5.mjs
+server/src/app.ts
+server/src/controllers/midtrans-booking.controller.ts
+server/src/controllers/operasional-booking.controller.ts
+server/src/lib/midtrans.ts
+server/src/routes/midtrans.routes.ts
+server/src/routes/payment-customer.routes.ts
+server/src/routes/refund-booking.routes.ts
 server/src/routes/booking.routes.ts
 server/src/routes/operasional-booking.routes.ts
-server/src/schemas/pembayaran-booking.schema.ts
-server/src/schemas/pesanan.schema.ts
-server/src/services/booking.service.ts
-server/src/services/item-pesanan.service.ts
+server/src/schemas/operasional-booking.schema.ts
+server/src/services/midtrans-booking.service.ts
 server/src/services/operasional-booking.service.ts
 server/src/services/pembayaran-booking.service.ts
 server/src/services/pesanan.service.ts
 ```
 
-Setiap entry ZIP diverifikasi SHA256 terhadap source. Checksum file dan ZIP ada di
-`Stage 2/BARBERBARBAR-F6-PAYMENT.sha256.txt`, di luar Git. Tidak ada .env, credential,
-dump, .git, node_modules, dist/generated atau file dilindungi dalam arsip.
+Setiap entry dibandingkan SHA256 dengan source. Checksum file dan ZIP ada di
+Stage 2/BARBERBARBAR-F7-MIDTRANS-REFUND.sha256.txt, di luar Git. Paket tidak berisi
+.env, credential/token aktual, dump, .git, node_modules, dist/generated atau file
+dilindungi. Generated/build dibuat ulang di checkout tujuan.

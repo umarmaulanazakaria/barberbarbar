@@ -120,7 +120,7 @@ try{
  assert.equal((await detail(any.id,tiga.token)).body.booking.barberFinalId,null);
  pass("Any menerima pilihan barber aktif pada validasi; alokasi final tidak dipersistenkan tanpa DP");
  await seedStatus(any.id,"IN_SERVICE"); // Hanya fixture uji transisi masa depan; tidak membuat Payment/Pesanan.
- assert.equal((await http(`/bookings/${any.id}/services`,"PUT",{items:[]},staff.token)).status,409);
+ assert.equal((await http(`/bookings/${any.id}/services`,"PUT",{items:[]},staff.token)).status,400);
  const complete=await Promise.all([op(any.id,"complete",admin.token),op(any.id,"complete",staff.token)]);
  assert.deepEqual(complete.map(h=>h.status).sort(),[200,409]);
  const selesai=(await detail(any.id,tiga.token)).body.booking;assert.equal(selesai.status,"COMPLETED");assert.ok(selesai.layananSelesaiPada);

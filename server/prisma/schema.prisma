@@ -53,6 +53,7 @@ model Pengguna {
   usulanBarber UsulanBarberBooking[]
   riwayatBooking RiwayatBooking[]
   transaksiBooking TransaksiPembayaranBooking[]
+  keputusanRefund PermohonanRefundBooking[]
 }
 
 enum Role {
@@ -281,6 +282,7 @@ model Booking {
   layananMulaiPada      DateTime? @db.Timestamptz(3)
   layananSelesaiPada    DateTime? @db.Timestamptz(3)
   deadlinePelunasan     DateTime? @db.Timestamptz(3)
+  dpDibawaDariRound      DateTime? @db.Timestamptz(3)
   diputuskanOlehId      Int?
   alasanPenolakan       String?
   pelanggan             Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
@@ -294,6 +296,7 @@ model Booking {
   riwayat               RiwayatBooking[]
   transaksiPembayaran   TransaksiPembayaranBooking[]
   invoice               InvoiceBooking?
+  permohonanRefund      PermohonanRefundBooking[]
 
   @@index([mulaiPada, selesaiPada])
   @@index([pelangganId, status])
@@ -323,6 +326,7 @@ enum StatusBooking {
   COMPLETED
   REJECTED
   CANCELLED
+  NO_SHOW
 }
 
 model UsulanBarberBooking {
@@ -383,11 +387,17 @@ model TransaksiPembayaranBooking {
   dibuatPada DateTime @default(now()) @db.Timestamptz(3)
   penggunaId Int?
   transaksiAsalId Int?
+  idTransaksiProvider String? @unique
+  jenisPembayaranProvider String?
+  statusProvider String?
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
   pengguna Pengguna? @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
   buktiProvider BuktiProviderBooking?
   transaksiAsal TransaksiPembayaranBooking? @relation("RefundTransaksiBooking", fields: [transaksiAsalId], references: [id], onDelete: Restrict)
   refund TransaksiPembayaranBooking[] @relation("RefundTransaksiBooking")
+  snap PercobaanSnapBooking?
+  permohonanRefund PermohonanRefundBooking[] @relation("SumberRefundBooking")
+  hasilRefund PermohonanRefundBooking? @relation("HasilRefundBooking")
   @@index([bookingId, status, tujuan])
 }
 
@@ -399,6 +409,7 @@ model BuktiProviderBooking {
   mataUang String @default("IDR")
   fingerprintPayload String
   terverifikasiPada DateTime @db.Timestamptz(3)
+  metodeVerifikasi String?
   transaksi TransaksiPembayaranBooking @relation(fields: [transaksiId], references: [id], onDelete: Cascade)
 }
 
@@ -432,4 +443,48 @@ enum StatusTransaksiBooking {
   SUCCEEDED
   FAILED
   EXPIRED
+}
+
+model PercobaanSnapBooking {
+  id Int @id @default(autoincrement())
+  transaksiId Int @unique
+  orderId String @unique
+  status String @default("CREATING")
+  tokenSnap String?
+  urlSnap String?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  transaksi TransaksiPembayaranBooking @relation(fields: [transaksiId], references: [id], onDelete: Cascade)
+}
+
+model PermohonanRefundBooking {
+  id Int @id @default(autoincrement())
+  bookingId Int
+  transaksiAsalId Int
+  transaksiRefundId Int? @unique
+  kunciSumber String @unique
+  nominal Int
+  alasan String
+  status StatusPermohonanRefund @default(PENDING_APPROVAL)
+  diputuskanOlehId Int?
+  diputuskanPada DateTime? @db.Timestamptz(3)
+  catatanKeputusan String?
+  kodeProvider String?
+  fingerprintProvider String?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  diperbaruiPada DateTime @updatedAt @db.Timestamptz(3)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  transaksiAsal TransaksiPembayaranBooking @relation("SumberRefundBooking", fields: [transaksiAsalId], references: [id], onDelete: Restrict)
+  transaksiRefund TransaksiPembayaranBooking? @relation("HasilRefundBooking", fields: [transaksiRefundId], references: [id], onDelete: Restrict)
+  diputuskanOleh Pengguna? @relation(fields: [diputuskanOlehId], references: [id], onDelete: SetNull)
+  @@index([bookingId, status])
+}
+
+enum StatusPermohonanRefund {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  PROCESSING
+  FAILED
+  SUCCEEDED
+  UNSUPPORTED
 }

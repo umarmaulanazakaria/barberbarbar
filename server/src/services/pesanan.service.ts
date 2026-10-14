@@ -115,6 +115,7 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
   }
 
   const diperbarui = await basisData.$transaction(async (tx) => {
+    if (await tx.booking.findUnique({ where: { pesananId: id }, select: { id: true } })) return null;
     const hasil = await tx.pesanan.updateMany({
       where: { id, status: pesanan.status },
       data: { status: statusBaru },

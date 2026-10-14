@@ -4,6 +4,8 @@ import { buatBooking, daftarBooking, detailBooking } from "../controllers/bookin
 import { terimaUsulanCustomer, tolakUsulanCustomer, rescheduleCustomer } from "../controllers/operasional-booking.controller.js";
 import { pembayaranCustomer, intentDpCustomer } from "../controllers/pembayaran-booking.controller.js";
 const routerBooking = Router();
+import { snapCustomer } from "../controllers/midtrans-booking.controller.js";
+import { batalkanCustomerBooking } from "../controllers/operasional-booking.controller.js";
 routerBooking.use(autentikasiPelanggan);
 routerBooking.post("/", buatBooking);
 routerBooking.get("/", daftarBooking);
@@ -13,4 +15,7 @@ routerBooking.post("/:id/barber-proposals/:proposalId/reject", tolakUsulanCustom
 routerBooking.post("/:id/reschedule", rescheduleCustomer);
 routerBooking.get("/:id/payments", pembayaranCustomer);
 routerBooking.post("/:id/payments/dp-intent", intentDpCustomer);
+routerBooking.post("/:id/payments/dp", snapCustomer("DP"));
+routerBooking.post("/:id/payments/online-settlement", snapCustomer("PELUNASAN"));
+routerBooking.post("/:id/cancel",batalkanCustomerBooking);
 export default routerBooking;

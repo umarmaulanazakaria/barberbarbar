@@ -90,7 +90,7 @@ model Pesanan {
   id               Int                    @id @default(autoincrement())
   nomorPesanan     String                 @unique
   pelangganId      Int
-  barberId         Int
+  barberId         Int?
   status           StatusPesanan          @default(WAITING)
   statusPembayaran StatusPembayaran       @default(UNPAID)
   checkInTime      DateTime               @default(now())
@@ -102,7 +102,7 @@ model Pesanan {
   dibuatPada       DateTime               @default(now())
   diperbaruiPada   DateTime               @updatedAt
   pelanggan        Pelanggan              @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
-  barber           Barber                 @relation(fields: [barberId], references: [id], onDelete: Restrict)
+  barber           Barber?                @relation(fields: [barberId], references: [id], onDelete: Restrict)
   items            ItemPesanan[]
   pembayaran       Pembayaran?
   riwayatStatus    RiwayatStatusPesanan[]

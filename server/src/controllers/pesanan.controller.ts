@@ -79,6 +79,7 @@ export const ubahStatus = async (req: Request, res: Response) => {
     id,
     validasi.data.status,
     req.pengguna.id,
+    validasi.data.barberId,
   );
   if (!hasil.berhasil)
     return res.status(hasil.alasan === "TIDAK_DITEMUKAN" ? 404 : 409).json({

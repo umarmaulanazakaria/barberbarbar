@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const skemaTambahPesanan = z.object({
   pelangganId: z.number().int().positive(),
-  barberId: z.number().int().positive(),
+  barberId: z.number().int().positive().nullable().optional(),
   items: z
     .array(
       z.object({
@@ -16,7 +16,8 @@ export const skemaTambahPesanan = z.object({
 
 export const skemaUbahStatusPesanan = z.object({
   status: z.enum(["WAITING", "IN_SERVICE", "COMPLETED", "CANCELLED"]),
-});
+  barberId: z.number().int().positive().optional(),
+}).refine(data => data.barberId === undefined || data.status === "IN_SERVICE", "Barber hanya ditetapkan saat mulai layanan");
 
 export const skemaPembayaran = z.object({
   metode: z.enum(["CASH", "QRIS", "CARD", "TRANSFER", "OTHER"]),

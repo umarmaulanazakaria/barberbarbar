@@ -1,4 +1,12 @@
 import type { Request, Response } from "express";
+import { statusMembershipPelanggan } from "../services/permohonan-membership.service.js";
+export const statusMembershipOperator = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ pesan: "ID pelanggan tidak valid" });
+  if (!await ambilDataPelangganBerdasarkanId(id)) return res.status(404).json({ pesan: "Pelanggan tidak ditemukan" });
+  const status = await statusMembershipPelanggan(id);
+  return res.json({ status: status.status, diskonPersen: status.diskonPersen });
+};
 import {
   ambilDataSemuaPelanggan,
   tambahDataPelanggan,

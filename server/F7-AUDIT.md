@@ -4,7 +4,112 @@
 44c4be8bfcf0e9600c7d47d2d763fd8820e34655. Master PRD v2.0 lengkap tidak ditemukan;
 implementasi memakai prompt F7 pengguna, F5/F6-AUDIT dan source aktual.
 
-## Pembaruan diagnosis dan bukti provider nyata
+## Hasil finalisasi dari commit 3d751dc
+
+14 Oktober 2026. **F7 masih PARSIAL: pelunasan online nyata PASS; refund
+Rp2.000 belum mendapat konfirmasi final provider.** Bagian ini merupakan status
+terbaru; diagnosis dan tabel audit pertama di bawah disimpan sebagai riwayat.
+Tidak ada perubahan kode pembayaran, dependency, schema atau migration pada
+finalisasi ini. Perubahan hanya dokumentasi.
+
+### Refund lama: DEFERRED, tanpa refund/retry baru
+
+Get Status resmi terakhir pada 2026-10-14T12:57:27.698Z (19:57:27 WIB):
+
+| Referensi / pemeriksaan | Bukti aktual |
+|---|---|
+| order_id | BBF7-DP-157-a9a8c1a770be4a92 |
+| transaction_id | 10cb3319-9196-463d-8484-715d01485c9f |
+| Nominal pembayaran asal / currency | Rp5.000 / IDR |
+| Refund yang dicari | F7-REFUND-48, Rp2.000; respons pengajuan sebelumnya 202 |
+| Get Status | status_code 200, transaction_status settlement |
+| Identitas / signature | Order, merchant Sandbox, nominal asal, currency dan signature cocok |
+| refunds / bank_confirmed_at | Tidak ada entri refund; bukti final untuk key tersebut belum tersedia |
+| Record lokal refund ID48 | Tidak tersedia: fixture sudah dibersihkan pada sesi sebelumnya |
+
+Status lokal terakhir yang tercatat dalam audit sebelumnya adalah PROCESSING.
+Get Status saat ini **tidak menyatakan status refund PROCESSING secara eksplisit**;
+responsnya hanya settlement tanpa entri refund. Karena itu tidak menyatakan
+refund SUCCEEDED ataupun FAILED. Nominal Rp2.000 masih merupakan nominal
+pengajuan historis, belum dapat dicocokkan dengan entri refund provider final.
+Tidak mengirim refund baru, menjalankan Retry Refund, menambah debit refund,
+atau merekonstruksi record/histori lokal yang sudah dihapus.
+
+Pemeriksaan berikutnya dapat memakai order_id/transaction_id di atas secara
+read-only. Rekonsiliasi idempotent belum dilakukan: belum ada bukti final dan
+record sumber lokal sudah tidak tersedia. Untuk pengujian refund berikutnya,
+pertahankan fixture selama PROCESSING hingga bukti final atau keputusan
+penghentian pengujian. Jangan mencoba refund pengganti untuk transaksi lama.
+
+Referensi: [Get Transaction Status resmi](https://docs.midtrans.com/reference/get-transaction-status)
+memuat contoh refund dengan key, nominal dan bank_confirmed_at. Respons 202
+pengajuan sebelumnya belum menjadi bukti bank-confirmed.
+
+### Pelunasan online nyata: PASS, independen dari refund lama
+
+Fixture dummy baru booking380, layanan Rp10.000, DP Rp5.000 dibuat melalui
+API booking/confirm. Customer menyelesaikan DP Sandbox; transaksi185 SUCCEEDED,
+statusProvider settlement dan evidence MIDTRANS_STATUS_V1 sudah ada sebelum
+agent melakukan sync. Check-in/start/complete masing-masing HTTP200, barber
+final terpasang dan satu Pesanan COMPLETED. Sisa tagihan authoritative Rp5.000
+berasal dari database; request Snap pelunasan tidak mengirim nominal frontend.
+
+Customer menyelesaikan checkout pelunasan QRIS Sandbox Rp5.000. **Sebelum sync
+atau replay oleh agent**, transaksi186 PELUNASAN SUCCEEDED, statusProvider
+settlement, evidence MIDTRANS_STATUS_V1, paid Rp10.000, refund Rp0, balance Rp0,
+PAID, invoice final total Rp10.000 dan satu Pembayaran legacy sudah terbentuk.
+Ini membuktikan webhook provider nyata, bukan mark-paid manual atau mock.
+
+Get Status resmi transaksi pelunasan kemudian memverifikasi order, transaction
+ID, merchant, gross_amount Rp5.000, IDR, settlement dan signature asli provider.
+Replay serentak tiga payload tersebut ke /midtrans/notifications mendapat
+HTTP200/200/200. Kredit pelunasan tetap satu, invoice tetap satu, paid Rp10.000,
+balance Rp0. Tidak membuat signature atau status pembayaran sintetis.
+
+F5 yang sudah PASS pada sesi sebelumnya tetap valid: check-in, barber final,
+Pesanan, IN_SERVICE, perubahan layanan dan COMPLETED dengan DP provider nyata.
+Finalisasi hanya menjalankan prasyarat fixture pelunasan baru; perubahan layanan
+provider nyata tidak diulang. Regresi mock kembali menguji perubahan layanan
+dan keterkaitannya dengan ledger/refund.
+
+### Matriks pengujian terbaru
+
+| Pemeriksaan | Hasil |
+|---|---|
+| Refund Rp2.000 final / rekonsiliasi | DEFERRED: settlement, tanpa entri refund/bank-confirmed; record lokal lama tidak ada |
+| DP Rp5.000 dan webhook Sandbox fixture baru | PASS provider nyata |
+| Check-in, barber final, Pesanan, IN_SERVICE, COMPLETED fixture baru | PASS provider nyata melalui API |
+| Perubahan layanan F5 dengan DP nyata sesi sebelumnya | PASS sebelumnya; tidak diulang |
+| Pelunasan QRIS Rp5.000, ledger, PAID, balance nol, invoice final | PASS provider nyata |
+| Replay tiga webhook signature asli, tanpa kredit/invoice ganda | PASS provider nyata |
+| F7 test-midtrans-f7.mjs | PASS 12 kelompok MOCK |
+| F6 / F5 / F4 / F3 | PASS 8 / 11 / 15 / 12 kelompok |
+| F2 fondasi / reset password / API publik | PASS 24 / 11 / 4 pemeriksaan utama |
+| Kasir Project3 dan kontrak HTTP Project4 | PASS suite F4/F6; UI/device tidak diuji |
+| TypeScript noEmit, noUnusedLocals, noUnusedParameters / build | PASS |
+| Prisma validate / migrate status | PASS; 16 migration existing up to date, tidak menjalankan migration |
+| Snapshot22 model setelah cleanup / checksum dan daftar arsip backup | PASS; identik baseline, arsip dapat dibaca pg_restore --list |
+| File historis dilindungi / .env ignored dan untracked | PASS |
+| UI/device Project4/5 dan Production | DEFERRED; di luar pengujian ini |
+
+Warning deprecation pg tentang concurrent query masih muncul pada suite,
+seluruh suite exit0. Tidak disembunyikan sebagai hasil FAIL ataupun dianggap
+risiko sudah diperbaiki. Batas dependency audit sebelumnya tetap berlaku.
+
+Semua fixture baru dibersihkan hanya melalui cleanup pemilik fixture setelah
+bukti pembayaran/replay dicatat. Snapshot22 model kembali identik dengan backup
+f7-2026-10-14T11-41-19-040Z; checksum arsip tetap
+033c6827d8c89e063064a2e4e031620a485b3aa5abdca68c1da47d7019e0646c.
+Data existing, termasuk17 Pembayaran awal, tidak diubah. Backend, redirect
+localhost dan tunnel pengujian ditutup. Riwayat provider tetap di dashboard;
+fixture lokal ini tidak lagi dapat menerima webhook lanjutan.
+
+Tidak ada FAIL baru yang teramati; refund final tetap DEFERRED dan F7 belum
+ditutup penuh. Pelunasan online sudah selesai secara independen. F8 belum
+dinyatakan siap sampai batas refund diselesaikan atau diputuskan secara eksplisit.
+Master PRD v2.0 lengkap masih tidak tersedia di workspace.
+
+## Riwayat diagnosis dan bukti provider nyata
 
 14 Oktober 2026, pengujian lanjutan setelah commit cecaf4495b1ea1b743f21578f1da8d32aa7c692f:
 
@@ -46,8 +151,9 @@ pemeriksaan akhir refund (masih PROCESSING/settlement tanpa bank-confirmed),
 fixture lokal dibersihkan, backend/tunnel/redirect lokal ditutup. Snapshot22 model
 existing kembali identik dengan manifest backup, checksum backup valid. Riwayat
 Snap diagnostic dan QRIS/refund Sandbox tetap di dashboard provider; fixture
-lokalnya sudah tidak tersedia untuk webhook lanjutan. Uji refund berikutnya harus
-memakai fixture baru dan mempertahankan harness sampai provider final.
+lokalnya sudah tidak tersedia untuk webhook lanjutan. Get Status transaksi lama
+masih dapat diperiksa read-only menggunakan referensi provider. Uji refund
+fixture baru harus mempertahankan harness sampai provider final.
 
 Bagian berikut adalah
 hasil audit pertama sebelum keberhasilan DP Sandbox dan disimpan sebagai riwayat.

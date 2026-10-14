@@ -7,9 +7,14 @@ Kode Snap/webhook/refund ADMIN dan integrasi F5 tersedia, 12 kelompok MOCK PASS.
 Diagnosis lanjutan: Snap201, webhook settlement DP5000 dan integrasi operasional
 F5 PASS dengan provider Sandbox nyata. HTTP500 lama tidak lagi reproducible;
 penyebab internal historis belum pasti, payment-domain tidak diubah spekulatif.
-Refund QRIS2000 diterima202 tetapi belum bank-confirmed; final refund dan pelunasan
-online nyata masih DEFERRED. F7 belum selesai penuh. Laporan: server/F7-AUDIT.md;
-panduan: server/F7-SANDBOX.md. Tidak ada dependency/migration baru pada diagnosis.
+Finalisasi dari commit3d751dc: pelunasan QRIS Sandbox Rp5.000 PASS, setelah DP
+Rp5.000; webhook asli menghasilkan paid Rp10.000/balance nol/PAID/satu invoice.
+Replay tiga webhook tidak menggandakan kredit atau invoice. Refund QRIS Rp2.000
+historis diterima202 tetapi Get Status terbaru masih settlement tanpa entri refund
+atau bank-confirmed; final refund DEFERRED. Tidak mengirim refund/retry baru.
+F7 masih PARSIAL, F8 belum dinyatakan siap. Laporan: server/F7-AUDIT.md;
+panduan: server/F7-SANDBOX.md. Finalisasi hanya dokumentasi, tanpa dependency,
+schema/migration atau perubahan payment-domain. Fixture lokal sudah dibersihkan.
 
 ## Penerapan
 

@@ -108,6 +108,10 @@ export const jawabUsulanBarber = (id: number, usulanId: number, pelangganId: num
 export const rescheduleBooking = (id: number, pelangganId: number, akunPelangganId: number, data: { mulaiPada: string; barberPilihanId?: number | null | undefined; items?: {layananId:number;qty:number}[] | undefined }) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id, pelangganId);
   if (booking.status !== "CONFIRMED" || booking.pesananId !== null) return tolak();
+  const sekarang = await waktuDatabaseBooking(tx);
+  if (booking.mulaiPada.getTime() - sekarang.getTime() < 3600000) {
+    return tolak("Reschedule hanya dapat diajukan minimal 1 jam sebelum jadwal semula");
+  }
   if (await tx.transaksiPembayaranBooking.count({ where: { bookingId: id, status: "PENDING" } })) return tolak("Rekonsiliasi payment pending sebelum reschedule");
   if (await tx.permohonanRefundBooking.count({ where: { bookingId: id, status: { notIn: ["REJECTED","SUCCEEDED"] } } })) return tolak("Refund masih aktif");
   const usulan = await tx.usulanBarberBooking.findFirst({ where: { bookingId: id }, orderBy: { id: "desc" } });
@@ -126,7 +130,7 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
   if(uangBaru && (uangBaru.subtotal>2147483647 || pengganti!.some(i=>i.subtotal>2147483647)))return tolak("Nominal melampaui batas",400);
   const durasi=pengganti?pengganti.reduce((n,i)=>n+i.durasiMenit*i.qty,0):booking.durasiMenit;
   const mulai = new Date(data.mulaiPada);
-  const selesai = validasiWaktuBooking(mulai, durasi, await waktuDatabaseBooking(tx));
+  const selesai = validasiWaktuBooking(mulai, durasi, sekarang);
   if (!selesai) return tolak("Waktu booking tidak memenuhi ketentuan operasional", 400);
   const barberId = data.barberPilihanId === undefined ? booking.barberPilihanId : data.barberPilihanId;
   await validasiSlot(tx, booking, mulai, selesai, barberId);

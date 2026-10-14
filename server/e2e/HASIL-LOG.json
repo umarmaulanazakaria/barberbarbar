@@ -1,0 +1,19 @@
+{
+  "jenis": "Unit middleware actual; sentinel synthetic tidak pernah dicetak",
+  "results": [
+    {
+      "id": "JSON_BODY",
+      "expected": 400,
+      "actual": 400,
+      "logAman": true,
+      "status": "PASS"
+    },
+    {
+      "id": "SDK_ERROR",
+      "expected": 500,
+      "actual": 500,
+      "logAman": true,
+      "status": "PASS"
+    }
+  ]
+}

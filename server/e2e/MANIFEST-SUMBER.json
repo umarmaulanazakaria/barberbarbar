@@ -1,0 +1,206 @@
+{
+    "jenis":  "Checksum sumber audit, bukan backup seluruh repository",
+    "pengecualian":  "Manifest ini tidak memuat hash dirinya; manifest luar ZIP memverifikasi seluruh entry termasuk file ini",
+    "sumber":  [
+                   {
+                       "path":  "barberbarbar/F13-AUDIT.md",
+                       "bytes":  18003,
+                       "sha256":  "4e2c1dbc175838c77718eb305a3623d3a578a2ed4614f07f14382a3b90176eff"
+                   },
+                   {
+                       "path":  "barberbarbar/README-PENGUJIAN.md",
+                       "bytes":  10442,
+                       "sha256":  "25104770262c46998e72def4c6848039177c965f9830ccf5cc7733b86711ec53"
+                   },
+                   {
+                       "path":  "barberbarbar/TEMUAN-LANJUTAN.md",
+                       "bytes":  2738,
+                       "sha256":  "4e71d5ed7efa5ab7594d8297db01a30bc55c66a5aa86a8d8b4eae61d52967fd2"
+                   },
+                   {
+                       "path":  "barberbarbar/client/package.json",
+                       "bytes":  792,
+                       "sha256":  "d158eb76d0237fd3207f74a84e66e1ab06507604f46dc2457e167e2c5ee48d07"
+                   },
+                   {
+                       "path":  "barberbarbar/client/package-lock.json",
+                       "bytes":  100691,
+                       "sha256":  "9ca94730ef32c3080b1d7a6e0ddfb103a40c21f2bb94748ebb28cb3dd23ce249"
+                   },
+                   {
+                       "path":  "barberbarbar/client/scripts/test-e2e-browser.mjs",
+                       "bytes":  18571,
+                       "sha256":  "641cd289de161fc094d0cb142a8d71daa0ec7cb88c5355825edd01b867aeca48"
+                   },
+                   {
+                       "path":  "barberbarbar/server/package-lock.json",
+                       "bytes":  185585,
+                       "sha256":  "27a72660ef8579f559108b939dab159769eb333fcba35d68d79635895c0be0c4"
+                   },
+                   {
+                       "path":  "barberbarbar/server/src/middleware/error.middleware.ts",
+                       "bytes":  1868,
+                       "sha256":  "9abed95bc988c2a3c608d94c8ea728152926f0bf665c766773164bb824a6d25a"
+                   },
+                   {
+                       "path":  "barberbarbar/server/src/services/operasional-booking.service.ts",
+                       "bytes":  19120,
+                       "sha256":  "8b9985acadda86d6a8b2b2a015837943e15065f3f036d2772825fd1eaceeaeb6"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-midtrans-f7.mjs",
+                       "bytes":  22599,
+                       "sha256":  "159ade94a90923dec8cd7573a3063b2d87c5a36de314be1d502b44641603a58e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/audit-dependency-e2e.mjs",
+                       "bytes":  1816,
+                       "sha256":  "b636e534f1834995c641ad2f3a3a4594c4c35dab29086658ea06f65af0c503b8"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/audit-provider-e2e.mjs",
+                       "bytes":  2857,
+                       "sha256":  "ccfc73cc0843456dadf7e7294cf4b571b1bac0f733771379e182a359099fc4de"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/backup-e2e.mjs",
+                       "bytes":  2845,
+                       "sha256":  "922e37e4cabfb35bc70086d374e6f4c63fc205ca99bd3ed7fbd8983783ca1f03"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/buat-matriks-e2e.mjs",
+                       "bytes":  9807,
+                       "sha256":  "f90b285ef02134921ee1f6edd261135fdee82e028af138c794814609bfe947ca"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/buat-cadangan-e2e.ps1",
+                       "bytes":  5659,
+                       "sha256":  "38cfddf11c6d8beaf23800b80d358df598ba33f50497972645bb16977b34736e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/jalankan-regresi-e2e.mjs",
+                       "bytes":  5852,
+                       "sha256":  "0d7290a48cd9413eae9abf7f7a0a2ea75fd24765b793c093eb28144e36fb7d86"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-batas-reschedule-e2e.mjs",
+                       "bytes":  5351,
+                       "sha256":  "7d8688f4a7d00dcb6a2010f2ad1ebb34605e26836c922d997dafe96b9adca951"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-log-aman-e2e.mjs",
+                       "bytes":  1333,
+                       "sha256":  "a3077402db970ef8f662453f7b6326740783e235674e4f9ef1e771185a5a4b56"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/verifikasi-integritas-e2e.mjs",
+                       "bytes":  3668,
+                       "sha256":  "35cd28b24ea157e7fd5fb0bb0155a5862b202b86d87b35034178591212a7c505"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/CENARIOS.json",
+                       "bytes":  30737,
+                       "sha256":  "bd52d7e8882d6a330b785933d5c6b1d4095e2c719b83810de9d3674724032832"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-BROWSER.json",
+                       "bytes":  2865,
+                       "sha256":  "5e10a684283304bcf8d52e2a61812f226c50883b3caaf4cd55be98ee19fa0471"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-DEPENDENCY.json",
+                       "bytes":  18125,
+                       "sha256":  "eaac4d83c9468d941f4166c04263bdfbd58a823cb63132ccdb92aba350424dea"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-INTEGRITAS.json",
+                       "bytes":  1696,
+                       "sha256":  "b7050a08c53c9e4dedfb3999b557987c3cef604b992ae0705b4e03b84132f6b1"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-LOG.json",
+                       "bytes":  355,
+                       "sha256":  "1accd4e72d008f67502422889bebf90fcd13712da2dae678dcd13ade22998dc9"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-PROVIDER.json",
+                       "bytes":  966,
+                       "sha256":  "35d5bbeae863e1564d7ecae58f9278bc8d6d2a4e96afecfaeac63a0014945361"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-REGRESI.json",
+                       "bytes":  31695,
+                       "sha256":  "afbb42179131ac9245b7ca8f45defe625ecd075d7e49434edc99f83ab0052ea8"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/HASIL-RESCHEDULE.json",
+                       "bytes":  1358,
+                       "sha256":  "6fc70c7d47bcad415c33c69617ae89b7d70bc9d5a750fd9c6b62f966ef76f4ab"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/MATRIKS-E2E.json",
+                       "bytes":  179055,
+                       "sha256":  "0d66bee7ad930e9fee78cfb04bc3e5970d1dc5fcfa7c2a9413233f419d43c8bc"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/MATRIKS-E2E.md",
+                       "bytes":  102038,
+                       "sha256":  "0561540e4d85200d1459aa23e97d15e1a6bfa6f456359cac802a56f08b807226"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/BERKAS-ZIP.json",
+                       "bytes":  2005,
+                       "sha256":  "89c9033ccbb828293a98decc2efe72c05a34888f77fbea05025bd689349300a1"
+                   },
+                   {
+                       "path":  "barberbarbar-mobile/package.json",
+                       "bytes":  851,
+                       "sha256":  "208c849e94dd1fa4ea622a56a80a05de2ebec3c9293b7b29ee60289c771247c0"
+                   },
+                   {
+                       "path":  "barberbarbar-mobile/package-lock.json",
+                       "bytes":  251693,
+                       "sha256":  "04672935b0946e837c957160ae1dfeec21a023c73675e8e2ee9428b338dc7a5d"
+                   },
+                   {
+                       "path":  "barberbarbar-mobile/F13-AUDIT.md",
+                       "bytes":  921,
+                       "sha256":  "61f8a1f52a3ca0719004a1f7144f4cdb3916c916377a4e42cb3a5e940294c4da"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/package.json",
+                       "bytes":  1178,
+                       "sha256":  "9b967a0ffbb4286559117d090f2cd984a6c444525b1f3e7265c22cddc5c46cb9"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/scripts/test-customer.mjs",
+                       "bytes":  23867,
+                       "sha256":  "20e7c8cf0cf9f88a9085fe51c326e7e0dc96eee615ad2dfbd0f83cf9de2a4588"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/scripts/test-detail-customer.mjs",
+                       "bytes":  2779,
+                       "sha256":  "1964fe434d1e93498d129dd6855c1629310993907795443b555295aada3b462a"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/src/layanan/aturan.ts",
+                       "bytes":  4381,
+                       "sha256":  "4873ff61827bba594d01970ce0d9068e1cede94920afa1e3f4beb18562feb20a"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/src/layar/DetailBooking.tsx",
+                       "bytes":  9176,
+                       "sha256":  "9d08afea675be5a8a600b60dacd77ddf66246f4457b016bbb8b73fa1e6b43068"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/src/tipe.ts",
+                       "bytes":  2551,
+                       "sha256":  "ed3c7a2b780d2e9def32ad6da6a9436920f24ad042f9a4babb9932914172c05e"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/F13-AUDIT.md",
+                       "bytes":  1286,
+                       "sha256":  "d31461332939d80e751efbd384d6cbc7982451f583ed128ec4aaaea53146243d"
+                   }
+               ]
+}

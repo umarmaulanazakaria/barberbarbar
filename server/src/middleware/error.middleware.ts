@@ -6,7 +6,14 @@ export const tidakDitemukan = (req: Request, res: Response) => {
 };
 
 export const tanganiKesalahan = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(error);
+  const kategori = error instanceof SyntaxError ? "JSON_INVALID"
+    : error instanceof Prisma.PrismaClientKnownRequestError ? "DATABASE_REQUEST"
+    : error instanceof Prisma.PrismaClientValidationError ? "DATABASE_VALIDATION"
+    : error instanceof Prisma.PrismaClientInitializationError ? "DATABASE_UNAVAILABLE"
+    : "INTERNAL";
+  const kode = error instanceof Prisma.PrismaClientKnownRequestError && /^P\d{4}$/.test(error.code)
+    ? error.code : undefined;
+  console.error({ kejadian: "REQUEST_GAGAL", kategori, ...(kode ? { kode } : {}) });
 
   if (error instanceof SyntaxError && "body" in error) {
     return res.status(400).json({ pesan: "JSON request tidak valid" });

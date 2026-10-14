@@ -168,13 +168,17 @@ try{
  const th=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:sh.body.transaksiId}}),ph=provider.get(th.referensiProvider);
  ph.transaction_status="expire";ph.status_code="407";assert.equal((await notifikasi(ph)).status,200);
  ph.transaction_status="pending";ph.status_code="201";await notifikasi(ph);assert.equal((await db.transaksiPembayaranBooking.findUnique({where:{id:th.id}})).status,"EXPIRED");
+ for(const statusGagal of ["deny","cancel","failure"]){
+  const percobaan=await snap(bh,c);assert.equal(percobaan.status,200);const ledger=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:percobaan.body.transaksiId}}),gagal=provider.get(ledger.referensiProvider);
+  gagal.transaction_status=statusGagal;gagal.status_code="202";assert.equal((await notifikasi(gagal)).status,200);assert.equal((await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:ledger.id}})).status,"FAILED");assert.equal((await ringkas(bh,c)).body.ringkasan.jumlahDibayar,0);
+ }
  const sh2=await snap(bh,c);assert.equal(sh2.status,200);const th2=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:sh2.body.transaksiId}});
  ph.transaction_status="settlement";ph.status_code="200";ph.settlement_time=waktu();assert.equal((await notifikasi(ph)).status,200);
  const ph2=provider.get(th2.referensiProvider);ph2.transaction_status="settlement";ph2.status_code="200";ph2.settlement_time=waktu();
  assert.equal((await notifikasi(ph2)).status,200);assert.equal((await notifikasi(ph2)).status,200);
  assert.equal((await ringkas(bh,c)).body.ringkasan.jumlahDibayar,100000);
  const rh=await db.permohonanRefundBooking.findMany({where:{bookingId:bh.id}});assert.equal(rh.length,1);assert.equal(rh[0].nominal,50000);
- pass("Expire tidak dihidupkan pending; settlement terlambat/dua DP nyata tetap disimpan dan duplikat DP membuat satu refund request");
+ pass("Expire tidak dihidupkan pending; deny/cancel/failure FAILED tanpa kredit; settlement terlambat/dua DP tetap disimpan dan duplikat DP satu refund request");
  const bi=await buat(g,11);const si=await snap(bi,g);assert.equal(si.status,200);
  const ti=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:si.body.transaksiId}}),pi=provider.get(ti.referensiProvider);
  await http(`/customer/bookings/${bi.id}/cancel`,"POST",{},g.token);pi.transaction_status="settlement";pi.status_code="200";pi.settlement_time=waktu();

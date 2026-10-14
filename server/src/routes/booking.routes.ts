@@ -1,9 +1,13 @@
 import { Router } from "express";
 import { autentikasiPelanggan } from "../middleware/auth-pelanggan.middleware.js";
 import { buatBooking, daftarBooking, detailBooking } from "../controllers/booking.controller.js";
+import { terimaUsulanCustomer, tolakUsulanCustomer, rescheduleCustomer } from "../controllers/operasional-booking.controller.js";
 const routerBooking = Router();
 routerBooking.use(autentikasiPelanggan);
 routerBooking.post("/", buatBooking);
 routerBooking.get("/", daftarBooking);
 routerBooking.get("/:id", detailBooking);
+routerBooking.post("/:id/barber-proposals/:proposalId/accept", terimaUsulanCustomer);
+routerBooking.post("/:id/barber-proposals/:proposalId/reject", tolakUsulanCustomer);
+routerBooking.post("/:id/reschedule", rescheduleCustomer);
 export default routerBooking;

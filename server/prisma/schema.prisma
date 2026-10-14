@@ -49,6 +49,9 @@ model Pengguna {
   riwayatStatus      RiwayatStatusPesanan[]
   keputusanPengaitan PermohonanPengaitanAkun[]
   keputusanMembership PermohonanMembership[]
+  keputusanBooking Booking[]
+  usulanBarber UsulanBarberBooking[]
+  riwayatBooking RiwayatBooking[]
 }
 
 enum Role {
@@ -64,7 +67,10 @@ model Barber {
   dibuatPada   DateTime  @default(now())
   pesanan      Pesanan[]
   pengguna     Pengguna?
-  bookingPilihan Booking[]
+  bookingPilihan Booking[] @relation("BarberPilihanBooking")
+  bookingDisetujui Booking[] @relation("BarberDisetujuiBooking")
+  bookingFinal Booking[] @relation("BarberFinalBooking")
+  usulanBooking UsulanBarberBooking[]
 }
 
 model Layanan {
@@ -177,6 +183,7 @@ model AkunPelanggan {
 
   pelanggan  Pelanggan            @relation(fields: [pelangganId], references: [id], onDelete: Cascade)
   tokenReset PasswordResetToken[]
+  riwayatBooking RiwayatBooking[]
 }
 
 model PasswordResetToken {
@@ -246,6 +253,8 @@ model Booking {
   nomorBooking          String @unique
   pelangganId           Int
   barberPilihanId       Int?
+  barberDisetujuiId     Int?
+  barberFinalId         Int?
   pesananId             Int? @unique
   status                StatusBooking @default(PENDING_CONFIRMATION)
   mulaiPada             DateTime @db.Timestamptz(3)
@@ -265,10 +274,21 @@ model Booking {
   dikonfirmasiPada      DateTime? @db.Timestamptz(3)
   ditolakPada           DateTime? @db.Timestamptz(3)
   dibatalkanPada        DateTime? @db.Timestamptz(3)
+  deadlineDp            DateTime? @db.Timestamptz(3)
+  checkInPada           DateTime? @db.Timestamptz(3)
+  layananMulaiPada      DateTime? @db.Timestamptz(3)
+  layananSelesaiPada    DateTime? @db.Timestamptz(3)
+  diputuskanOlehId      Int?
+  alasanPenolakan       String?
   pelanggan             Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
-  barberPilihan         Barber? @relation(fields: [barberPilihanId], references: [id], onDelete: Restrict)
+  barberPilihan         Barber? @relation("BarberPilihanBooking", fields: [barberPilihanId], references: [id], onDelete: Restrict)
+  barberDisetujui       Barber? @relation("BarberDisetujuiBooking", fields: [barberDisetujuiId], references: [id], onDelete: Restrict)
+  barberFinal           Barber? @relation("BarberFinalBooking", fields: [barberFinalId], references: [id], onDelete: Restrict)
+  diputuskanOleh        Pengguna? @relation(fields: [diputuskanOlehId], references: [id], onDelete: SetNull)
   pesanan               Pesanan? @relation(fields: [pesananId], references: [id], onDelete: Restrict)
   items                 ItemBooking[]
+  usulanBarber          UsulanBarberBooking[]
+  riwayat               RiwayatBooking[]
 
   @@index([mulaiPada, selesaiPada])
   @@index([pelangganId, status])
@@ -293,8 +313,47 @@ model ItemBooking {
 enum StatusBooking {
   PENDING_CONFIRMATION
   CONFIRMED
+  CHECKED_IN
   IN_SERVICE
   COMPLETED
   REJECTED
   CANCELLED
+}
+
+model UsulanBarberBooking {
+  id Int @id @default(autoincrement())
+  bookingId Int
+  barberId Int
+  diusulkanOlehId Int?
+  alasan String
+  status StatusUsulanBarber @default(PENDING)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  diputuskanPada DateTime? @db.Timestamptz(3)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  barber Barber @relation(fields: [barberId], references: [id], onDelete: Restrict)
+  diusulkanOleh Pengguna? @relation(fields: [diusulkanOlehId], references: [id], onDelete: SetNull)
+  @@index([bookingId, status])
+}
+
+enum StatusUsulanBarber {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+model RiwayatBooking {
+  id Int @id @default(autoincrement())
+  bookingId Int
+  aksi String
+  statusSebelum StatusBooking
+  statusSetelah StatusBooking
+  penggunaId Int?
+  akunPelangganId Int?
+  rincian Json?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  pengguna Pengguna? @relation(fields: [penggunaId], references: [id], onDelete: SetNull)
+  akunPelanggan AkunPelanggan? @relation(fields: [akunPelangganId], references: [id], onDelete: SetNull)
+  @@index([bookingId, dibuatPada])
 }

@@ -19,6 +19,7 @@ model Pelanggan {
   akunPelanggan       AkunPelanggan?
   permohonanPengaitan PermohonanPengaitanAkun[]
   permohonanMembership PermohonanMembership[]
+  booking             Booking[]
 }
 
 enum StatusPelanggan {
@@ -63,6 +64,7 @@ model Barber {
   dibuatPada   DateTime  @default(now())
   pesanan      Pesanan[]
   pengguna     Pengguna?
+  bookingPilihan Booking[]
 }
 
 model Layanan {
@@ -73,6 +75,7 @@ model Layanan {
   aktif       Boolean       @default(true)
   dibuatPada  DateTime      @default(now())
   itemPesanan ItemPesanan[]
+  itemBooking ItemBooking[]
 }
 
 model Pesanan {
@@ -95,6 +98,7 @@ model Pesanan {
   items            ItemPesanan[]
   pembayaran       Pembayaran?
   riwayatStatus    RiwayatStatusPesanan[]
+  booking          Booking?
 
   @@index([status])
   @@index([statusPembayaran])
@@ -235,4 +239,62 @@ enum StatusPermohonanMembership {
   PENDING_APPROVAL
   APPROVED
   REJECTED
+}
+
+model Booking {
+  id                    Int @id @default(autoincrement())
+  nomorBooking          String @unique
+  pelangganId           Int
+  barberPilihanId       Int?
+  pesananId             Int? @unique
+  status                StatusBooking @default(PENDING_CONFIRMATION)
+  mulaiPada             DateTime @db.Timestamptz(3)
+  selesaiPada           DateTime @db.Timestamptz(3)
+  zonaWaktu             String @default("Asia/Jakarta")
+  durasiMenit           Int
+  subtotal              Int
+  membershipAktif       Boolean
+  discountPercent       Int
+  diskon                Int
+  total                 Int
+  dpPersen              Int @default(50)
+  nominalDp             Int
+  catatan               String?
+  dibuatPada            DateTime @default(now()) @db.Timestamptz(3)
+  diperbaruiPada         DateTime @updatedAt @db.Timestamptz(3)
+  dikonfirmasiPada      DateTime? @db.Timestamptz(3)
+  ditolakPada           DateTime? @db.Timestamptz(3)
+  dibatalkanPada        DateTime? @db.Timestamptz(3)
+  pelanggan             Pelanggan @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  barberPilihan         Barber? @relation(fields: [barberPilihanId], references: [id], onDelete: Restrict)
+  pesanan               Pesanan? @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+  items                 ItemBooking[]
+
+  @@index([mulaiPada, selesaiPada])
+  @@index([pelangganId, status])
+  @@index([barberPilihanId, status])
+}
+
+model ItemBooking {
+  id           Int @id @default(autoincrement())
+  bookingId    Int
+  layananId    Int
+  namaLayanan  String
+  durasiMenit  Int
+  harga        Int
+  qty          Int
+  subtotal     Int
+  booking      Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  layanan      Layanan @relation(fields: [layananId], references: [id], onDelete: Restrict)
+
+  @@unique([bookingId, layananId])
+}
+
+enum StatusBooking {
+  PENDING_CONFIRMATION
+  CONFIRMED
+  IN_SERVICE
+  COMPLETED
+  REJECTED
+  CANCELLED
 }

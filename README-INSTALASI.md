@@ -1,56 +1,41 @@
-# BARBER BARBAR — Paket F3 Membership Request
+# BARBER BARBAR — Paket F4 Booking Foundation
 
-14 Oktober 2026 · branch `feature/project5-integration`.
+14 Oktober 2026 · feature/project5-integration · baseline wajib F2/F3 lengkap.
 
-F3 tersedia sebagai API backend, panel keputusan ADMIN pada halaman Membership
-Project 3, dan komponen React customer siap integrasi. Sesuai jawaban pemilik proyek,
-source Project 5 yang belum tersedia tidak dibuat ulang. Project 4 tidak diubah.
-Master PRD v2.0/handover tidak ditemukan; implementasi mengikuti requirement F3
-dan keputusan eksplisit pengguna. Detail pengujian: `server/F3-AUDIT.md`.
+F4 hanya foundation API reservasi customer, terpisah dari Pesanan/Pembayaran/refund.
+Source/kontrak operator Project3/4 tetap. Laporan: server/F4-AUDIT.md.
 
-## Lokasi ekstraksi / replace
+## Replace dan prasyarat
 
-ZIP `BARBERBARBAR-F3-MEMBERSHIP.zip` menggunakan struktur `barberbarbar/...`.
-Ekstrak ke folder **Stage 2** (parent repository Project 3), sehingga file masuk
-ke `Stage 2/barberbarbar`. Semua file di paket adalah file lengkap, bukan patch.
-Backup versi lama dari file-file pada daftar di bawah sebelum replace.
+Ekstrak BARBERBARBAR-F4-BOOKING.zip ke **Stage 2**, parent barberbarbar. Struktur
+ZIP barberbarbar/... berisi file lengkap, bukan patch. Backup source target sebelum
+replace dan periksa perubahan lokal. Gunakan baseline F3/branch yang benar.
+**Working tree ini sudah menerapkan F4/migration; tidak perlu replace ulang.**
+ZIP F3 sebelumnya tetap disimpan; F0–F3 tidak perlu diulang.
 
-**Working tree yang dikerjakan sudah berisi F3 dan migration sudah diterapkan.**
-Tidak perlu replace ulang di workspace tersebut. ZIP ditujukan untuk distribusi
-ke checkout lain dengan baseline F2 yang sudah lengkap. Pastikan checkout tujuan
-berada di branch yang benar dan tidak memiliki perubahan lokal pada file target.
+Tidak ada dependency, extension, software atau environment baru. Gunakan Node/npm,
+Prisma/PostgreSQL, DATABASE_URL/JWT_SECRET dan dependency existing. Jangan mengubah
+credential, file koneksi atau zona PostgreSQL global. Generated Prisma/build output
+harus dibuat di checkout tujuan, tidak disertakan ZIP.
 
-Paket tidak menyertakan `.env`, dependency, dump database, generated Prisma,
-build output, Git, atau token. Dua file yang wajib dilindungi **tidak disertakan**:
-`barberbarbar/server/src/lib/prisma.ts` dan
-`barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx`.
+File dilindungi tidak masuk paket: server/src/lib/prisma.ts dan Project4
+src/layar/LayarTambahPelanggan.tsx. ZIP juga tidak memuat .env, .git, node_modules,
+dump, token atau secret.
 
-## Prasyarat dan backup
+## Backup, migration dan build
 
-Tidak ada dependency, extension VS Code, software atau variabel environment baru.
-Gunakan Node/npm, dependency Project 3/F2 existing, PostgreSQL, Prisma CLI, serta
-`DATABASE_URL` dan `JWT_SECRET` existing. Jangan mengubah credential.
+1. Backup file target sebelum replace.
+2. Backup DB di luar repository: pg_dump -h localhost -U <user> -d <database> --format=custom --file=<arsip>.
+   Jangan menaruh password dalam argumen/Git.
+3. Verifikasi pg_restore --list <arsip>, lalu PowerShell pg_restore --file=- <arsip> | Out-Null
+   (tanpa restore, exit code0); catat SHA-256 melalui Get-FileHash <arsip>.
+4. Alternatif setelah script tersedia dan build F3 tersedia: dari server jalankan
+   node scripts/backup-f4.mjs. Khusus DB lokal, output Stage 2/backup-database.
+5. Tinjau migration 20261014081424_tambah_booking_foundation: hanya enum, tabel baru,
+   indeks/FK/CHECK pada Booking/ItemBooking. Tidak ada update/delete/drop data existing.
+   Relasi model existing tidak menambah kolom fisik pada tabel existing.
 
-Sebelum migration di checkout tujuan:
-
-1. Backup file source yang akan diganti.
-2. Buat backup PostgreSQL dengan tooling existing, misalnya:
-   `pg_dump -h localhost -U <user> -d <database> --format=custom --file=<lokasi-backup-di-luar-repository>`.
-   Jangan memasukkan password ke argumen atau Git.
-3. Verifikasi arsip dengan `pg_restore --list <arsip>` dan baca seluruh arsip
-   tanpa restore, misalnya PowerShell `pg_restore --file=- <arsip> | Out-Null`.
-   Pastikan exit code 0 dan catat SHA-256 (`Get-FileHash <arsip>`).
-4. Tinjau `server/prisma/migrations/20261014074849_tambah_permohonan_membership/migration.sql`.
-   SQL hanya menambah enum, tabel baru, indeks dan FK pada tabel baru; tidak
-   mengubah data membership/customer existing. Jangan menjalankan reset database.
-
-Alternatif backup setelah file script tersedia dan build F2 tersedia:
-`node scripts/backup-f3.mjs` dari `server`. Script khusus database lokal;
-backup tersimpan di `Stage 2/backup-database`, bukan dalam repository.
-
-## Migration dan build
-
-Dari `Stage 2/barberbarbar/server`:
+Dari barberbarbar/server:
 
 ```powershell
 node node_modules/prisma/build/index.js validate
@@ -61,124 +46,117 @@ node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit --incremental fal
 npm.cmd run build
 ```
 
-Gunakan `migrate deploy`, bukan `migrate dev`/reset untuk penerapan paket.
-Migration sudah dibuat create-only dan ditinjau. Tabel baru memiliki unique index
-parsial untuk satu PENDING_APPROVAL per pelanggan; index tersebut didefinisikan
-dalam SQL. Pertahankan index tersebut saat membuat migration berikutnya.
+Restart backend dengan cara existing. Migration dibuat create-only, ditinjau dan
+transactional BEGIN/COMMIT. Jangan reset/force push. CHECK dalam SQL harus dipertahankan
+pada migration selanjutnya. Tidak perlu instalasi/upgrade package.
 
-Dari `barberbarbar/client`, jalankan `npm.cmd run build`. Restart backend/client
-dengan cara startup existing. Tidak perlu menginstal atau memperbarui package.
+## Kontrak API customer
 
-## Kontrak API F3
+Semua membutuhkan Bearer JWT CUSTOMER:
 
-| Method/path | JWT | Fungsi |
-| --- | --- | --- |
-| GET `/customer/membership` | CUSTOMER | Status membership sendiri |
-| POST `/customer/membership/requests` | CUSTOMER | Ajukan dengan body `{}` atau tanpa body |
-| GET `/membership-requests` | ADMIN | Daftar permohonan dan keputusan |
-| POST `/membership-requests/:id/approve` | ADMIN | Setujui atomik |
-| POST `/membership-requests/:id/reject` | ADMIN | Tolak atomik |
+- POST /customer/bookings: membuat PENDING_CONFIRMATION (201).
+- GET /customer/bookings: daftar sendiri (200, { data: [...] }).
+- GET /customer/bookings/:id: detail sendiri (200, { booking: {...} }).
 
-Keputusan dapat memakai `{ "catatanKeputusan": "..." }` (opsional, maksimal 500
-karakter). CUSTOMER tidak memiliki endpoint list/detail/update permohonan orang
-lain. Query ID tidak mengganti identitas; body pengajuan yang mengandung identitas
-atau diskon ditolak 400. JWT operator pada API customer ditolak 401; STAFF pada
-API keputusan ditolak 403; CUSTOMER pada API ADMIN ditolak 401.
+Contoh body (tanggal ilustrasi, ID dari /public/services dan /public/barbers):
 
-GET customer mengembalikan `status`, `dapatMengajukan`, `diskonPersen`, `membership`
-dan `permohonan` terbaru milik sendiri. Tidak ada identitas operator/customer lain,
-hash password atau kontak customer lain. Pengajuan berhasil 201, konflik 409.
-Keputusan berhasil 200, sudah diputuskan/konflik 409, ID tidak ditemukan 404.
-
-Mapping sesuai keputusan pengguna:
-
-- Tanpa Membership/pending: `NON_MEMBER`, diskon 0, boleh mengajukan.
-- Pending dan belum memiliki Membership: `PENDING_APPROVAL`, diskon 0.
-- Membership `isActive=true`: `ACTIVE`, diskon mengikuti Membership existing.
-- Membership `isActive=false`: `INACTIVE`, diskon 0, tidak dapat mengajukan;
-  hanya ADMIN dapat reaktivasi lewat API existing.
-- Penolakan tanpa Membership: kembali `NON_MEMBER`; dapat mengajukan ulang.
-
-Membership yang dibuat lewat approval customer selalu 10%, menggunakan tabel dan
-format kode member existing. Kebijakan API operator diskon 0–100% dipertahankan
-sesuai keputusan pengguna. Tidak ada sistem benefit kedua.
-
-Jika operator langsung mendaftarkan member saat permohonan masih pending,
-Membership existing menjadi authoritative dan status customer ACTIVE. Pending
-tetap hanya dapat diputuskan ADMIN; approval mengakui Membership existing tanpa
-membuat duplikat/mengubah benefit. Reject ditolak 409 agar tidak mencabut benefit
-operator. Jika Membership existing nonaktif, approval tidak mereaktivasi;
-reaktivasi tetap hanya melalui flow ADMIN existing.
-
-## Komponen customer / panel ADMIN
-
-Panel permohonan otomatis tampil pada halaman Membership Project 3 hanya untuk
-ADMIN. Flow create oleh ADMIN/STAFF serta edit/delete ADMIN existing tetap ada.
-
-Komponen customer terletak di
-`client/src/components/customer/MembershipPelanggan.tsx`. Integrasikan ke host
-React Project 5 dengan token CUSTOMER milik sesi login host:
-
-```tsx
-<MembershipPelanggan tokenCustomer={tokenSesiCustomer} alamatApi="/api" />
+```json
+{
+  "mulaiPada": "2026-10-16T10:07:00+07:00",
+  "barberPilihanId": null,
+  "items": [{ "layananId": 1, "qty": 2 }, { "layananId": 2, "qty": 1 }],
+  "catatan": "Catatan opsional"
+}
 ```
 
-Komponen memiliki status, tombol Ajukan Membership tanpa formulir, status pending,
-INACTIVE, benefit aktif, dan tombol Perbarui status. Token diberikan lewat props;
-tidak membaca/menyimpan token operator di localStorage. Ganti token/cleanup akan
-membatalkan fetch lama. Gunakan same-origin `/api` atau proxy existing; konfigurasi
-lintas origin Project 5 mengikuti host aplikasi saat source-nya tersedia.
-Komponen ini belum dipasang pada halaman customer nyata karena host belum tersedia.
+null/tidak mengirim barberPilihanId berarti siapa saja; ID berarti barber aktif
+tertentu. Identitas customer diambil dari JWT. Payload strict: harga, diskon,
+durasi, customerId, status, nominalDp atau pesananId tidak boleh dikirim. Maks50
+layanan berbeda, qty1–100, catatan maks500. Layanan sama digabung menggunakan qty.
+
+Error400 data/waktu invalid;409 jadwal tidak tersedia tanpa identitas booking
+bentrok;401 tanpaJWT/operator/DIBLOKIR;404 detail orang lain/tidak ada identik.
+Respons tidak memuat hash/kontak operator/barber/customer lain. Customer tidak
+memiliki API update/cancel/approve/status/payment di F4.
+
+## Waktu, kapasitas dan snapshot
+
+- Asia/Jakarta setiap hari09–23. Input ISO offset/Z wajib; seconds/milliseconds0.
+  Respons ISO UTC + zonaWaktu. Fleksibel per menit, bukan slot30menit.
+- Mulai di masa depan. Same-day Jakarta minimum3jam setelah clock backend sesudah
+  lock; horizon mulai maksimum rolling14×24jam. Batas tepat diterima.
+- Selesai = mulai + sum(durasiMenit×qty); tanggal Jakarta sama, tidak melewati23.
+  Selesai tepat23 diterima.
+- Rentang [start,end); interval berurutan tidak bentrok. Pending/CONFIRMED/IN_SERVICE
+  menahan slot; COMPLETED/REJECTED/CANCELLED tidak menahan.
+- Specific ID dicek konflik; specific/any bersama dihitung sweep occupancy terhadap
+  jumlah barber aktif. Nonaktif tidak menambah kapasitas. Booking aktif tetap
+  dihitung konservatif jika barber pilihan kemudian dinonaktifkan.
+- Customer tidak boleh punya booking aktif overlap. Validasi/insert nested item atomik.
+- Snapshot harga/nama/durasi dari DB. Non-member/INACTIVE diskon0; ACTIVE booking10%.
+  Kebijakan diskon kustom operator F3/order existing tidak berubah, tetapi tidak
+  dipakai untuk diskon booking F4.
+- Diskon rupiah floor(subtotal×persen/100). Kontrak DP50% sesudah diskon, rupiah
+  bulat ceil(total/2). Belum ada pembayaran atau konfirmasi DP.
+- Perubahan harga/membership tidak menghitung ulang booking historis.
+
+## Protokol wajib untuk F5+
+
+Booking tidak membuat Pesanan/Pembayaran. pesananId nullable unik untuk relasi
+berikutnya; barberPilihanId adalah preferensi, bukan barber final. Timestamp
+konfirmasi/penolakan/pembatalan disiapkan, transisi enum belum mempunyai API.
+
+SEMUA writer/perubahan jadwal F5+ wajib mengambil pg_advisory_xact_lock(7354,1)
+dalam transaksi sebelum baca kapasitas/update. READ COMMITTED melihat commit
+sebelumnya sesudah menunggu lock. Prisma temporal TIMESTAMPTZ memakai SET LOCAL
+TIME ZONE 'UTC' di transaksi; jangan mengubah koneksi/zona global. Operational
+validation tetap Jakarta. Direct SQL/writer yang mengabaikan lock tidak memiliki
+jaminan double-booking aplikasi; tidak ada exclusion constraint/extension baru.
+
+F5 mengerjakan confirm/reject ADMIN/STAFF, keputusan lengkap, cancel/reschedule,
+alokasi barber final IN_SERVICE dan pengaitan Pesanan. Any saat ini menahan pool
+kapasitas, belum barber final. Pengurangan barber aktif dan alokasi perlu meninjau
+booking yang sudah diterima. Walk-in/Pesanan existing tetap terpisah dari reservasi
+masa depan. Pending belum expiry otomatis; payment/refund/scheduler/socket/UI
+berada di F6–F12, tidak ditambahkan di F4.
 
 ## Pengujian
 
-Dari `server`, jalankan **berurutan**, hanya database lokal dengan fixture dummy:
+Dari server, hanya DB lokal, berurutan:
 
 ```powershell
+node scripts/test-booking-f4.mjs
 node scripts/test-membership-f3.mjs
 node scripts/test-fondasi-pelanggan.mjs
 node scripts/test-reset-password-pelanggan.mjs
 node scripts/test-api-publik.mjs
 ```
 
-Script F3 membersihkan fixture yang dibuat proses sendiri. Jangan menjalankan
-suite bersamaan karena suite reset memeriksa hash operator existing. Tidak
-menggunakan akun/data customer sebenarnya. Validasi HTTP/integrasi, TypeScript,
-build dan Prisma lulus; UI/browser/device Project 5 belum diuji pada host nyata.
-
-Booking customer, DP 50%, dan F4/F6 tidak ditambahkan. Pesanan Project 3 existing
-tetap menyimpan snapshot diskon/nominal dari backend; regresinya diuji dengan
-pesanan dummy sebelum/sesudah perubahan membership.
+F4:15kelompok + cleanup PASS, termasuk kasir create→IN_SERVICE→COMPLETED→PAID/invoice.
+Waktu diuji boundary deterministik dan HTTP actual. Fixture hanya ID milik proses,
+bukan customer asli. F2/F3 script existing tidak diubah. UI/device tidak diuji;
+source host Project5/PRD v2.0/handover belum tersedia.
 
 ## Rollback aman
 
-Jika rollback kode diperlukan, hentikan proses aplikasi lalu pulihkan **hanya
-file pada daftar paket** dari backup source/baseline F2. Jangan menyentuh dua file
-lokal yang dilindungi. Build kembali dan restart dengan flow existing.
+Hentikan aplikasi, pulihkan hanya file pada daftar paket dari backup source/
+baseline F3, build dan restart. Jangan menyentuh dua file dilindungi. Pertahankan
+migration/tabel additive yang sudah diterapkan; F3 tidak menggunakannya. Jangan
+drop/reset/otomatis restore database atau menghapus booking yang sudah masuk.
+Pemulihan DB memerlukan rencana terpisah dan persetujuan pemilik data; backup bisa
+diverifikasi di DB isolasi tanpa menimpa DB existing.
 
-Pertahankan tabel/migration F3 yang sudah diterapkan: perubahan bersifat additive
-dan source F2 tidak menggunakannya. Jangan drop tabel, menghapus riwayat permohonan,
-menjalankan reset, atau otomatis restore database existing. Jika pemulihan database
-diperlukan, tinjau arsip dan rencana pemulihan terpisah terlebih dahulu dengan
-persetujuan pemilik data. Backup dapat diverifikasi di database isolasi, tanpa
-menimpa database existing.
+## Daftar12 file ZIP (relatif Stage 2)
 
-## Daftar file paket
-
-Semua path berikut relatif root ZIP / Stage 2:
-
-1. `barberbarbar/README-INSTALASI.md` — baru.
-2. `barberbarbar/server/F3-AUDIT.md` — baru.
-3. `barberbarbar/server/prisma/schema.prisma` — berubah.
-4. `barberbarbar/server/prisma/migrations/20261014074849_tambah_permohonan_membership/migration.sql` — baru.
-5. `barberbarbar/server/src/app.ts` — berubah.
-6. `barberbarbar/server/src/services/membership.service.ts` — berubah.
-7. `barberbarbar/server/src/services/permohonan-membership.service.ts` — baru.
-8. `barberbarbar/server/src/controllers/permohonan-membership.controller.ts` — baru.
-9. `barberbarbar/server/src/routes/membership-pelanggan.routes.ts` — baru.
-10. `barberbarbar/server/src/routes/permohonan-membership.routes.ts` — baru.
-11. `barberbarbar/server/scripts/backup-f3.mjs` — baru.
-12. `barberbarbar/server/scripts/test-membership-f3.mjs` — baru.
-13. `barberbarbar/client/src/pages/MembershipPage.tsx` — berubah.
-14. `barberbarbar/client/src/components/PermohonanMembershipAdmin.tsx` — baru.
-15. `barberbarbar/client/src/components/customer/MembershipPelanggan.tsx` — baru.
+1. barberbarbar/README-INSTALASI.md — berubah, panduan F4.
+2. barberbarbar/server/F4-AUDIT.md — baru.
+3. barberbarbar/server/prisma/schema.prisma — berubah.
+4. barberbarbar/server/prisma/migrations/20261014081424_tambah_booking_foundation/migration.sql — baru.
+5. barberbarbar/server/src/app.ts — berubah.
+6. barberbarbar/server/src/lib/jadwal-booking.ts — baru.
+7. barberbarbar/server/src/schemas/booking.schema.ts — baru.
+8. barberbarbar/server/src/services/booking.service.ts — baru.
+9. barberbarbar/server/src/controllers/booking.controller.ts — baru.
+10. barberbarbar/server/src/routes/booking.routes.ts — baru.
+11. barberbarbar/server/scripts/backup-f4.mjs — baru.
+12. barberbarbar/server/scripts/test-booking-f4.mjs — baru.

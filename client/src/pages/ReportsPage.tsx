@@ -89,7 +89,7 @@ export default function ReportsPage() {
 
   return (
     <>
-      <PageTitle title="Reports" subtitle="Operational and revenue summary" />
+      <PageTitle title="Laporan" subtitle="Ringkasan operasional dan pendapatan" />
 
       <div className="mb-4 flex flex-wrap gap-3">
         <Input
@@ -108,8 +108,8 @@ export default function ReportsPage() {
 
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[
-          ["Orders", data?.jumlahPesanan ?? 0],
-          ["Completed", data?.selesai ?? 0],
+          ["Pesanan", data?.jumlahPesanan ?? 0],
+          ["Layanan Selesai", data?.selesai ?? 0],
           ["Unpaid", data?.belumDibayar ?? 0],
           ["Cancelled", data?.dibatalkan ?? 0],
           ["Revenue", rupiah(data?.revenue ?? 0)],
@@ -124,14 +124,14 @@ export default function ReportsPage() {
       <Card className="mb-4 overflow-hidden">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
           <div>
-            <h2 className="text-sm font-black text-slate-900">Revenue Trend</h2>
+            <h2 className="text-sm font-black text-slate-900">Tren Pendapatan</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Paid revenue by day for the selected period
+              Pendapatan harian yang telah dibayar pada periode terpilih
             </p>
           </div>
           <div className="rounded-lg bg-indigo-50 px-3 py-2 text-right">
             <div className="text-[11px] font-medium uppercase tracking-wide text-indigo-500">
-              Total Revenue
+              Total Pendapatan
             </div>
             <div className="mt-0.5 text-sm font-black text-indigo-700">
               {rupiah(data?.revenue ?? 0)}
@@ -141,7 +141,7 @@ export default function ReportsPage() {
 
         {revenueChart.length === 0 ? (
           <div className="flex min-h-56 items-center justify-center px-6 py-10 text-sm text-slate-400">
-            No paid revenue in this period.
+            Belum ada pendapatan pada periode ini.
           </div>
         ) : (
           <div className="overflow-x-auto px-4 pb-4 pt-5 sm:px-5">
@@ -150,7 +150,7 @@ export default function ReportsPage() {
                 viewBox={`0 0 ${chartWidth} ${chartHeight}`}
                 className="h-[260px] w-full overflow-visible"
                 role="img"
-                aria-label="Daily paid revenue line chart"
+                aria-label="Grafik pendapatan harian"
               >
                 <defs>
                   <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
@@ -258,12 +258,12 @@ export default function ReportsPage() {
           <table className="w-full min-w-[720px] text-left text-xs">
             <thead className="bg-slate-50">
               <tr>
-                <th className="p-3">Order</th>
-                <th>Date</th>
-                <th>Customer</th>
+                <th className="p-3">Pesanan</th>
+                <th>Tanggal</th>
+                <th>Pelanggan</th>
                 <th>Barber</th>
                 <th>Status</th>
-                <th>Payment</th>
+                <th>Pembayaran</th>
                 <th>Total</th>
               </tr>
             </thead>

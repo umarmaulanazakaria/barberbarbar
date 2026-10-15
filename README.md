@@ -1,8 +1,15 @@
-﻿# BARBER BARBAR
+# BARBER BARBAR — Web Management & Backend
 
 Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer App melalui satu API dan satu database PostgreSQL.
 
-**Status: siap ditinjau dengan syarat; belum siap Production.** Acceptance Android, checkout Sandbox langsung dari Customer App, refund historis Rp2.000, pengiriman recovery email, advisory dependency, dan sejumlah keputusan bisnis masih terbuka. Lihat [audit workspace](docs/WORKSPACE-CLEANUP-AUDIT.md) dan [release checklist](docs/RELEASE-CHECKLIST.md).
+Project untuk **tugas kuliah, pembelajaran Fullstack, portofolio, dan demonstrasi lokal**; bukan aplikasi Production. Hosting berbayar bukan kebutuhan demo. Mobile berhasil menurut laporan pengguna (**USER-REPORTED**); bukti rinci UI native/checkout Android belum lengkap. Email nyata, refund historis dan advisory tetap dicatat jujur. Lihat [acceptance demo](docs/DEMO-ACCEPTANCE.md).
+
+Hasil terbaru ada di [penutupan acceptance](docs/FINAL-ACCEPTANCE-CLOSURE.md):
+29 suite teknis lulus, perubahan identitas/password dengan autentikasi ulang,
+edit layanan/jumlah pada jadwal ulang, template/transport email mock, serta
+perbaikan race edit Web. Delivery email nyata belum aktif; memilih provider dan
+mengisi sample environment saja tidak otomatis mengirim email. Detail setup
+ada di [panduan reset](server/scripts/RESET-PASSWORD-CUSTOMER.md).
 
 ## Teknologi dan fitur
 
@@ -33,6 +40,19 @@ docs/                      Panduan dan bukti audit
 Mobile Staff memakai JWT operator; Customer memakai JWT CUSTOMER tanpa akses operator. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
 
 ## Menjalankan lokal
+
+Untuk dependency dan environment yang sudah tersedia, gunakan satu launcher Windows dari folder ini:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\jalankan-barberbarbar.ps1 -HanyaBackend
+# Tambahkan -Ngrok hanya saat menguji pembayaran; forwarding wajib ke proxy 3001.
+# Tambahkan -Periksa untuk pemeriksaan read-only tanpa menjalankan proses baru.
+```
+
+Launcher memeriksa identitas backend, memakai port 3000 dan proxy webhook 3001,
+serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web dan kedua
+Expo ikut dijalankan bila port kosong. Panduan pemulihan status, hasil pengujian
+dan batas webhook laptop ada di [audit pembayaran dan antarmuka](docs/PAYMENT-WEBHOOK-UI-COPY-AUDIT.md).
 
 Persyaratan: Node.js/npm sesuai lockfile (baseline Node 24), PostgreSQL, serta `pg_dump`/`pg_restore` untuk backup. Database existing memerlukan konfigurasi pemilik. Dari `server`, pasang dependency lalu buat `.env` berdasarkan `.env.example`:
 
@@ -76,7 +96,7 @@ Konfigurasi webhook dan batas provider: [panduan Midtrans](docs/audit/F7-SANDBOX
 
 ## Pengujian dan backup
 
-Jalankan pada database lokal dengan fixture terisolasi dan backup terbaru. Runner memeriksa 22 model sesudah setiap tahap. Hasil baru berada di `server/artifacts/` yang diabaikan Git.
+Jalankan pada database uji lokal kosong yang terpisah, dengan schema ditinjau dan backup terbaru. Override DATABASE_URL hanya untuk proses pengujian; jangan arahkan runner ke data aplikasi. Runner memeriksa 22 model sesudah setiap tahap. Hasil baru berada di `server/artifacts/` yang diabaikan Git.
 
 ```powershell
 # Dari server; MIDTRANS_IS_PRODUCTION=false
@@ -96,3 +116,27 @@ Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar 
 - [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
 
 Branch review: `feature/project5-integration`. Build lokal dan provider MOCK tidak menggantikan acceptance perangkat atau pembayaran provider nyata.
+
+## Demonstrasi dan portofolio
+
+[Menjalankan ekosistem](docs/PANDUAN-JALANKAN-DEMO.md) | [Presentasi](docs/PANDUAN-PRESENTASI.md) | [Naskah](docs/NASKAH-DEMO.md) | [Review Git/PR](docs/PORTFOLIO-RELEASE-REVIEW.md).
+
+### API utama
+
+| Kelompok | Fungsi dan akses |
+|---|---|
+| GET `/public/services`, `/public/barbers` | Katalog aktif tanpa login, atribut publik saja |
+| `/auth/customer/*`, `/customer/membership`, `/customer/bookings` | Akun, profil dan data milik CUSTOMER |
+| `/bookings`, `/orders`, `/customers`, `/services`, `/barbers` | Operasional dengan JWT operator |
+| `/membership-requests`, `/refund-requests` | Keputusan khusus ADMIN diperiksa backend |
+| POST `/midtrans/notifications` | Webhook dengan signature dan verifikasi provider |
+
+Route -> controller -> service -> Prisma memisahkan HTTP, aturan bisnis dan penyimpanan. PostgreSQL menjadi sumber kebenaran; Socket.IO memberi sinyal refetch REST dalam room berotorisasi.
+
+### Screenshot Web aktual
+
+Web asli di Edge headless dengan fixture database kosong terpisah dan pembayaran **MOCK**. Bukan bukti Android/provider nyata. [Lima gambar dan reproduksi](docs/screenshots/README.md).
+
+![Dashboard Web fixture](docs/screenshots/dashboard.jpg)
+
+![Pembayaran booking fixture lunas](docs/screenshots/payment-management.jpg)

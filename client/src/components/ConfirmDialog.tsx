@@ -19,8 +19,8 @@ export default function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel = "Konfirmasi",
+  cancelLabel = "Batal",
   variant = "danger",
   loading = false,
   onConfirm,
@@ -82,7 +82,7 @@ export default function ConfirmDialog({
               onClick={onConfirm}
               disabled={loading}
             >
-              {loading ? "Processing..." : confirmLabel}
+              {loading ? "Memproses..." : confirmLabel}
             </Button>
           </div>
         </div>

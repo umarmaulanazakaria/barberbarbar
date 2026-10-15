@@ -47,7 +47,7 @@ export default function LoginPage() {
     } catch (error) {
       setError(
         error instanceof z.ZodError
-          ? "Email or password format is invalid"
+          ? "Periksa kembali email dan kata sandi."
           : pesanError(error),
       );
     } finally {
@@ -68,12 +68,11 @@ export default function LoginPage() {
 
         <div>
           <h1 className="mt-5 max-w-lg text-4xl font-black leading-tight">
-            Manage orders, customers, barbers and payments in one place.
+            Kelola pesanan, pelanggan, barber, dan pembayaran dalam satu tempat.
           </h1>
 
           <p className="mt-4 max-w-lg text-sm leading-6 text-slate-300">
-            A clean workflow from check-in to service completion, payment and
-            history.
+            Kelola kunjungan dari kedatangan hingga layanan selesai, pembayaran, dan riwayat.
           </p>
         </div>
 
@@ -103,10 +102,10 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-7">
-            <h2 className="text-2xl font-black text-slate-900">Welcome back</h2>
+            <h2 className="text-2xl font-black text-slate-900">Selamat datang kembali</h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Sign in to continue to Barber Barbar
+              Masuk untuk melanjutkan ke BARBER BARBAR
             </p>
           </div>
 
@@ -123,7 +122,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label>Password</Label>
+              <Label>Kata Sandi</Label>
 
               <Input
                 type="password"
@@ -140,7 +139,7 @@ export default function LoginPage() {
             )}
 
             <Button className="w-full" disabled={loading}>
-              {loading ? "Please wait..." : "Sign In"}
+              {loading ? "Mohon tunggu..." : "Masuk"}
             </Button>
           </form>
         </Card>

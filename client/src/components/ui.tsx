@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import {
   useEffect,
   useMemo,
@@ -102,9 +103,9 @@ export const SearchableSelect = ({
   value,
   onChange,
   options,
-  placeholder = "Select option",
-  searchPlaceholder = "Search...",
-  emptyText = "No matching data",
+  placeholder = "Pilih opsi",
+  searchPlaceholder = "Cari...",
+  emptyText = "Tidak ada data yang sesuai",
   className = "",
   disabled = false,
   ariaLabel,
@@ -375,7 +376,7 @@ export const Modal = ({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label="Tutup dialog"
             className="grid size-9 place-items-center rounded-lg text-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
           >
             ×
@@ -401,25 +402,7 @@ export const StatusBadge = ({ value }: { value: string }) => {
             : value === "INACTIVE"
               ? "bg-slate-100 text-slate-500"
               : "bg-slate-100 text-slate-600";
-  const labels: Record<string, string> = {
-    PENDING_CONFIRMATION: "Menunggu konfirmasi",
-    CONFIRMED: "Dikonfirmasi", CHECKED_IN: "Check-in", NO_SHOW: "Tidak hadir",
-    REJECTED: "Ditolak", PENDING_APPROVAL: "Menunggu ADMIN", PENDING: "Menunggu",
-    PROCESSING: "Diproses provider", SUCCEEDED: "Berhasil", FAILED: "Gagal",
-    UNSUPPORTED: "Tidak didukung", APPROVED: "Disetujui", OVERDUE: "Lewat batas pelunasan",
-    DP_PAID: "DP terverifikasi", AWAITING_DP: "Menunggu DP", PARTIALLY_PAID: "Dibayar sebagian",
-    REFUND_REVIEW: "Peninjauan refund", DP_FORFEITED: "DP hangus",
-    WAITING: "Waiting",
-    IN_SERVICE: "In Service",
-    COMPLETED: "Completed",
-    CANCELLED: "Cancelled",
-    UNPAID: "Unpaid",
-    PAID: "Paid",
-    AKTIF: "Active",
-    DIBLOKIR: "Blocked",
-    INACTIVE: "Inactive",
-  };
-  const label = labels[value] ?? value;
+  const label = statusRamah(value);
   return (
     <span
       className={cn(
@@ -454,12 +437,12 @@ export const PageTitle = ({
   </div>
 );
 
-export const Empty = ({ text = "No data found" }: { text?: string }) => (
+export const Empty = ({ text = "Belum ada data" }: { text?: string }) => (
   <div className="py-12 text-center text-sm text-slate-400">{text}</div>
 );
 
 export const LoadingState = ({
-  text = "Loading data...",
+  text = "Memuat data...",
 }: {
   text?: string;
 }) => (
@@ -470,7 +453,7 @@ export const LoadingState = ({
 );
 
 export const ErrorState = ({
-  text = "Failed to load data.",
+  text = "Data belum dapat dimuat.",
   onRetry,
 }: {
   text?: string;
@@ -479,11 +462,11 @@ export const ErrorState = ({
   <div className="flex min-h-40 flex-col items-center justify-center px-6 py-10 text-center">
     <div className="text-sm font-bold text-slate-700">{text}</div>
     <div className="mt-1 text-xs text-slate-400">
-      Check the connection and try again.
+      Periksa koneksi dan coba lagi.
     </div>
     {onRetry && (
       <Button variant="secondary" className="mt-4" onClick={onRetry}>
-        Try Again
+        Coba Lagi
       </Button>
     )}
   </div>

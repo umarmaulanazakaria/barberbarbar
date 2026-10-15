@@ -21,17 +21,17 @@ import RealtimeOperator from "./RealtimeOperator";
 
 const menu = [
   ["Dashboard", "/", LayoutDashboard],
-  ["Orders", "/orders", CalendarDays],
-  ["Booking Customer", "/bookings", CalendarDays],
-  ["Refund", "/refunds", ReceiptText],
-  ["Customers", "/customers", Users],
+  ["Pesanan", "/orders", CalendarDays],
+  ["Booking Pelanggan", "/bookings", CalendarDays],
+  ["Pengembalian Dana", "/refunds", ReceiptText],
+  ["Pelanggan", "/customers", Users],
   ["Membership", "/membership", Tags],
-  ["Barbers", "/barbers", UserRound],
-  ["Services", "/services", Scissors],
-  ["Order History", "/history", History],
-  ["Invoices", "/invoices", ReceiptText],
-  ["Reports", "/reports", ChartNoAxesCombined],
-  ["Settings", "/settings", Settings],
+  ["Barber", "/barbers", UserRound],
+  ["Layanan", "/services", Scissors],
+  ["Riwayat Pesanan", "/history", History],
+  ["Invoice", "/invoices", ReceiptText],
+  ["Laporan", "/reports", ChartNoAxesCombined],
+  ["Pengaturan", "/settings", Settings],
 ] as const;
 
 export default function AppLayout() {
@@ -61,7 +61,7 @@ export default function AppLayout() {
       {open && (
         <button
           type="button"
-          aria-label="Close navigation"
+          aria-label="Tutup navigasi"
           onClick={() => setOpen(false)}
           className="no-print fixed inset-0 z-30 bg-slate-950/45 backdrop-blur-[1px] lg:hidden"
         />
@@ -90,7 +90,7 @@ export default function AppLayout() {
             type="button"
             onClick={() => setOpen(false)}
             className="ml-auto grid size-9 place-items-center rounded-lg text-slate-300 transition hover:bg-white/10 hover:text-white lg:hidden"
-            aria-label="Close menu"
+            aria-label="Tutup menu"
           >
             <X size={19} />
           </button>
@@ -131,7 +131,7 @@ export default function AppLayout() {
             className="flex min-h-10 w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-slate-300 transition hover:bg-white/10 hover:text-white"
           >
             <LogOut size={14} />
-            Logout
+            Keluar
           </button>
         </div>
       </aside>
@@ -142,7 +142,7 @@ export default function AppLayout() {
             type="button"
             onClick={() => setOpen(true)}
             className="mr-3 grid size-10 place-items-center rounded-lg text-slate-700 transition hover:bg-slate-100 lg:hidden"
-            aria-label="Open menu"
+            aria-label="Buka menu"
           >
             <Menu size={21} />
           </button>

@@ -6,7 +6,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
   if (loading)
     return (
       <div className="grid min-h-screen place-items-center text-sm text-slate-500">
-        Loading...
+        Memuat...
       </div>
     );
   if (!user) return <Navigate to="/login" replace />;

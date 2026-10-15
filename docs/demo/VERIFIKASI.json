@@ -1,0 +1,470 @@
+{
+  "tanggal": "2026-10-15T08:31:02.470Z",
+  "scope": "Demo lokal akademik; bukan Production",
+  "baseline": {
+    "p3": "b2438eb",
+    "staff": "283aeda",
+    "customer": "f8f79d4"
+  },
+  "regresi": [
+    {
+      "id": "backend-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 1,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-fondasi-pelanggan",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 16,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-reset-password-pelanggan",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-penutupan-akun",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 7,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-api-publik",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 2,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-membership-f3",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-booking-f4",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 4,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-operasional-f5",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-payment-f6",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-scheduler-booking",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 8,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "test-realtime",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 19,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "web-build",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 24,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "web-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "staff-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "staff-expo-check",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "staff-android-export",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 30,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "staff-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 6,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-expo-check",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 2,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-android-export",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 21,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-dropdown",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 10,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-detail",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-recovery",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "reschedule-boundary",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 2,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "browser-e2e",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 38,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "log-safety",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "customer-draft",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "snapshot22Identik": true
+    },
+    {
+      "id": "process-log",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "snapshot22Identik": true
+    }
+  ],
+  "browser": [
+    {
+      "id": "WEB-LOGIN",
+      "status": "PASS",
+      "actual": "ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing"
+    },
+    {
+      "id": "WEB-MEMBER",
+      "status": "PASS",
+      "actual": "Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN"
+    },
+    {
+      "id": "WEB-DIALOG",
+      "status": "PASS",
+      "actual": "Role/nama dialog, fokus awal, trap Tab, Escape dan pengembalian fokus; cancel tanpa mutasi booking"
+    },
+    {
+      "id": "WEB-BOOKING",
+      "status": "PASS",
+      "actual": "Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED"
+    },
+    {
+      "id": "WEB-LIFECYCLE",
+      "status": "PASS",
+      "actual": "DP MOCK sah → check-in Web lebih awal → barber final any → Pesanan/IN_SERVICE terpantau Customer/Staff SDK"
+    },
+    {
+      "id": "WEB-ITEMS",
+      "status": "PASS",
+      "actual": "Web tambah/kurangi qty, hapus/tambah layanan merekalkulasi tagihan; snapshot diskon tetap10% (provider MOCK)"
+    },
+    {
+      "id": "WEB-INVOICE",
+      "status": "PASS",
+      "actual": "Staff SDK complete → Web kasir bayar sisa DB → Customer SDK PAID/balance0/satu invoice final"
+    },
+    {
+      "id": "WEB-REJECT",
+      "status": "PASS",
+      "actual": "Reject Web wajib alasan dan alasan tersimpan pada detail customer"
+    },
+    {
+      "id": "WEB-REFUND",
+      "status": "PASS",
+      "actual": "ADMIN approve MOCK202 → PROCESSING tanpa debit/refund ganda/retry; STAFF ditolak halaman refund"
+    },
+    {
+      "id": "WEB-RESPONSIVE",
+      "status": "PASS",
+      "actual": "Daftar booking fixture pada viewport390px tidak overflow horizontal; bukan Android UI"
+    },
+    {
+      "id": "WEB-LOGOUT",
+      "status": "PASS",
+      "actual": "Logout Web membersihkan token, route kembali login; tidak ada pageerror JS selama skenario"
+    },
+    {
+      "id": "CLEANUP",
+      "status": "PASS",
+      "actual": "22 model domain existing identik; hanya fixture suite dibersihkan"
+    }
+  ],
+  "seed": {
+    "status": "PASS",
+    "izinWajib": true,
+    "databaseNonDemoDitolak": true,
+    "passwordPrivat": true,
+    "duaRunTanpaDuplikat": true,
+    "akunTidakBerubah": true,
+    "cleanup22Kosong": true,
+    "identitas": "Dummy khusus berbeda dari identitas database aplikasi; tidak mengubah akun existing"
+  },
+  "integritas": {
+    "status": "PASS",
+    "snapshot22Identik": true,
+    "baselineSha256": "9138fbd44e10570d98bc793b210e5483d21db8e93ccd6a31093e3b96255e3132",
+    "akhirSha256": "9138fbd44e10570d98bc793b210e5483d21db8e93ccd6a31093e3b96255e3132",
+    "checks": {
+      "bookingCustomer": 0,
+      "ledgerBooking": 0,
+      "invoiceBooking": 0,
+      "refundSource": 0,
+      "invoiceDuplicate": 0,
+      "hashFinal": 0
+    },
+    "protectedFiles": [
+      {
+        "path": "barberbarbar/server/src/lib/prisma.ts",
+        "sha256": "d524d6701a23a32c66c42711102af799cad1d2425b13f47d85d81d987bc1672a"
+      },
+      {
+        "path": "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+        "sha256": "522ad8a3a03bd429b240519f2898bd4a45b88434eb941ab7904b3ae341cda941"
+      },
+      {
+        "path": "barberbarbar-mobile/src/layanan/booking.ts",
+        "sha256": "d6b8c45c859e05d32077819bc54631767a7d5a8c0f449af290f649b9784e12ea"
+      }
+    ],
+    "prismaIndexTerjaga": true
+  },
+  "dependency": [
+    {
+      "workspace": "backend",
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 4,
+        "critical": 0,
+        "total": 4
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 4,
+        "critical": 0,
+        "total": 4
+      },
+      "advisories": [
+        "https://github.com/advisories/GHSA-ggr8-5vv4-36mx",
+        "https://github.com/advisories/GHSA-3f6p-5ww8-9rcr",
+        "https://github.com/advisories/GHSA-rgwj-5xj2-c3m3"
+      ]
+    },
+    {
+      "workspace": "web",
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 0,
+        "critical": 0,
+        "total": 2
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 0,
+        "critical": 0,
+        "total": 2
+      },
+      "advisories": [
+        "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+        "https://github.com/advisories/GHSA-337j-9hxr-rhxg"
+      ]
+    },
+    {
+      "workspace": "staff",
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 15,
+        "critical": 0,
+        "total": 22
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 15,
+        "critical": 0,
+        "total": 22
+      },
+      "advisories": [
+        "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+        "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+        "https://github.com/advisories/GHSA-w5hq-g745-h8pq"
+      ]
+    },
+    {
+      "workspace": "customer",
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 16,
+        "critical": 0,
+        "total": 23
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 16,
+        "critical": 0,
+        "total": 23
+      },
+      "advisories": [
+        "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+        "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+        "https://github.com/advisories/GHSA-w5hq-g745-h8pq"
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "booking-management.jpg",
+      "bytes": 47359,
+      "sha256": "a8a540bdf64ca9f1fd78f8c1176518dbdbcd13ec734a576dd5006c2ebeb9d6a0",
+      "visualReview": "PASS - fixture sintetis, tanpa credential/data asli",
+      "provider": "MOCK"
+    },
+    {
+      "file": "dashboard.jpg",
+      "bytes": 66317,
+      "sha256": "1805271abf246a8b771b77c0b27c1d802fb0f7c421f94daf4a99037e539fa45d",
+      "visualReview": "PASS - fixture sintetis, tanpa credential/data asli",
+      "provider": "MOCK"
+    },
+    {
+      "file": "detail-booking.jpg",
+      "bytes": 97427,
+      "sha256": "2d981bab0d88e40eac8aab49e1b07e06d2d31ff9f825ad44bcf8e693f209c64c",
+      "visualReview": "PASS - fixture sintetis, tanpa credential/data asli",
+      "provider": "MOCK"
+    },
+    {
+      "file": "membership.jpg",
+      "bytes": 60283,
+      "sha256": "e42f17ecfc8d0bfc452743e06cc45d69978f0b1e3ca6c5f8e25cb99baabda27d",
+      "visualReview": "PASS - fixture sintetis, tanpa credential/data asli",
+      "provider": "MOCK"
+    },
+    {
+      "file": "payment-management.jpg",
+      "bytes": 158648,
+      "sha256": "be547e37733298f94a1debb39c318709971f3ba32d727b92aaffe744e2a83385",
+      "visualReview": "PASS - fixture sintetis, tanpa credential/data asli",
+      "provider": "MOCK"
+    }
+  ],
+  "native": "USER-REPORTED umum; skenario rinci dan capture DEFERRED",
+  "realProvider": "Tidak menjalankan transaksi baru; webhook 13.20 WIB USER-REPORTED",
+  "runtime": {
+    "backend": 3000,
+    "proxyWebhook": 3001,
+    "web": "localhost:5173 (IPv6 loopback existing)",
+    "staff": 8081,
+    "customer": 8082,
+    "status": "PASS - localhost Web 200, Metro Staff/Customer 200, katalog200 dan operator tanpa JWT401"
+  },
+  "batas": "Ringkasan tersanitasi, bukan log mentah atau audit forensik semua history.",
+  "keamanan": {
+    "tanggal": "2026-10-15T08:33:55.201Z",
+    "berkasDipindai": 25,
+    "temuanRahasia": 0,
+    "temuanDataPribadi": 0,
+    "envAsliTracked": 0,
+    "historisUtuh": true,
+    "status": "PASS",
+    "batas": "Pencocokan exact terhadap credential proses dan email/telepon/nama>=8 karakter pada snapshot; bukan jaminan menyeluruh semua secret/PII di seluruh repo/history."
+  }
+}

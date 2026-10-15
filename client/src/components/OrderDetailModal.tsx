@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, Printer, X } from "lucide-react";
@@ -44,8 +45,8 @@ export default function OrderDetailModal({
     onSuccess: (_, status) => {
       toast.success(
         status === "IN_SERVICE"
-          ? "Service started"
-          : "Order marked as completed",
+          ? "Layanan dimulai"
+          : "Layanan pesanan selesai",
       );
       queryClient.invalidateQueries({ queryKey: ["order", orderId] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -110,10 +111,10 @@ export default function OrderDetailModal({
         <div className="flex items-start justify-between border-b border-slate-200 px-4 py-4 sm:px-6">
           <div className="min-w-0">
             <h2 className="text-lg font-extrabold text-slate-900 sm:text-xl">
-              Order Detail
+              Detail Pesanan
             </h2>
             <p className="mt-1 truncate text-xs text-slate-500">
-              {order?.nomorPesanan ?? "Loading order..."}
+              {order?.nomorPesanan ?? "Memuat pesanan..."}
             </p>
           </div>
 
@@ -121,7 +122,7 @@ export default function OrderDetailModal({
             type="button"
             onClick={onClose}
             disabled={statusMutation.isPending || paymentOpen}
-            aria-label="Close order detail"
+            aria-label="Tutup detail pesanan"
             className="grid size-9 shrink-0 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <X size={19} />
@@ -130,20 +131,20 @@ export default function OrderDetailModal({
 
         <div className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto p-4 sm:max-h-[calc(94vh-78px)] sm:p-6">
           {isLoading ? (
-            <LoadingState text="Loading order detail..." />
+            <LoadingState text="Memuat detail pesanan..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load order detail."
+              text="Detail pesanan belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : !order ? (
-            <ErrorState text="Order detail is not available." />
+            <ErrorState text="Detail pesanan belum tersedia." />
           ) : (
             <div className="grid gap-4 xl:grid-cols-[1.6fr_.8fr]">
               <Card className="p-4 shadow-none sm:p-5">
                 <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="text-xs text-slate-400">Order No.</div>
+                    <div className="text-xs text-slate-400">Nomor Pesanan</div>
                     <div className="break-all text-lg font-black sm:text-xl">
                       {order.nomorPesanan}
                     </div>
@@ -157,7 +158,7 @@ export default function OrderDetailModal({
 
                 <div className="mb-5 grid gap-4 rounded-lg bg-slate-50 p-4 sm:grid-cols-3">
                   <div>
-                    <div className="text-[10px] text-slate-400">Customer</div>
+                    <div className="text-[10px] text-slate-400">Pelanggan</div>
                     <b className="text-sm">{order.pelanggan.nama}</b>
                     <div className="break-all text-xs text-slate-500">
                       {order.pelanggan.nomorTelepon}
@@ -184,10 +185,10 @@ export default function OrderDetailModal({
                   <table className="w-full min-w-[560px] text-xs">
                     <thead className="text-slate-400">
                       <tr>
-                        <th className="px-2 py-2 text-left">Service</th>
-                        <th>Duration</th>
-                        <th>Price</th>
-                        <th>Qty</th>
+                        <th className="px-2 py-2 text-left">Layanan</th>
+                        <th>Durasi</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
                         <th className="px-2 text-right">Subtotal</th>
                       </tr>
                     </thead>
@@ -199,7 +200,7 @@ export default function OrderDetailModal({
                             {item.namaLayanan}
                           </td>
                           <td className="text-center">
-                            {item.durasiMenit} min
+                            {item.durasiMenit} menit
                           </td>
                           <td className="text-center">{rupiah(item.harga)}</td>
                           <td className="text-center">{item.qty}</td>
@@ -219,7 +220,7 @@ export default function OrderDetailModal({
 
                   {order.diskon > 0 && (
                     <div className="text-emerald-600">
-                      Discount {order.discountPercent}%{" "}
+                      Diskon {order.discountPercent}%{" "}
                       <b>-{rupiah(order.diskon)}</b>
                     </div>
                   )}
@@ -231,7 +232,7 @@ export default function OrderDetailModal({
 
                 {order.catatan && (
                   <div className="mt-5 rounded-lg border border-slate-200 p-3 text-xs">
-                    <b>Notes</b>
+                    <b>Catatan</b>
                     <div className="mt-1 whitespace-pre-wrap text-slate-500">
                       {order.catatan}
                     </div>
@@ -241,7 +242,7 @@ export default function OrderDetailModal({
 
               <div className="space-y-4">
                 <Card className="p-4 shadow-none sm:p-5">
-                  <div className="mb-4 text-sm font-bold">Status (Service)</div>
+                  <div className="mb-4 text-sm font-bold">Status Layanan</div>
 
                   <div className="mb-4 flex items-center justify-between gap-2 text-[10px]">
                     <span
@@ -251,7 +252,7 @@ export default function OrderDetailModal({
                           : "text-slate-400"
                       }
                     >
-                      Waiting
+                      Menunggu
                     </span>
                     <span>→</span>
                     <span
@@ -261,7 +262,7 @@ export default function OrderDetailModal({
                           : "text-slate-400"
                       }
                     >
-                      In Service
+                      Sedang Dilayani
                     </span>
                     <span>→</span>
                     <span
@@ -271,7 +272,7 @@ export default function OrderDetailModal({
                           : "text-slate-400"
                       }
                     >
-                      Completed
+                      Layanan Selesai
                     </span>
                   </div>
 
@@ -282,7 +283,7 @@ export default function OrderDetailModal({
                       disabled={statusMutation.isPending}
                       onClick={() => statusMutation.mutate("IN_SERVICE")}
                     >
-                      Start Service
+                      Mulai Layanan
                     </Button>
                   )}
 
@@ -293,7 +294,7 @@ export default function OrderDetailModal({
                       disabled={statusMutation.isPending}
                       onClick={() => statusMutation.mutate("COMPLETED")}
                     >
-                      Mark as Completed
+                      Selesaikan Layanan
                     </Button>
                   )}
 
@@ -303,13 +304,13 @@ export default function OrderDetailModal({
                         className="w-full"
                         onClick={() => setPaymentOpen(true)}
                       >
-                        Go to Payment
+                        Buka Pembayaran
                       </Button>
                     )}
 
                   {order.statusPembayaran === "PAID" && (
                     <div className="rounded-lg bg-emerald-50 p-3 text-center text-xs font-bold text-emerald-600">
-                      Payment completed
+                      Pembayaran Berhasil
                     </div>
                   )}
 
@@ -320,7 +321,7 @@ export default function OrderDetailModal({
                       onClick={() => printDocument("ticket")}
                     >
                       <Printer size={15} />
-                      Print Service Ticket
+                      Cetak Tiket Layanan
                     </Button>
 
                     {order.statusPembayaran === "PAID" && order.pembayaran && (
@@ -330,18 +331,18 @@ export default function OrderDetailModal({
                         onClick={() => printDocument("invoice")}
                       >
                         <FileText size={15} />
-                        Print Invoice
+                        Cetak Invoice
                       </Button>
                     )}
                   </div>
                 </Card>
 
                 <Card className="p-4 shadow-none sm:p-5">
-                  <div className="mb-3 text-sm font-bold">Order Summary</div>
+                  <div className="mb-3 text-sm font-bold">Ringkasan Pesanan</div>
 
                   <div className="space-y-2 text-xs text-slate-500">
                     <div className="flex justify-between gap-4">
-                      <span>Total items</span>
+                      <span>Jumlah layanan</span>
                       <b className="text-slate-800">
                         {order.items.reduce(
                           (total, item) => total + item.qty,
@@ -351,21 +352,21 @@ export default function OrderDetailModal({
                     </div>
 
                     <div className="flex justify-between gap-4">
-                      <span>Total duration</span>
-                      <b className="text-slate-800">{duration} min</b>
+                      <span>Total durasi</span>
+                      <b className="text-slate-800">{duration} menit</b>
                     </div>
 
                     <div className="flex items-center justify-between gap-4">
-                      <span>Payment</span>
+                      <span>Pembayaran</span>
                       <StatusBadge value={order.statusPembayaran} />
                     </div>
 
                     {order.pembayaran && (
                       <>
                         <div className="flex justify-between gap-4">
-                          <span>Method</span>
+                          <span>Metode</span>
                           <b className="text-slate-800">
-                            {order.pembayaran.metode}
+                            {statusRamah(order.pembayaran.metode)}
                           </b>
                         </div>
                         <div className="flex justify-between gap-4">
@@ -400,20 +401,20 @@ export default function OrderDetailModal({
             </div>
           </div>
 
-          <div className="print-document-title">SERVICE TICKET</div>
+          <div className="print-document-title">TIKET LAYANAN</div>
           <div className="print-divider" />
 
           <div className="print-info-grid">
             <div>
-              <span>Order</span>
+              <span>Pesanan</span>
               <b>{order.nomorPesanan}</b>
             </div>
             <div>
-              <span>Customer</span>
+              <span>Pelanggan</span>
               <b>{order.pelanggan.nama}</b>
             </div>
             <div>
-              <span>Phone</span>
+              <span>Telepon</span>
               <b>{order.pelanggan.nomorTelepon}</b>
             </div>
             <div>
@@ -436,9 +437,9 @@ export default function OrderDetailModal({
           <table className="print-table">
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Qty</th>
-                <th>Duration</th>
+                <th>Layanan</th>
+                <th>Jumlah</th>
+                <th>Durasi</th>
                 <th className="text-right">Subtotal</th>
               </tr>
             </thead>
@@ -447,7 +448,7 @@ export default function OrderDetailModal({
                 <tr key={item.id}>
                   <td>{item.namaLayanan}</td>
                   <td>{item.qty}</td>
-                  <td>{item.durasiMenit * item.qty} min</td>
+                  <td>{item.durasiMenit * item.qty} menit</td>
                   <td className="text-right">{rupiah(item.subtotal)}</td>
                 </tr>
               ))}
@@ -456,8 +457,8 @@ export default function OrderDetailModal({
 
           <div className="print-divider" />
           <div className="print-total-row">
-            <span>Total Duration</span>
-            <b>{duration} min</b>
+            <span>Total Durasi</span>
+            <b>{duration} menit</b>
           </div>
           <div className="print-total-row">
             <span>Subtotal</span>
@@ -465,7 +466,7 @@ export default function OrderDetailModal({
           </div>
           {order.diskon > 0 && (
             <div className="print-total-row">
-              <span>Member Discount ({order.discountPercent}%)</span>
+              <span>Diskon Member ({order.discountPercent}%)</span>
               <b>-{rupiah(order.diskon)}</b>
             </div>
           )}
@@ -476,12 +477,12 @@ export default function OrderDetailModal({
 
           {order.catatan && (
             <div className="print-note">
-              <b>Notes:</b> {order.catatan}
+              <b>Catatan:</b> {order.catatan}
             </div>
           )}
 
           <div className="print-footer">
-            Thank you for visiting Barber Barbar.
+            Terima kasih telah berkunjung ke BARBER BARBAR.
             <br />
             Not Cutting Heads, Just Hair
           </div>
@@ -509,34 +510,34 @@ export default function OrderDetailModal({
           <div className="print-divider" />
           <div className="invoice-meta">
             <div>
-              <span>Billed To</span>
+              <span>Ditagihkan Kepada</span>
               <b>{order.pelanggan.nama}</b>
               <small>{order.pelanggan.nomorTelepon}</small>
             </div>
             <div>
-              <span>Payment Detail</span>
+              <span>Detail Pembayaran</span>
               <b>
                 {tanggal(order.pembayaran.dibayarPada)}{" "}
                 {waktu(order.pembayaran.dibayarPada)}
               </b>
               <small>
-                {order.pembayaran.metode} · Order {order.nomorPesanan}
+                {statusRamah(order.pembayaran.metode)} · Pesanan {order.nomorPesanan}
               </small>
             </div>
             <div>
               <span>Barber</span>
               <b>{order.barber?.nama ?? "Belum ditentukan"}</b>
-              <small>Service completed</small>
+              <small>Layanan selesai</small>
             </div>
           </div>
 
           <table className="print-table invoice-table">
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th className="text-right">Amount</th>
+                <th>Layanan</th>
+                <th>Jumlah</th>
+                <th>Harga Satuan</th>
+                <th className="text-right">Jumlah</th>
               </tr>
             </thead>
             <tbody>
@@ -558,7 +559,7 @@ export default function OrderDetailModal({
             </div>
             {order.diskon > 0 && (
               <div>
-                <span>Member Discount ({order.discountPercent}%)</span>
+                <span>Diskon Member ({order.discountPercent}%)</span>
                 <b>-{rupiah(order.diskon)}</b>
               </div>
             )}
@@ -567,24 +568,24 @@ export default function OrderDetailModal({
               <b>{rupiah(order.total)}</b>
             </div>
             <div>
-              <span>Amount Received</span>
+              <span>Jumlah Diterima</span>
               <b>{rupiah(order.pembayaran.jumlahDiterima)}</b>
             </div>
             <div>
-              <span>Change</span>
+              <span>Kembalian</span>
               <b>{rupiah(order.pembayaran.kembalian)}</b>
             </div>
           </div>
 
           {order.pembayaran.catatan && (
             <div className="print-note">
-              <b>Payment Notes:</b> {order.pembayaran.catatan}
+              <b>Catatan Pembayaran:</b> {order.pembayaran.catatan}
             </div>
           )}
 
-          <div className="invoice-paid-stamp">PAID</div>
+          <div className="invoice-paid-stamp">LUNAS</div>
           <div className="print-footer">
-            Thank you for trusting Barber Barbar.
+            Terima kasih telah mempercayai BARBER BARBAR.
             <br />
             Not Cutting Heads, Just Hair
           </div>

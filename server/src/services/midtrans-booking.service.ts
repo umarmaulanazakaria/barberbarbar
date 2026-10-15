@@ -4,6 +4,7 @@ import basisData from "../lib/prisma.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
+import { buatPemeriksaanPembayaran } from "../lib/pemeriksaan-pembayaran.js";
 import { gerbangMidtrans, KesalahanMidtrans, merchantSandbox, skemaStatusMidtrans,
   verifikasiSignatureMidtrans, type StatusMidtrans } from "../lib/midtrans.js";
 import { ambilBookingPembayaran, bacaRingkasanPembayaran, finalisasiInvoiceDalamTransaksi,
@@ -133,14 +134,16 @@ const catatRefundTerverifikasi = async (tx: Prisma.TransactionClient, t: { id: n
     await tx.permohonanRefundBooking.update({ where: { id: r.id }, data: { status: "SUCCEEDED", transaksiRefundId: tr.id, kodeProvider: data.status_code, fingerprintProvider: sidik(data) } });
   }
 };
-const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true) => transaksiKeuanganBooking(async tx => {
+const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true, alokasiRefund = true) => transaksiKeuanganBooking(async tx => {
   const t = await tx.transaksiPembayaranBooking.findUnique({ where: { referensiProvider: data.order_id } });
   if (!t || t.kanal !== "MIDTRANS" || t.tujuan === "REFUND") return gagal("Transaksi provider tidak ditemukan", 404);
   cocok(data, t);
+  let statusBaru = t.status;
   const berhasil = data.status_code === "200" && (data.transaction_status === "settlement" || data.transaction_status === "capture" && data.fraud_status === "accept" ||
     ["refund","partial_refund"].includes(data.transaction_status));
   if (berhasil && (data.payment_type !== "credit_card" || data.fraud_status === "accept")) {
     if (t.status !== "SUCCEEDED") {
+      statusBaru = "SUCCEEDED";
       const dibayar = waktuProvider(data.settlement_time ?? data.transaction_time);
       await tx.transaksiPembayaranBooking.update({ where: { id: t.id }, data: { status: "SUCCEEDED", dibayarPada: dibayar,
         idTransaksiProvider: data.transaction_id, jenisPembayaranProvider: data.payment_type, statusProvider: data.transaction_status,
@@ -151,6 +154,7 @@ const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true) => tran
     const b = await ambilBookingPembayaran(tx, t.bookingId);
     const timeoutSistem = b.status === "CANCELLED" && await tx.riwayatBooking.findFirst({ where: { bookingId: b.id,
       aksi: { in: ["TIMEOUT_CONFIRMATION", "TIMEOUT_RESCHEDULE", "TIMEOUT_DP"] }, statusSetelah: "CANCELLED" }, select: { id: true } });
+    if (alokasiRefund) {
     if (timeoutSistem && t.tujuan === "DP") {
       await mintaRefundDalamTransaksi(tx, b.id, t.nominal, `SYSTEM-TIMEOUT-${b.id}`, "DP terverifikasi setelah pembatalan sistem", true);
     } else if (b.status === "REJECTED" || b.status === "CANCELLED" && b.dibatalkanPada && b.mulaiPada.getTime()-b.dibatalkanPada.getTime() >= 3600000) {
@@ -166,22 +170,44 @@ const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true) => tran
       }
       await mintaRefundKelebihan(tx, b.id, `OVERPAY-${t.id}`);
     }
+    }
     const ringkas = await bacaRingkasanPembayaran(tx, b);
     if (b.status === "COMPLETED" && ringkas.statusPembayaran === "PAID" && ringkas.dpTerverifikasi) await finalisasiInvoiceDalamTransaksi(tx, b, ringkas, 0);
   } else if (t.status === "PENDING") {
     const status = data.transaction_status === "expire" ? "EXPIRED" : ["deny","cancel","failure"].includes(data.transaction_status) ? "FAILED" : "PENDING";
+    statusBaru = status;
     await tx.transaksiPembayaranBooking.update({ where: { id: t.id }, data: { status, statusProvider: data.transaction_status,
       idTransaksiProvider: data.transaction_id, jenisPembayaranProvider: data.payment_type } });
   }
+  if (statusBaru !== t.status) {
+    const booking = await tx.booking.findUniqueOrThrow({ where: { id: t.bookingId }, select: { status: true } });
+    await tx.riwayatBooking.create({ data: { bookingId: t.bookingId, aksi: "PAYMENT_STATUS_VERIFIED",
+      statusSebelum: booking.status, statusSetelah: booking.status,
+      rincian: { transaksiId: t.id, tujuan: t.tujuan, nominal: t.nominal, statusSebelum: t.status,
+        statusSetelah: statusBaru, sumber: "MIDTRANS_GET_STATUS" } } });
+  }
   return { diterima: true };
 });
-export const sinkronkanPembayaran = async (id: number, pelangganId?: number) => {
+const periksaPembayaran = buatPemeriksaanPembayaran<{ diterima: boolean }>();
+const bacaStatusPembayaran = async (id: number, pelangganId: number | undefined, rekonsiliasiRefund: boolean) => {
   const t = await basisData.transaksiPembayaranBooking.findFirst({ where: { id, kanal: "MIDTRANS", tujuan: { not: "REFUND" },
     ...(pelangganId === undefined ? {} : { booking: { pelangganId } }) }, select: { referensiProvider: true } });
   if (!t?.referensiProvider) return gagal("Transaksi tidak ditemukan",404);
   const parsed = skemaStatusMidtrans.safeParse(await gerbangMidtrans.status(t.referensiProvider));
-  if (!parsed.success) return gagal("Status provider tidak memenuhi kontrak",502);
-  return terapkanStatus(parsed.data);
+  if (!parsed.success) return gagal("Pembayaran belum dapat diverifikasi. Silakan coba lagi.",502);
+  return terapkanStatus(parsed.data, rekonsiliasiRefund, rekonsiliasiRefund);
+};
+// Alur ADMIN/refund existing tetap membaca status provider terbaru.
+export const sinkronkanPembayaran = (id: number, pelangganId?: number) => bacaStatusPembayaran(id, pelangganId, true);
+export const sinkronkanPembayaranPelanggan = async (id: number, pelangganId: number) => {
+  // Periksa pemilik sebelum bergabung dengan request/cooldown transaksi yang sama.
+  const milikSendiri = await basisData.transaksiPembayaranBooking.findFirst({ where: {
+    id, kanal: "MIDTRANS", tujuan: { not: "REFUND" }, booking: { pelangganId },
+  }, select: { id: true } });
+  if (!milikSendiri) return gagal("Transaksi tidak ditemukan", 404);
+  // Pemulihan customer hanya memverifikasi kredit; tidak membuat/merekonsiliasi
+  // refund. Refund tetap melalui workflow keputusan ADMIN existing.
+  return periksaPembayaran(id, () => bacaStatusPembayaran(id, pelangganId, false));
 };
 // Hanya kredit DP yang belum final; scanner tidak memproses refund provider.
 // Panggilan jaringan dilakukan di luar lock transaksi jadwal.

@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -28,11 +29,11 @@ import {
 } from "./ui";
 
 const methods = [
-  ["CASH", "Cash", Banknote],
+  ["CASH", "Tunai", Banknote],
   ["QRIS", "QRIS", QrCode],
-  ["CARD", "Card", CreditCard],
+  ["CARD", "Kartu", CreditCard],
   ["TRANSFER", "Transfer", Landmark],
-  ["OTHER", "Other", WalletCards],
+  ["OTHER", "Lainnya", WalletCards],
 ] as const;
 
 type PaymentModalProps = {
@@ -127,11 +128,11 @@ export default function PaymentModal({
 
       if (action.tipe === "tambah") {
         setNewServiceId(0);
-        toast.success("Service added to order");
+        toast.success("Layanan ditambahkan ke pesanan");
       } else if (action.tipe === "hapus") {
-        toast.success("Service removed from order");
+        toast.success("Layanan dihapus dari pesanan");
       } else {
-        toast.success("Order item updated");
+        toast.success("Layanan pesanan diperbarui");
       }
     },
     onError: (error) => toast.error(pesanError(error)),
@@ -161,7 +162,7 @@ export default function PaymentModal({
 
       setPaid(true);
       setConfirmPayment(false);
-      toast.success("Payment completed successfully");
+      toast.success("Pembayaran berhasil disimpan");
     },
     onError: (error) => {
       setConfirmPayment(false);
@@ -234,9 +235,9 @@ export default function PaymentModal({
       <Card className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
         <div className="flex items-start justify-between border-b border-slate-200 px-4 py-4 sm:px-6">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900">Payment</h2>
+            <h2 className="text-xl font-extrabold text-slate-900">Pembayaran</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Review and adjust services before paying {order.nomorPesanan}
+              Periksa layanan sebelum menerima pembayaran {order.nomorPesanan}
             </p>
           </div>
 
@@ -244,7 +245,7 @@ export default function PaymentModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            aria-label="Close payment"
+            aria-label="Tutup pembayaran"
             className="grid size-9 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <X size={19} />
@@ -259,14 +260,13 @@ export default function PaymentModal({
                   <CheckCircle2 size={34} />
                 </div>
                 <h3 className="text-xl font-black text-slate-900">
-                  Payment successful
+                  Pembayaran Berhasil
                 </h3>
                 <p className="mt-2 text-sm text-slate-500">
-                  {order.nomorPesanan} has been marked as paid. You will stay on
-                  the current page.
+                  {order.nomorPesanan} telah dilunasi. Anda tetap berada di halaman ini.
                 </p>
                 <Button className="mt-6 min-w-36" onClick={onClose}>
-                  Back to Order Detail
+                  Kembali ke Detail Pesanan
                 </Button>
               </div>
             </div>
@@ -276,20 +276,20 @@ export default function PaymentModal({
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <div className="text-sm font-extrabold text-slate-900">
-                      Order Services
+                      Layanan Pesanan
                     </div>
                     <div className="mt-1 text-xs text-slate-500">
-                      Add, change, or remove services before payment is confirmed.
+                      Sesuaikan layanan sebelum pembayaran dikonfirmasi.
                     </div>
                   </div>
                   <div className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700">
-                    Editable until paid
+                    Dapat diubah sebelum lunas
                   </div>
                 </div>
 
                 <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
                   <div className="mb-2 text-xs font-bold text-slate-600">
-                    Add Service
+                    Tambah Layanan
                   </div>
                   <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                     <SearchableSelect
@@ -297,10 +297,10 @@ export default function PaymentModal({
                       onChange={(value) => setNewServiceId(Number(value))}
                       options={addOptions}
                       placeholder={
-                        servicesLoading ? "Loading services..." : "Select service"
+                        servicesLoading ? "Memuat layanan..." : "Pilih layanan"
                       }
-                      searchPlaceholder="Search service..."
-                      emptyText="No available service"
+                      searchPlaceholder="Cari layanan..."
+                      emptyText="Belum ada layanan tersedia"
                       disabled={!editable || busy || servicesLoading}
                     />
                     <Button
@@ -314,7 +314,7 @@ export default function PaymentModal({
                       }
                     >
                       <Plus size={16} />
-                      Add
+                      Tambah
                     </Button>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function PaymentModal({
                           }
                           options={itemOptions(item.id)}
                           placeholder={item.namaLayanan}
-                          searchPlaceholder="Search service..."
+                          searchPlaceholder="Cari layanan..."
                           disabled={!editable || busy}
                         />
 
@@ -387,11 +387,11 @@ export default function PaymentModal({
 
                           <button
                             type="button"
-                            aria-label={`Remove ${item.namaLayanan}`}
+                            aria-label={`Hapus ${item.namaLayanan}`}
                             title={
                               order.items.length <= 1
-                                ? "Order must have at least one service"
-                                : "Remove service"
+                                ? "Pesanan harus memiliki minimal satu layanan"
+                                : "Hapus layanan"
                             }
                             disabled={
                               !editable || busy || order.items.length <= 1
@@ -411,7 +411,7 @@ export default function PaymentModal({
 
                       <div className="mt-2 flex items-center justify-between gap-4 text-xs text-slate-500">
                         <span>
-                          {item.durasiMenit * item.qty} min · {rupiah(item.harga)} each
+                          {item.durasiMenit * item.qty} menit · {rupiah(item.harga)} per layanan
                         </span>
                         <b className="text-slate-800">{rupiah(item.subtotal)}</b>
                       </div>
@@ -427,7 +427,7 @@ export default function PaymentModal({
 
                   {order.diskon > 0 && (
                     <div className="flex justify-between text-emerald-600">
-                      <span>Member Discount ({order.discountPercent}%)</span>
+                      <span>Diskon Member ({order.discountPercent}%)</span>
                       <b>-{rupiah(order.diskon)}</b>
                     </div>
                   )}
@@ -440,7 +440,7 @@ export default function PaymentModal({
               </div>
 
               <div className="p-4 sm:p-6">
-                <Label>Payment Method</Label>
+                <Label>Metode Pembayaran</Label>
                 <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {methods.map(([value, label, Icon]) => (
                     <button
@@ -461,7 +461,7 @@ export default function PaymentModal({
                 </div>
 
                 <div className="mb-4">
-                  <Label>Amount Received</Label>
+                  <Label>Jumlah Diterima</Label>
                   <Input
                     type="number"
                     min={0}
@@ -473,14 +473,14 @@ export default function PaymentModal({
                 </div>
 
                 <div className="mb-4 rounded-lg bg-emerald-50 p-3">
-                  <div className="text-xs text-emerald-600">Change</div>
+                  <div className="text-xs text-emerald-600">Kembalian</div>
                   <div className="text-xl font-black text-emerald-700">
                     {rupiah(change)}
                   </div>
                 </div>
 
                 <div>
-                  <Label>Notes (Optional)</Label>
+                  <Label>Catatan (opsional)</Label>
                   <Textarea
                     rows={3}
                     value={notes}
@@ -496,7 +496,7 @@ export default function PaymentModal({
                     onClick={onClose}
                     disabled={busy}
                   >
-                    Cancel
+                    Batal
                   </Button>
                   <Button
                     variant="success"
@@ -504,7 +504,7 @@ export default function PaymentModal({
                     disabled={amount < order.total || busy}
                     onClick={() => setConfirmPayment(true)}
                   >
-                    {paymentMutation.isPending ? "Processing..." : "Mark as Paid"}
+                    {paymentMutation.isPending ? "Processing..." : "Simpan Pembayaran"}
                   </Button>
                 </div>
               </div>
@@ -515,9 +515,9 @@ export default function PaymentModal({
 
       <ConfirmDialog
         open={confirmPayment}
-        title="Confirm Payment?"
-        description={`Mark ${order.nomorPesanan} as paid with ${method}? After payment, order services can no longer be changed.`}
-        confirmLabel="Mark as Paid"
+        title="Konfirmasi Pembayaran?"
+        description={`Terima pembayaran ${order.nomorPesanan} melalui ${statusRamah(method)}? Setelah pembayaran disimpan, layanan pesanan tidak dapat diubah.`}
+        confirmLabel="Simpan Pembayaran"
         variant="success"
         loading={paymentMutation.isPending}
         onCancel={() => setConfirmPayment(false)}

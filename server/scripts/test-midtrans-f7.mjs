@@ -8,7 +8,7 @@ if(!["localhost","127.0.0.1","[::1]"].includes(new URL(process.env.DATABASE_URL?
 process.env.MIDTRANS_MERCHANT_ID="fixture-f7";process.env.MIDTRANS_SERVER_KEY=randomBytes(32).toString("hex");
 process.env.MIDTRANS_CLIENT_KEY="fixture-client";process.env.MIDTRANS_IS_PRODUCTION="false";
 const {default:db}=await import("../dist/lib/prisma.js");const {default:app}=await import("../dist/app.js");
-const {gerbangMidtrans}=await import("../dist/lib/midtrans.js");
+const {gerbangMidtrans,KesalahanMidtrans}=await import("../dist/lib/midtrans.js");
 const {loginPelanggan}=await import("../dist/services/auth-pelanggan.service.js");
 const {sinkronkanPembayaran}=await import("../dist/services/midtrans-booking.service.js");
 const provider=new Map(),tanda=`uji-f7-${randomUUID()}`,password=randomBytes(18).toString("hex"),pelanggan=[],operator=[];
@@ -224,6 +224,50 @@ try{
  process.env.MIDTRANS_IS_PRODUCTION="true";try{assert.equal((await snap(bk,f)).status,503);}finally{process.env.MIDTRANS_IS_PRODUCTION="false";}
  assert.equal((await http(`/customer/payments/${ta.id}/sync`,"POST",{},b.token)).status,404);
  pass("Snap timeout reserved/UNCERTAIN, retry tanpa tagihan baru; deadline/Production gagal tertutup, sync own-scope");
+ assert.equal((await http('/midtrans/notifications','POST',{})).status,400);
+ assert.equal((await notifikasi({...pa,order_id:'UNKNOWN-'+randomUUID()})).status,404);
+ assert.equal((await notifikasi({...pa,merchant_id:'merchant-lain'})).status,400);
+ const currencyLama=pa.currency;pa.currency='USD';try{assert.equal((await notifikasi(pa)).status,400);}finally{pa.currency=currencyLama;}
+ assert.equal((await ringkas(ba,a)).body.ringkasan.pembayaranPercobaan,true);
+ process.env.MIDTRANS_IS_PRODUCTION='true';try{assert.equal((await ringkas(ba,a)).body.ringkasan.pembayaranPercobaan,false);}finally{process.env.MIDTRANS_IS_PRODUCTION='false';}
+ pass('Route POST ditemukan; unknown order, merchant, currency invalid ditolak; mode pembayaran berasal dari backend');
+ const gerbangStatus=gerbangMidtrans.status;let statusCalls=0;
+ const sebelumUang=(await ringkas(ba,a)).body.ringkasan;
+ const auditSebelum=await db.riwayatBooking.count({where:{bookingId:ba.id,aksi:'PAYMENT_STATUS_VERIFIED'}});
+ gerbangMidtrans.status=async id=>{statusCalls++;await new Promise(r=>setTimeout(r,30));return gerbangStatus(id);};
+ try{
+  const syncs=await Promise.all([1,2,3].map(()=>http(`/customer/payments/${ta.id}/sync`,'POST',{},a.token)));
+  assert.ok(syncs.every(r=>r.status===200));assert.equal(statusCalls,1);
+  assert.equal((await http(`/customer/payments/${ta.id}/sync`,'POST',{},a.token)).status,200);assert.equal(statusCalls,1);
+ }finally{gerbangMidtrans.status=gerbangStatus;}
+ assert.equal((await ringkas(ba,a)).body.ringkasan.jumlahDibayar,sebelumUang.jumlahDibayar);
+ assert.equal((await ringkas(ba,a)).body.ringkasan.balance,0);assert.equal(await db.invoiceBooking.count({where:{bookingId:ba.id}}),1);
+ assert.equal(await db.riwayatBooking.count({where:{bookingId:ba.id,aksi:'PAYMENT_STATUS_VERIFIED'}}),auditSebelum);
+ pass('Rekonsiliasi GET Status concurrent/ulang digabung satu panggilan; PAID tetap satu invoice, kredit dan audit tidak ganda');
+ for(const[id,p,kode]of[[th.id,c,503],[ti.id,g,404]]){
+  const sebelum=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id},select:{status:true}});
+  gerbangMidtrans.status=async()=>{throw new KesalahanMidtrans(kode,'MOCK_PROVIDER_UNAVAILABLE');};
+  try{assert.equal((await http(`/customer/payments/${id}/sync`,'POST',{},p.token)).status,kode);}
+  finally{gerbangMidtrans.status=gerbangStatus;}
+  assert.equal((await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id},select:{status:true}})).status,sebelum.status);
+ }
+ pass('Provider timeout/network dan 404 bukan sukses; status ledger tidak diubah');
+ assert.ok(await db.riwayatBooking.count({where:{bookingId:ba.id,aksi:'PAYMENT_STATUS_VERIFIED'}})>0);
+ assert.equal(await db.riwayatBooking.count({where:{bookingId:bi.id,aksi:'PAYMENT_STATUS_VERIFIED'}}),1);
+ pass('Perubahan ledger memiliki audit atomik; rollback/retry menghasilkan satu catatan status berhasil');
+ const bl=await buat(g,14),sl=await snap(bl,g);assert.equal(sl.status,200);
+ const tl=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:sl.body.transaksiId}}),pl=provider.get(tl.referensiProvider);
+ assert.equal((await http(`/customer/bookings/${bl.id}/cancel`,'POST',{},g.token)).status,200);
+ pl.transaction_status='settlement';pl.status_code='200';pl.settlement_time=waktu();
+ const sebelumSnap=snapCount,sebelumRefund=refundCount;
+ assert.equal((await http(`/customer/payments/${tl.id}/sync`,'POST',{},g.token)).status,200);
+ assert.equal((await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:tl.id}})).status,'SUCCEEDED');
+ assert.equal(await db.buktiProviderBooking.count({where:{transaksiId:tl.id}}),1);
+ assert.equal(await db.permohonanRefundBooking.count({where:{bookingId:bl.id}}),0);
+ assert.equal(await db.invoiceBooking.count({where:{bookingId:bl.id}}),0);
+ assert.equal((await db.booking.findUniqueOrThrow({where:{id:bl.id}})).status,'CANCELLED');
+ assert.equal(snapCount,sebelumSnap);assert.equal(refundCount,sebelumRefund);
+ pass('Webhook terlewat dipulihkan dari GET Status; booking terminal utuh, tanpa Snap/refund/permohonan refund/invoice baru');
  console.log(`Total: ${total} kelompok MOCK F7 PASS; bukan Sandbox provider nyata.`);
 }catch(err){console.error(`FAIL MOCK F7 (${err.name}); detail credential/token tidak dicetak.`);console.error(err.stack?.split("\n").find(l=>l.includes("test-midtrans-f7.mjs"))?.split("test-midtrans-f7.mjs").pop());process.exitCode=1;}
 finally{

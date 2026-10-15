@@ -137,14 +137,22 @@ export const ambilProfilPelanggan = async (idAkun: number) => {
   });
 };
 
+export class KesalahanProfilPelanggan extends Error {
+  constructor(public kode: number, pesan: string) { super(pesan); }
+}
 export const ubahProfilPelanggan = async (
   idAkun: number,
   data: DataUbahProfilPelanggan,
 ) => {
-  const akun = await basisData.akunPelanggan.findUnique({
+  try { return await basisData.$transaction(async transaksi => {
+  // Urutan lock sama dengan reset password; validasi password sesudah lock.
+  await transaksi.$queryRaw`SELECT "id" FROM "AkunPelanggan" WHERE "id" = ${idAkun} FOR UPDATE`;
+  const akun = await transaksi.akunPelanggan.findUnique({
     where: { id: idAkun },
     select: {
       pelangganId: true,
+      email: true,
+      passwordHash: true,
       pelanggan: {
         select: { status: true },
       },
@@ -155,11 +163,30 @@ export const ubahProfilPelanggan = async (
     return null;
   }
 
-  return basisData.pelanggan.update({
+  const sensitif = data.email !== undefined || data.nomorTelepon !== undefined || data.passwordBaru !== undefined;
+  if (sensitif && (!data.passwordSaatIni || !await bcrypt.compare(data.passwordSaatIni, akun.passwordHash))) {
+    throw new KesalahanProfilPelanggan(403, "Kata sandi saat ini tidak sesuai");
+  }
+  if (data.email !== undefined && data.email !== akun.email) {
+    const konflik = await transaksi.akunPelanggan.findFirst({ where: { id: { not: idAkun }, email: { equals: data.email, mode: "insensitive" } }, select: { id: true } });
+    const pending = await transaksi.permohonanPengaitanAkun.findFirst({ where: { status: "MENUNGGU", email: { equals: data.email, mode: "insensitive" } }, select: { id: true } });
+    if (konflik || pending) throw new KesalahanProfilPelanggan(409, "Perubahan profil tidak dapat diproses dengan data tersebut");
+  }
+  if (sensitif) {
+    // Rehash mencabut JWT berbasis sidik kredensial existing, termasuk ketika
+    // hanya email/telepon berubah. Tidak memerlukan kolom/migration baru.
+    const passwordHash = await bcrypt.hash(data.passwordBaru ?? data.passwordSaatIni!, 12);
+    await transaksi.akunPelanggan.update({ where: { id: idAkun }, data: {
+      passwordHash, ...(data.email !== undefined ? { email: data.email } : {}),
+    } });
+    await transaksi.passwordResetToken.updateMany({ where: { akunPelangganId: idAkun, digunakanPada: null }, data: { digunakanPada: new Date() } });
+  }
+  const pelanggan = await transaksi.pelanggan.update({
     where: { id: akun.pelangganId },
     data: {
       ...(data.nama !== undefined && { nama: data.nama }),
       ...(data.alamat !== undefined && { alamat: data.alamat }),
+      ...(data.nomorTelepon !== undefined && { nomorTelepon: data.nomorTelepon }),
     },
     select: {
       id: true,
@@ -169,4 +196,12 @@ export const ubahProfilPelanggan = async (
       status: true,
     },
   });
+  return { pelanggan, sesiDicabut: sensitif };
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }); }
+  catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2002", "P2034"].includes(error.code)) {
+      throw new KesalahanProfilPelanggan(409, "Perubahan profil tidak dapat diproses dengan data tersebut");
+    }
+    throw error;
+  }
 };

@@ -1,0 +1,16 @@
+{
+  "tanggal": "2026-10-15T06:57:38.429Z",
+  "jenis": "GET Status Sandbox read-only; tanpa refund/retry atau mutasi",
+  "orderId": "BBF7-DP-157-a9a8c1a770be4a92",
+  "transactionId": "10cb3319-9196-463d-8484-715d01485c9f",
+  "nominalAsal": 5000,
+  "nominalRefundHistoris": 2000,
+  "refundKey": "F7-REFUND-48",
+  "statusProvider": "settlement",
+  "metode": "qris",
+  "merchantCocok": true,
+  "refundProviderCount": 0,
+  "refundCocok": [],
+  "lokal": [],
+  "hasil": "DEFERRED: tanpa bukti final; status pengajuan individual tidak dapat disimpulkan dari settlement transaksi asal"
+}

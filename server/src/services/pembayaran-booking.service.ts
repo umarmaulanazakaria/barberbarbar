@@ -44,7 +44,8 @@ export const bacaRingkasanPembayaran = async (tx: Prisma.TransactionClient, book
     booking.status === "COMPLETED" ? uang.jumlahDibayar > 0 ? "PARTIALLY_PAID" : "UNPAID" : dpTerverifikasi ? "DP_PAID" : "AWAITING_DP";
   const invoice = await tx.invoiceBooking.findUnique({ where: { bookingId: booking.id }, select: kolomInvoice });
   const terminal = ["CANCELLED", "REJECTED", "NO_SHOW"].includes(booking.status);
-  return { ...uang, balance: terminal ? 0 : uang.balance, kewajibanPelunasanDihentikan: terminal,
+  return { ...uang, pembayaranPercobaan: process.env.MIDTRANS_IS_PRODUCTION === "false",
+    balance: terminal ? 0 : uang.balance, kewajibanPelunasanDihentikan: terminal,
     nominalDpAwal: booking.nominalDp, dpTerverifikasi, deadlineDp: booking.deadlineDp,
     deadlinePelunasan: deadline, statusPembayaran: terminal ? (booking.status === "NO_SHOW" || booking.status === "CANCELLED" && booking.dibatalkanPada &&
       booking.mulaiPada.getTime()-booking.dibatalkanPada.getTime()<3600000 ? "DP_FORFEITED" : "REFUND_REVIEW") : statusPembayaran,

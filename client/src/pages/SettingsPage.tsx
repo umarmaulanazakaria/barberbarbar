@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
       barber.pengguna?.email ?? "",
 
-      barber.pengguna ? "account created" : "no account",
+      barber.pengguna ? "akun tersedia" : "belum memiliki akun",
     ]
       .join(" ")
       .toLocaleLowerCase("id-ID")
@@ -102,7 +102,7 @@ export default function SettingsPage() {
       }
 
       if (password !== confirmPassword) {
-        throw new Error("Password confirmation does not match");
+        throw new Error("Konfirmasi kata sandi tidak sesuai");
       }
 
       return api.post(`/barbers/${selectedBarber.id}/account`, {
@@ -117,7 +117,7 @@ export default function SettingsPage() {
         queryKey: ["barber-staff-accounts"],
       });
 
-      toast.success("Staff account created successfully");
+      toast.success("Akun staf berhasil dibuat");
 
       closeModal();
     },
@@ -125,7 +125,7 @@ export default function SettingsPage() {
     onError: (error) => {
       toast.error(
         error instanceof Error &&
-          error.message === "Password confirmation does not match"
+          error.message === "Konfirmasi kata sandi tidak sesuai"
           ? error.message
           : pesanError(error),
       );
@@ -135,17 +135,17 @@ export default function SettingsPage() {
   return (
     <>
       <PageTitle
-        title="Settings"
-        subtitle="Application and account information"
+        title="Pengaturan"
+        subtitle="Informasi aplikasi dan akun"
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">
-          <h3 className="font-bold">Signed-in Account</h3>
+          <h3 className="font-bold">Akun yang Masuk</h3>
 
           <div className="mt-4 space-y-2 text-sm">
             <div>
-              <span className="text-slate-400">Name</span>
+              <span className="text-slate-400">Nama</span>
 
               <div className="font-bold">{user?.name}</div>
             </div>
@@ -157,7 +157,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <span className="text-slate-400">Role</span>
+              <span className="text-slate-400">Peran</span>
 
               <div className="font-bold text-indigo-600">{user?.role}</div>
             </div>
@@ -182,8 +182,7 @@ export default function SettingsPage() {
           </div>
 
           <p className="mt-4 text-sm leading-6 text-slate-500">
-            Manage customers, barbers, services, orders, payments and reports in
-            one place.
+            Kelola pelanggan, barber, layanan, pesanan, pembayaran, dan laporan dalam satu tempat.
           </p>
         </Card>
       </div>
@@ -197,10 +196,10 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <h3 className="font-bold text-slate-900">Staff Accounts</h3>
+                <h3 className="font-bold text-slate-900">Akun Staf</h3>
 
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Create STAFF login accounts from existing barber data.
+                  Buat akun masuk staf dari data barber yang sudah tersedia.
                 </p>
               </div>
             </div>
@@ -214,7 +213,7 @@ export default function SettingsPage() {
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search barber name, phone or account email..."
+                placeholder="Cari nama barber, telepon, atau email akun..."
                 className="pl-9"
               />
             </div>
@@ -222,27 +221,27 @@ export default function SettingsPage() {
 
           <div className="overflow-x-auto">
             {isLoading ? (
-              <LoadingState text="Loading staff accounts..." />
+              <LoadingState text="Memuat akun staf..." />
             ) : isError ? (
               <ErrorState
-                text="Failed to load staff accounts."
+                text="Akun staf belum dapat dimuat."
                 onRetry={() => void refetch()}
               />
             ) : !filteredBarbers.length ? (
-              <Empty text="No barber data found" />
+              <Empty text="Belum ada data barber" />
             ) : (
               <table className="w-full min-w-[760px] text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500">
                   <tr>
                     <th className="px-4 py-3">Barber</th>
 
-                    <th>Phone</th>
+                    <th>Telepon</th>
 
-                    <th>Barber Status</th>
+                    <th>Status Barber</th>
 
-                    <th>Login Account</th>
+                    <th>Akun Masuk</th>
 
-                    <th className="px-4 text-right">Action</th>
+                    <th className="px-4 text-right">Tindakan</th>
                   </tr>
                 </thead>
 
@@ -269,11 +268,11 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="mt-0.5 text-[11px] text-emerald-600">
-                              Staff account active
+                              Akun staf aktif
                             </div>
                           </div>
                         ) : (
-                          <span className="text-slate-400">Not created</span>
+                          <span className="text-slate-400">Belum dibuat</span>
                         )}
                       </td>
 
@@ -284,8 +283,8 @@ export default function SettingsPage() {
                           disabled={!barber.aktif || Boolean(barber.pengguna)}
                         >
                           {barber.pengguna
-                            ? "Account Created"
-                            : "Create Account"}
+                            ? "Akun Tersedia"
+                            : "Buat Akun"}
                         </Button>
                       </td>
                     </tr>
@@ -299,7 +298,7 @@ export default function SettingsPage() {
 
       <Modal
         open={Boolean(selectedBarber)}
-        title="Create Staff Account"
+        title="Buat Akun Staf"
         onClose={closeModal}
       >
         <div className="space-y-4">
@@ -311,7 +310,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="mt-1 text-xs text-slate-500">
-              The account name will use this barber name automatically.
+              Nama akun mengikuti nama barber ini.
             </div>
           </div>
 
@@ -322,29 +321,29 @@ export default function SettingsPage() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="staff@barber.com"
+              placeholder="nama@example.com"
             />
           </div>
 
           <div>
-            <Label>Password</Label>
+            <Label>Kata Sandi</Label>
 
             <Input
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Minimum 6 characters"
+              placeholder="Minimal 6 karakter"
             />
           </div>
 
           <div>
-            <Label>Confirm Password</Label>
+            <Label>Konfirmasi Kata Sandi</Label>
 
             <Input
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="Repeat password"
+              placeholder="Ulangi kata sandi"
             />
           </div>
 
@@ -358,7 +357,7 @@ export default function SettingsPage() {
               createAccount.isPending
             }
           >
-            {createAccount.isPending ? "Creating..." : "Create Staff Account"}
+            {createAccount.isPending ? "Creating..." : "Buat Akun Staf"}
           </Button>
         </div>
       </Modal>

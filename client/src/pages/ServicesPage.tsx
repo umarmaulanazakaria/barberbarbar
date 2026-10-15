@@ -88,7 +88,7 @@ export default function ServicesPage() {
         : api.post("/layanan", { nama, durasiMenit: durasi, harga, aktif }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["services"] });
-      toast.success(edit ? "Service updated successfully" : "Service created successfully");
+      toast.success(edit ? "Layanan berhasil diperbarui" : "Layanan berhasil ditambahkan");
       setOpen(false);
     },
     onError: (error) => toast.error(pesanError(error)),
@@ -101,7 +101,7 @@ export default function ServicesPage() {
     try {
       await api.delete(`/layanan/${edit.id}`);
       await queryClient.invalidateQueries({ queryKey: ["services"] });
-      toast.success("Service deleted successfully");
+      toast.success("Layanan berhasil dihapus");
       setConfirmDelete(false);
       setOpen(false);
     } catch (error) {
@@ -114,9 +114,9 @@ export default function ServicesPage() {
   return (
     <>
       <PageTitle
-        title="Services"
-        subtitle="Service duration and pricing"
-        action={canManage ? <Button onClick={() => start()}>+ New Service</Button> : undefined}
+        title="Layanan"
+        subtitle="Kelola durasi dan harga layanan"
+        action={canManage ? <Button onClick={() => start()}>+ Tambah Layanan</Button> : undefined}
       />
 
       <Card className="overflow-hidden">
@@ -126,7 +126,7 @@ export default function ServicesPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search service name, duration, price..."
+              placeholder="Cari nama, durasi, atau harga layanan..."
               className="pl-9"
             />
           </div>
@@ -134,11 +134,11 @@ export default function ServicesPage() {
             value={statusFilter}
             onChange={(value) => setStatusFilter(String(value))}
             placeholder="Filter status"
-            searchPlaceholder="Search status..."
-            ariaLabel="Filter service status"
+            searchPlaceholder="Cari status..."
+            ariaLabel="Filter status layanan"
             options={[
-              { value: "ALL", label: "All statuses" },
-              { value: "ACTIVE", label: "Active" },
+              { value: "ALL", label: "Semua status" },
+              { value: "ACTIVE", label: "Aktif" },
               { value: "INACTIVE", label: "Inactive" },
             ]}
           />
@@ -146,18 +146,18 @@ export default function ServicesPage() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading services..." />
+            <LoadingState text="Memuat layanan..." />
           ) : isError ? (
-            <ErrorState text="Failed to load services." onRetry={() => void refetch()} />
+            <ErrorState text="Layanan belum dapat dimuat." onRetry={() => void refetch()} />
           ) : !filteredServices.length ? (
-            <Empty text={search || statusFilter !== "ALL" ? "No services match your filters" : "No services yet"} />
+            <Empty text={search || statusFilter !== "ALL" ? "Tidak ada layanan yang sesuai filter" : "Belum ada layanan"} />
           ) : (
             <table className="w-full min-w-[640px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Service</th>
-                  <th>Duration</th>
-                  <th>Price</th>
+                  <th className="px-4 py-3">Layanan</th>
+                  <th>Durasi</th>
+                  <th>Harga</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -177,7 +177,7 @@ export default function ServicesPage() {
                     className="group cursor-pointer border-t border-slate-200 transition-all duration-200 hover:bg-indigo-50/60 hover:shadow-[inset_3px_0_0_0_#4f46e5] focus:bg-indigo-50/60 focus:outline-none focus:shadow-[inset_3px_0_0_0_#4f46e5]"
                   >
                     <td className="px-4 py-3 font-bold transition-transform duration-200 group-hover:translate-x-1">{service.nama}</td>
-                    <td>{service.durasiMenit} min</td>
+                    <td>{service.durasiMenit} menit</td>
                     <td>{rupiah(service.harga)}</td>
                     <td><StatusBadge value={service.aktif ? "AKTIF" : "INACTIVE"} /></td>
                   </tr>
@@ -190,37 +190,37 @@ export default function ServicesPage() {
 
       <Modal
         open={open}
-        title={edit ? (canManage ? "Edit Service" : "Service Details") : "New Service"}
+        title={edit ? (canManage ? "Ubah Layanan" : "Detail Layanan") : "Tambah Layanan"}
         onClose={() => setOpen(false)}
       >
         <div className="space-y-4">
           <div>
-            <Label>Service Name</Label>
+            <Label>Nama Layanan</Label>
             <Input value={nama} onChange={(event) => setNama(event.target.value)} disabled={!canManage} />
           </div>
           <div>
-            <Label>Duration (minutes)</Label>
+            <Label>Durasi (menit)</Label>
             <Input type="number" min={1} value={durasi} onChange={(event) => setDurasi(Number(event.target.value))} disabled={!canManage} />
           </div>
           <div>
-            <Label>Price</Label>
+            <Label>Harga</Label>
             <Input type="number" min={1} value={harga} onChange={(event) => setHarga(Number(event.target.value))} disabled={!canManage} />
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={aktif} onChange={(event) => setAktif(event.target.checked)} disabled={!canManage} />
-            Active
+            Aktif
           </label>
 
           {canManage && (
             <Button className="w-full" onClick={() => save.mutate()} disabled={!nama || durasi <= 0 || harga <= 0 || save.isPending}>
-              {save.isPending ? "Saving..." : "Save Service"}
+              {save.isPending ? "Saving..." : "Simpan Layanan"}
             </Button>
           )}
 
           {edit && canManage && (
             <div className="border-t border-slate-200 pt-4">
               <Button variant="danger" className="w-full" onClick={() => setConfirmDelete(true)} disabled={deletePending}>
-                Delete Service
+                Hapus Layanan
               </Button>
             </div>
           )}
@@ -229,9 +229,9 @@ export default function ServicesPage() {
 
       <ConfirmDialog
         open={confirmDelete}
-        title="Delete Service?"
-        description="This service can only be deleted if it has not been used in an order."
-        confirmLabel="Delete Service"
+        title="Hapus Layanan?"
+        description="Layanan hanya dapat dihapus jika belum digunakan pada pesanan."
+        confirmLabel="Hapus Layanan"
         loading={deletePending}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={deleteService}

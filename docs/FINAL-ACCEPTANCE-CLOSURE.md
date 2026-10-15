@@ -253,7 +253,20 @@ test akun/reset/regresi, editor booking Web dan tes browser; Customer App,
 config scheme, API/profil/reset/reschedule dan tes adapter. README/panduan
 diperbarui. Tidak ada perubahan source Staff atau package/lockfile.
 File sample environment aman diperbolehkan oleh pemindai rilis; environment
-nyata tetap dilarang. Hash commit/push aktual dicatat setelah pemeriksaan akhir.
+nyata tetap dilarang.
+
+| Repository | Commit source / keadaan | Push/upstream |
+|---|---|---|
+| Project 3 | ad86fe546b0801654f52b434fb89298d74bdfd00; 25 file | PASS origin/feature/project5-integration; 0 ahead/behind |
+| Staff | 283aedacbee6d69d02090f6fedc336f721ad4c78; tidak ada perubahan tugas ini | Fetch/upstream 0 ahead/behind; tanpa commit kosong |
+| Customer | f8f79d42b4c43d0ae0bde66f2ea57dc5ccc8a70b; 13 file | PASS origin/feature/project5-integration; 0 ahead/behind |
+
+Laporan ini ditutup pada commit dokumentasi sesudah commit source di atas;
+identitasnya tersedia melalui `git log -1 -- docs/FINAL-ACCEPTANCE-CLOSURE.md`.
+Status post-commit: Project 3 hanya menyisakan Prisma historis staged; Staff
+hanya `src/layanan/booking.ts` historis unstaged; Customer bersih. Hash ketiga
+file historis dan blob index Prisma diverifikasi ulang identik. Tidak force
+push atau merge main.
 Pemindaian perubahan terhadap credential proses dan data pribadi pada snapshot
 menemukan nol kecocokan; file environment asli yang dilacak Git nol. Ini bukan
 jaminan menyeluruh seluruh riwayat/dependency. Lihat

@@ -136,4 +136,14 @@ Baseline Project 3 `787fe5c7c46e`, Project 4 `994a23652f00`, Project 5 `fa90ce50
 - Staging memakai daftar path eksplisit; commit Project 3 memakai `--only` agar tidak menyertakan staged Prisma.
 - Judul commit Bahasa Indonesia tanpa nomor fase/prefix. Push hanya ke `origin/feature/project5-integration`, tanpa force atau perubahan history.
 
-Hash commit dan hasil push akhir dilaporkan bersama penyelesaian tugas; identitas commit laporan ini sendiri dapat diperoleh melalui `git log -1 -- docs/WORKSPACE-CLEANUP-AUDIT.md`. Jangan memasukkan hash diri ke dokumen sebelum commit. Git status tidak diharapkan bersih total karena dua perubahan historis tersebut memang dipertahankan.
+Commit cleanup dan push aktual telah diverifikasi:
+
+| Repository | Commit cleanup | Push origin / upstream |
+|---|---|---|
+| Project 3 | `0c7e1f4be92b180805a60fa2c11f6c002ba92519` | PASS; 0 ahead / 0 behind |
+| Project 4 | `2af6c93deccf81208dac65a049877bcfa3ffc2f5` | PASS; 0 ahead / 0 behind |
+| Project 5 | `a2be072701fcf5f1d73b1a8c5f944e82a882129c` | PASS; 0 ahead / 0 behind |
+
+Pemeriksaan pasca-push memastikan commit tidak memuat tiga file dilindungi, hash file/index sesuai baseline, dan root tetap tiga folder. Project 3 menyisakan staged Prisma historis; Project 4 menyisakan formatting booking unstaged; Project 5 bersih. Semua perubahan cleanup sudah dipublikasikan tanpa force push atau merge.
+
+Penutupan laporan ini dibuat dalam commit dokumentasi tersendiri setelah push tersebut. Identitas commit laporan dapat diperoleh melalui `git log -1 -- docs/WORKSPACE-CLEANUP-AUDIT.md`; hash diri tidak ditulis sebelum commit. Tidak diperlukan ZIP baru karena source tersimpan di Git dan backup privat terverifikasi sudah tersedia.

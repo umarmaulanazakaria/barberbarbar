@@ -20,7 +20,7 @@ for (const jenis of ['rejection', 'exception', 'disconnect']) {
     results.push({ jenis, kode, logAman, listenerTertutup: tertutup, status: kode === 1 && logAman && tertutup ? 'PASS' : 'FAIL' });
   } finally { if (child.exitCode === null) child.kill(); }
 }
-const output = process.env.BB_AUDIT_OUTPUT_DIR ?? 'finalization'; await mkdir(output, { recursive: true });
+const output = process.env.BB_AUDIT_OUTPUT_DIR ?? 'artifacts/regresi'; await mkdir(output, { recursive: true });
 await writeFile(`${output}/HASIL-LOG-PROSES.json`, JSON.stringify({ jenis: 'Entrypoint aktual, error sintetis, tanpa mutasi DB/provider', results }, null, 2));
 console.log(JSON.stringify(results));
 assert.ok(results.every(r => r.status === 'PASS'), 'Fatal error/shutdown tidak boleh mencetak error mentah dan wajib menutup listener');

@@ -12,4 +12,4 @@ for(const [project,cwd]of[['backend',process.cwd()],['web',path.resolve('../clie
  }
  results.push(row);console.log(JSON.stringify({project,full:row.lengkap.jumlah,omitDev:row.omitDev.jumlah}));
 }
-await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'e2e'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-DEPENDENCY.json',JSON.stringify({tanggal:new Date().toISOString(),catatan:'omitDev adalah klasifikasi npm; tooling Expo dapat tercantum sebagai dependencies produksi, bukan bukti seluruh advisory dapat dicapai bundle mobile',results},null,2));
+await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi')+'/HASIL-DEPENDENCY.json',JSON.stringify({tanggal:new Date().toISOString(),catatan:'omitDev adalah klasifikasi npm; tooling Expo dapat tercantum sebagai dependencies produksi, bukan bukti seluruh advisory dapat dicapai bundle mobile',results},null,2));

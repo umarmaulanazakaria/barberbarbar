@@ -1,10 +1,10 @@
 import "dotenv/config";
+import { akarCadangan } from "./lokasi-cadangan.mjs";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { ambilSnapshot, pastikanAman } from "./util-audit-hash-permohonan.mjs";
 
 const { default: db } = await import("../dist/lib/prisma.js");
@@ -25,7 +25,7 @@ try {
   pastikanAman(sebelum);
   const waktu = new Date().toISOString().replace(/[:.]/g, "-");
   // Di luar repository agar arsip berisi data sensitif tidak masuk Git.
-  const induk = resolve(fileURLToPath(new URL("../../../", import.meta.url)), "backup-database");
+  const induk = akarCadangan; await mkdir(induk, { recursive: true });
   const direktori = join(induk, `f2-hash-${waktu}`);
   await mkdir(direktori, { recursive: false });
   const lokasi = join(direktori, "database.dump");

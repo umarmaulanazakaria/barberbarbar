@@ -9,7 +9,7 @@ assert.ok(Number.isInteger(jumlah) && jumlah >= 1 && jumlah <= 10);
 assert.ok(/^[a-z-]+$/.test(label));
 const hasil = [];
 for (let urutan = 1; urutan <= jumlah; urutan++) {
-  const output = `finalization/browser-${label}-${urutan}`;
+  const output = `artifacts/stabilitas/browser-${label}-${urutan}`;
   const mulai = Date.now();
   const anak = spawn(process.execPath, ['scripts/test-e2e-browser.mjs'], {
     env: { ...process.env, BB_AUDIT_OUTPUT_DIR: output },
@@ -22,6 +22,6 @@ for (let urutan = 1; urutan <= jumlah; urutan++) {
   console.log(JSON.stringify(hasil.at(-1)));
   if (!bersih) throw new Error('Cleanup gagal; hentikan sebelum fixture berikutnya');
 }
-await mkdir('../server/finalization', { recursive: true });
-await writeFile(`../server/finalization/STABILITAS-${label}.json`, JSON.stringify({ jenis: 'Edge headless, browser UI aktual; SDK native adapter, provider MOCK', hasil }, null, 2));
+await mkdir('../server/artifacts/stabilitas', { recursive: true });
+await writeFile(`../server/artifacts/stabilitas/STABILITAS-${label}.json`, JSON.stringify({ jenis: 'Edge headless, browser UI aktual; SDK native adapter, provider MOCK', hasil }, null, 2));
 if (hasil.some(r => r.status !== 'PASS')) process.exitCode = 1;

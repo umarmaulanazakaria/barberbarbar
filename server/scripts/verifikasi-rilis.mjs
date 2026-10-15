@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { periksaCadangan } from './lokasi-cadangan.mjs';
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -6,9 +7,10 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
 const akar = path.resolve('../..');
-const daftar = JSON.parse(await readFile('finalization/BERKAS-ZIP.json', 'utf8'));
+assert.ok(process.argv[2] && process.argv[3], 'Berikan file daftar publik dan folder backup database');
+const daftar = JSON.parse(await readFile(process.argv[2], 'utf8'));
 const pribadi = new Set();
-const snapshot = JSON.parse(await readFile(path.join(akar, 'backup-database/e2e-2026-10-15T00-47-37-807Z/snapshot.json'), 'utf8'));
+const snapshot = JSON.parse(await readFile(path.join(periksaCadangan(process.argv[3]), 'snapshot.json'), 'utf8'));
 for (const model of ['pelanggan', 'akunPelanggan', 'pengguna']) for (const row of snapshot[model]) {
   for (const nama of ['nama', 'name', 'email', 'nomorTelepon']) if (typeof row[nama] === 'string' && row[nama].length >= 8) pribadi.add(row[nama]);
 }
@@ -32,10 +34,10 @@ for (const repo of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-custome
   const files = git(path.join(akar, repo), ['ls-files']).split('\n');
   envTracked.push(...files.filter(f => { const n = path.posix.basename(f); return (n === '.env' || n.startsWith('.env.')) && !['.env.example', '.env.sample'].includes(n); }));
 }
-const baseline = JSON.parse(await readFile('e2e/HASIL-INTEGRITAS.json', 'utf8'));
+const baseline = JSON.parse(await readFile((process.env.BB_AUDIT_OUTPUT_DIR ?? 'artifacts/regresi') + '/HASIL-INTEGRITAS.json', 'utf8'));
 for (const item of baseline.protectedFiles) assert.equal(createHash('sha256').update(await readFile(path.join(akar, item.path))).digest('hex'), item.sha256, 'File historis berubah');
 assert.ok(git(path.resolve('..'), ['ls-files', '-s', '--', 'server/src/lib/prisma.ts']).includes('6594970f6d44cfae4ac899cd83f14f6991dce0a0'));
 const hasil = { tanggal: new Date().toISOString(), berkasDipindai: jumlah, temuanRahasia, temuanDataPribadi: temuanPribadi, envAsliTracked: envTracked.length, historisUtuh: true, status: temuanRahasia === 0 && temuanPribadi === 0 && envTracked.length === 0 ? 'PASS' : 'FAIL', batas: 'Pencocokan exact terhadap credential proses dan email/telepon/nama>=8 karakter pada snapshot; bukan jaminan menyeluruh semua secret/PII di seluruh repo/history.' };
-if (!process.argv.includes('--tanpa-tulis')) await writeFile('finalization/HASIL-KEAMANAN.json', JSON.stringify(hasil, null, 2));
+if (!process.argv.includes('--tanpa-tulis')) await writeFile((process.env.BB_AUDIT_OUTPUT_DIR ?? 'artifacts/regresi') + '/HASIL-KEAMANAN.json', JSON.stringify(hasil, null, 2));
 console.log(JSON.stringify(hasil));
 assert.equal(hasil.status, 'PASS', 'Verifikasi rilis gagal; nilai rahasia/data pribadi tidak dicetak');

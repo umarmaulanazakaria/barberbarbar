@@ -1,0 +1,299 @@
+{
+  "tanggal": "2026-10-15T02:25:08.622Z",
+  "awal": {
+    "files": 74984,
+    "directories": 10901,
+    "links": 0,
+    "bytes": 1207038355,
+    "kategori": {
+      "A": 329,
+      "B": 4047,
+      "C": 49,
+      "D": 16,
+      "E": 210,
+      "F": 81233,
+      "G": 1,
+      "H": 0
+    }
+  },
+  "backup": {
+    "lokasi": "C:\\Users\\raifa\\AppData\\Local\\BARBERBARBAR\\workspace-backups\\cleanup-2026-10-15T02-07-15-699Z",
+    "status": "PASS",
+    "files": 16624,
+    "total": 410846609,
+    "setiapFileDibacaDanSHA256Cocok": true,
+    "manifestSha256": "8ac3503e3857bdc08850462df403aa6eadefa7f18ed398b79e532da4e598d0f0"
+  },
+  "dihapus": [
+    {
+      "target": ".hintrc",
+      "files": 1,
+      "directories": 0,
+      "bytes": 228
+    },
+    {
+      "target": "backup-arsip",
+      "files": 3,
+      "directories": 2,
+      "bytes": 488051
+    },
+    {
+      "target": "backup-database",
+      "files": 29,
+      "directories": 14,
+      "bytes": 1384008
+    },
+    {
+      "target": "BARBERBARBAR-F12-CUSTOMER-APP.zip",
+      "files": 1,
+      "directories": 0,
+      "bytes": 487017
+    },
+    {
+      "target": "BARBERBARBAR-F12-CUSTOMER-APP.zip.manifest.json",
+      "files": 1,
+      "directories": 0,
+      "bytes": 8846
+    },
+    {
+      "target": "BARBERBARBAR-F12-CUSTOMER-APP.zip.sha256",
+      "files": 1,
+      "directories": 0,
+      "bytes": 99
+    },
+    {
+      "target": "BARBERBARBAR-F13-E2E.manifest.json",
+      "files": 1,
+      "directories": 0,
+      "bytes": 11666
+    },
+    {
+      "target": "BARBERBARBAR-F13-E2E.zip",
+      "files": 1,
+      "directories": 0,
+      "bytes": 243106
+    },
+    {
+      "target": "BARBERBARBAR-F13-E2E.zip.sha256",
+      "files": 1,
+      "directories": 0,
+      "bytes": 91
+    },
+    {
+      "target": "BARBERBARBAR-F14-FINALIZATION.manifest.json",
+      "files": 1,
+      "directories": 0,
+      "bytes": 31286
+    },
+    {
+      "target": "BARBERBARBAR-F14-FINALIZATION.zip",
+      "files": 1,
+      "directories": 0,
+      "bytes": 236537
+    },
+    {
+      "target": "BARBERBARBAR-F14-FINALIZATION.zip.sha256",
+      "files": 1,
+      "directories": 0,
+      "bytes": 100
+    },
+    {
+      "target": "barberbarbar/START-HERE.txt",
+      "files": 1,
+      "directories": 0,
+      "bytes": 402
+    },
+    {
+      "target": "barberbarbar-mobile/assets/splash-icon.png",
+      "files": 1,
+      "directories": 0,
+      "bytes": 17547
+    },
+    {
+      "target": "barberbarbar/server/dist",
+      "files": 456,
+      "directories": 12,
+      "bytes": 4627615
+    },
+    {
+      "target": "barberbarbar/client/dist",
+      "files": 6,
+      "directories": 2,
+      "bytes": 1026230
+    },
+    {
+      "target": "barberbarbar-mobile/dist",
+      "files": 39,
+      "directories": 6,
+      "bytes": 6969993
+    },
+    {
+      "target": "barberbarbar-mobile/.expo",
+      "files": 4,
+      "directories": 3,
+      "bytes": 162438
+    },
+    {
+      "target": "barberbarbar-customer/dist",
+      "files": 39,
+      "directories": 6,
+      "bytes": 7067087
+    },
+    {
+      "target": "barberbarbar-customer/.expo",
+      "files": 2,
+      "directories": 3,
+      "bytes": 13951
+    },
+    {
+      "target": "barberbarbar/server/scripts/buat-cadangan-e2e.ps1",
+      "files": 1,
+      "directories": 0,
+      "bytes": 5659
+    },
+    {
+      "target": "barberbarbar/server/scripts/buat-cadangan-final.ps1",
+      "files": 1,
+      "directories": 0,
+      "bytes": 5722
+    }
+  ],
+  "dipindahkan": [
+    {
+      "dari": "barberbarbar/F10-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F10-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/F13-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F13-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/F14-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F14-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/PANDUAN-DEMO.md",
+      "ke": "barberbarbar/docs/PANDUAN-DEMO.md"
+    },
+    {
+      "dari": "barberbarbar/PULL-REQUEST.md",
+      "ke": "barberbarbar/docs/PULL-REQUEST.md"
+    },
+    {
+      "dari": "barberbarbar/README-FINAL.md",
+      "ke": "barberbarbar/docs/README-FINAL.md"
+    },
+    {
+      "dari": "barberbarbar/README-INSTALASI.md",
+      "ke": "barberbarbar/docs/README-INSTALASI.md"
+    },
+    {
+      "dari": "barberbarbar/README-PENGUJIAN-ANDROID.md",
+      "ke": "barberbarbar/docs/README-PENGUJIAN-ANDROID.md"
+    },
+    {
+      "dari": "barberbarbar/README-PENGUJIAN.md",
+      "ke": "barberbarbar/docs/README-PENGUJIAN.md"
+    },
+    {
+      "dari": "barberbarbar/RELEASE-CHECKLIST.md",
+      "ke": "barberbarbar/docs/RELEASE-CHECKLIST.md"
+    },
+    {
+      "dari": "barberbarbar/TEMUAN-LANJUTAN.md",
+      "ke": "barberbarbar/docs/TEMUAN-LANJUTAN.md"
+    },
+    {
+      "dari": "barberbarbar-mobile/F11-AUDIT.md",
+      "ke": "barberbarbar-mobile/docs/audit/F11-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-mobile/F13-AUDIT.md",
+      "ke": "barberbarbar-mobile/docs/audit/F13-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-mobile/F14-AUDIT.md",
+      "ke": "barberbarbar-mobile/docs/audit/F14-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-mobile/PULL-REQUEST.md",
+      "ke": "barberbarbar-mobile/docs/PULL-REQUEST.md"
+    },
+    {
+      "dari": "barberbarbar-customer/F12-AUDIT.md",
+      "ke": "barberbarbar-customer/docs/audit/F12-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-customer/F13-AUDIT.md",
+      "ke": "barberbarbar-customer/docs/audit/F13-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-customer/F14-AUDIT.md",
+      "ke": "barberbarbar-customer/docs/audit/F14-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar-customer/PULL-REQUEST.md",
+      "ke": "barberbarbar-customer/docs/PULL-REQUEST.md"
+    },
+    {
+      "dari": "barberbarbar-customer/README-INSTALASI.md",
+      "ke": "barberbarbar-customer/docs/README-INSTALASI.md"
+    },
+    {
+      "dari": "barberbarbar/server/F2-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F2-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F3-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F3-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F4-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F4-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F5-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F5-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F6-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F6-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F7-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F7-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F7-SANDBOX.md",
+      "ke": "barberbarbar/docs/audit/F7-SANDBOX.md"
+    },
+    {
+      "dari": "barberbarbar/server/F8-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F8-AUDIT.md"
+    },
+    {
+      "dari": "barberbarbar/server/F9-AUDIT.md",
+      "ke": "barberbarbar/docs/audit/F9-AUDIT.md"
+    }
+  ],
+  "dependency": {
+    "dihapus": [
+      "eslint",
+      "tsx"
+    ],
+    "paketDihapusOlehNpm": 71,
+    "bukti": "Tidak ada import runtime, command package/scripts, ESLint config, CI, dynamic registration, atau test consumer. dev.mjs menjalankan TypeScript CLI dan node watch langsung. Referensi dokumentasi menjelaskan sejarah alat, bukan consumer runtime.",
+    "batas": "Dependency lain dipertahankan bila digunakan runtime/test/type/plugin/toolchain; pengurangan paket bukan klaim advisory selesai."
+  },
+  "akhir": {
+    "files": 73778,
+    "directories": 10697,
+    "links": 0
+  },
+  "root": [
+    "barberbarbar",
+    "barberbarbar-customer",
+    "barberbarbar-mobile"
+  ],
+  "batasHitungan": "Hitungan rekursif termasuk dependency terpasang dan .git; output build dibuat ulang selama regresi, bukan ukuran source saja. Daftar dihapus menunjukkan target awal sebelum rebuild; perubahan node_modules dari uninstall dicatat terpisah."
+}

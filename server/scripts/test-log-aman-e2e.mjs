@@ -13,5 +13,5 @@ try{
  }
  assert.ok(results.every(r=>r.logAman),'Log umum tidak boleh memuat body/password/token/header/error mentah');
 }finally{
- console.error=asli;await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'e2e'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-LOG.json',JSON.stringify({jenis:'Unit middleware actual; sentinel synthetic tidak pernah dicetak',results},null,2));console.log(JSON.stringify(results));
+ console.error=asli;await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi')+'/HASIL-LOG.json',JSON.stringify({jenis:'Unit middleware actual; sentinel synthetic tidak pernah dicetak',results},null,2));console.log(JSON.stringify(results));
 }

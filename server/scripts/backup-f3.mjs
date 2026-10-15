@@ -1,9 +1,9 @@
 import "dotenv/config";
+import { akarCadangan } from "./lokasi-cadangan.mjs";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 const { default: db } = await import("../dist/lib/prisma.js");
 const model = ["pelanggan", "akunPelanggan", "pengguna", "barber", "layanan", "membership",
@@ -23,7 +23,8 @@ try {
   const url = new URL(process.env.DATABASE_URL ?? "");
   if (!["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) throw new Error("Backup otomatis hanya database lokal");
   const sebelum = await db.$transaction(sidik, { isolationLevel: "RepeatableRead" });
-  const folder = resolve(fileURLToPath(new URL("../../../backup-database/", import.meta.url)), `f3-${new Date().toISOString().replace(/[:.]/g, "-")}`);
+  const folder = resolve(akarCadangan, `f3-${new Date().toISOString().replace(/[:.]/g, "-")}`);
+  await mkdir(akarCadangan, { recursive: true });
   await mkdir(folder, { recursive: false });
   const arsip = resolve(folder, "database.dump");
   jalankan("pg_dump", ["--format=custom", "--no-password", "--file", arsip], {

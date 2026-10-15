@@ -6,3 +6,11 @@ server/.env
 client/.env
 *.tsbuildinfo
 .DS_Store
+# Keluaran pengujian baru; bukti audit historis tetap dilacak terpisah.
+server/artifacts/
+**/.cache/
+coverage/
+*.log
+**/.env.*
+!**/.env.example
+!**/.env.sample

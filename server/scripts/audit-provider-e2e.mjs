@@ -20,4 +20,4 @@ try{
  hasil.catatan=hasil.status==='PASS_PROVIDER_FINAL'?'Bukti provider final ada; tidak merekonstruksi record lokal yang sudah hilang.':'Tidak ada bukti final Rp2.000 yang cocok; tidak menyimpulkan sukses/gagal atau retry aman dari settlement saja.';
  hasil.refundAtauRetryDikirim=false;hasil.databaseDiubah=false;
 }catch(e){hasil.catatan='Get Status/validasi belum berhasil; tidak ada mutasi/refund/retry.';hasil.kategoriKesalahan=e.name;}
-finally{if(db)await db.$disconnect();await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'e2e'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-PROVIDER.json',JSON.stringify(hasil,null,2));console.log(JSON.stringify(hasil));}
+finally{if(db)await db.$disconnect();await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'artifacts/regresi')+'/HASIL-PROVIDER.json',JSON.stringify(hasil,null,2));console.log(JSON.stringify(hasil));}

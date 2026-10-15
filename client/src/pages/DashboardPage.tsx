@@ -36,31 +36,31 @@ export default function DashboardPage() {
   });
 
   const cards = [
-    ["Waiting", data?.waiting ?? 0, Clock3],
-    ["In Service", data?.inService ?? 0, Scissors],
-    ["Completed (Unpaid)", data?.completedUnpaid ?? 0, WalletCards],
-    ["Paid Today", data?.paidToday ?? 0, UserRoundCheck],
+    ["Menunggu", data?.waiting ?? 0, Clock3],
+    ["Sedang Dilayani", data?.inService ?? 0, Scissors],
+    ["Layanan Selesai, Belum Lunas", data?.completedUnpaid ?? 0, WalletCards],
+    ["Pembayaran Hari Ini", data?.paidToday ?? 0, UserRoundCheck],
   ] as const;
 
   return (
     <>
       <PageTitle
         title="Dashboard"
-        subtitle="Overview of today's barbershop operations"
+        subtitle="Ringkasan operasional barbershop hari ini"
         action={
-          <Button onClick={() => setNewOrderOpen(true)}>+ New Order</Button>
+          <Button onClick={() => setNewOrderOpen(true)}>+ Pesanan Baru</Button>
         }
       />
 
       <RingkasanBookingDashboard />
       {isLoading ? (
         <Card>
-          <LoadingState text="Loading dashboard..." />
+          <LoadingState text="Memuat dashboard..." />
         </Card>
       ) : isError ? (
         <Card>
           <ErrorState
-            text="Failed to load dashboard."
+            text="Dashboard belum dapat dimuat."
             onRetry={() => void refetch()}
           />
         </Card>
@@ -88,29 +88,29 @@ export default function DashboardPage() {
             <Card className="overflow-hidden">
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div>
-                  <div className="font-bold">Recent Orders</div>
-                  <div className="text-xs text-slate-400">Latest activity</div>
+                  <div className="font-bold">Pesanan Terbaru</div>
+                  <div className="text-xs text-slate-400">Aktivitas terbaru</div>
                 </div>
                 <Link
                   to="/orders"
                   className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-100 hover:shadow-sm active:translate-y-0"
                 >
-                  View all <ArrowRight size={14} />
+                  Lihat semua <ArrowRight size={14} />
                 </Link>
               </div>
 
               <div className="overflow-x-auto">
                 {!data?.pesananTerbaru.length ? (
-                  <Empty text="No recent orders yet" />
+                  <Empty text="Belum ada pesanan terbaru" />
                 ) : (
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500">
                       <tr>
-                        <th className="px-4 py-3">Order</th>
-                        <th>Customer</th>
+                        <th className="px-4 py-3">Pesanan</th>
+                        <th>Pelanggan</th>
                         <th>Barber</th>
                         <th>Status</th>
-                        <th>Payment</th>
+                        <th>Pembayaran</th>
                         <th>Check-in</th>
                       </tr>
                     </thead>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                           key={o.id}
                           role="link"
                           tabIndex={0}
-                          aria-label={`Open order ${o.nomorPesanan}`}
+                          aria-label={`Buka pesanan ${o.nomorPesanan}`}
                           onClick={() => setSelectedOrderId(o.id)}
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                     <WalletCards size={19} />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500">Revenue Today</div>
+                    <div className="text-xs text-slate-500">Pendapatan Hari Ini</div>
                     <div className="text-xl font-black text-slate-900">
                       {rupiah(data?.revenueToday ?? 0)}
                     </div>
@@ -169,20 +169,20 @@ export default function DashboardPage() {
               <Card className="p-5">
                 <div className="mb-4 flex items-center gap-2 font-bold">
                   <UsersRound size={17} />
-                  Overview
+                  Ringkasan
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <b>{data?.pelanggan ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Customers</div>
+                    <div className="text-[10px] text-slate-400">Pelanggan</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 p-3">
                     <b>{data?.barberAktif ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Barbers</div>
+                    <div className="text-[10px] text-slate-400">Barber</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 p-3">
                     <b>{data?.layananAktif ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Services</div>
+                    <div className="text-[10px] text-slate-400">Layanan</div>
                   </div>
                 </div>
               </Card>

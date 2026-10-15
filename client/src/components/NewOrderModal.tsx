@@ -103,7 +103,7 @@ export default function NewOrderModal({
         })
       ).data,
     onSuccess: (data) => {
-      toast.success("Order created successfully");
+      toast.success("Pesanan berhasil dibuat");
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
@@ -173,9 +173,9 @@ export default function NewOrderModal({
       <Card className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
         <div className="flex items-start justify-between border-b border-slate-200 px-4 py-4 sm:px-6">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900">New Order</h2>
+            <h2 className="text-xl font-extrabold text-slate-900">Pesanan Baru</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Create order / customer check-in
+              Buat pesanan dan catat kedatangan pelanggan
             </p>
           </div>
 
@@ -183,7 +183,7 @@ export default function NewOrderModal({
             type="button"
             onClick={tutupModal}
             disabled={mutation.isPending}
-            aria-label="Close new order"
+            aria-label="Tutup pesanan baru"
             className="grid size-9 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <X size={19} />
@@ -199,14 +199,14 @@ export default function NewOrderModal({
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Customer *</Label>
+              <Label>Pelanggan *</Label>
               <SearchableSelect
                 value={customer}
                 onChange={(value) => setCustomer(Number(value))}
-                placeholder="Select customer"
-                searchPlaceholder="Search customer name or phone..."
-                emptyText="Customer not found"
-                ariaLabel="Select customer"
+                placeholder="Pilih pelanggan"
+                searchPlaceholder="Cari nama atau nomor telepon pelanggan..."
+                emptyText="Pelanggan tidak ditemukan"
+                ariaLabel="Pilih pelanggan"
                 options={activeCustomers.map((customerItem) => ({
                   value: customerItem.id,
                   label: `${customerItem.nama} — ${customerItem.nomorTelepon}${
@@ -224,10 +224,10 @@ export default function NewOrderModal({
               <SearchableSelect
                 value={barber}
                 onChange={(value) => setBarber(Number(value))}
-                placeholder="Select barber"
-                searchPlaceholder="Search barber..."
-                emptyText="Barber not found"
-                ariaLabel="Select barber"
+                placeholder="Pilih barber"
+                searchPlaceholder="Cari barber..."
+                emptyText="Barber tidak ditemukan"
+                ariaLabel="Pilih barber"
                 options={activeBarbers.map((barberItem) => ({
                   value: barberItem.id,
                   label: barberItem.nama,
@@ -238,19 +238,19 @@ export default function NewOrderModal({
 
           <div className="mt-6">
             <div className="mb-2 text-xs font-bold text-slate-700">
-              Service Items *
+              Layanan *
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-slate-200">
               <table className="w-full min-w-[650px] text-xs">
                 <thead className="bg-slate-50 text-slate-500">
                   <tr>
-                    <th className="p-3 text-left">Service</th>
-                    <th>Duration</th>
-                    <th>Price</th>
-                    <th>Qty</th>
+                    <th className="p-3 text-left">Layanan</th>
+                    <th>Durasi</th>
+                    <th>Harga</th>
+                    <th>Jumlah</th>
                     <th>Subtotal</th>
-                    <th aria-label="Action" />
+                    <th aria-label="Tindakan" />
                   </tr>
                 </thead>
 
@@ -270,9 +270,9 @@ export default function NewOrderModal({
                                 layananId: Number(value),
                               })
                             }
-                            placeholder="Select service"
-                            searchPlaceholder="Search service..."
-                            emptyText="Service not found"
+                            placeholder="Pilih layanan"
+                            searchPlaceholder="Cari layanan..."
+                            emptyText="Layanan tidak ditemukan"
                             ariaLabel={`Select service item ${index + 1}`}
                             options={activeServices.map((serviceItem) => ({
                               value: serviceItem.id,
@@ -282,7 +282,7 @@ export default function NewOrderModal({
                           />
                         </td>
                         <td className="text-center">
-                          {service?.durasiMenit ?? 0} min
+                          {service?.durasiMenit ?? 0} menit
                         </td>
                         <td className="text-center">
                           {rupiah(service?.harga ?? 0)}
@@ -328,7 +328,7 @@ export default function NewOrderModal({
                                 ),
                               )
                             }
-                            aria-label="Remove service item"
+                            aria-label="Hapus layanan"
                             className="rounded-md p-1.5 text-red-500 transition hover:bg-red-50 disabled:opacity-30"
                           >
                             <Trash2 size={15} />
@@ -349,27 +349,27 @@ export default function NewOrderModal({
                 setItems((current) => [...current, { layananId: 0, qty: 1 }])
               }
             >
-              + Add Service Item
+              + Tambah Layanan
             </Button>
           </div>
 
           <div className="mt-5">
-            <Label>Notes (Optional)</Label>
+            <Label>Catatan (opsional)</Label>
             <Textarea
               rows={3}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
-              placeholder="Customer request..."
+              placeholder="Permintaan pelanggan..."
             />
           </div>
 
           <div className="mt-6 grid gap-4 border-t border-slate-200 pt-5 md:grid-cols-2">
             <div className="text-xs leading-6 text-slate-500">
-              Total Items
+              Jumlah Layanan
               <b className="ml-2 text-slate-800">{totalItems}</b>
               <br />
-              Total Duration
-              <b className="ml-2 text-slate-800">{totalDuration} min</b>
+              Total Durasi
+              <b className="ml-2 text-slate-800">{totalDuration} menit</b>
             </div>
 
             <div className="space-y-1 text-right text-xs">
@@ -378,7 +378,7 @@ export default function NewOrderModal({
               </div>
               {discount > 0 && (
                 <div className="text-emerald-600">
-                  Member discount {discount}%
+                  Diskon member {discount}%
                   <b className="ml-1">-{rupiah(discountValue)}</b>
                 </div>
               )}
@@ -395,7 +395,7 @@ export default function NewOrderModal({
               disabled={mutation.isPending}
               onClick={resetForm}
             >
-              Reset
+              Kosongkan
             </Button>
             <Button
               type="submit"
@@ -406,7 +406,7 @@ export default function NewOrderModal({
                 mutation.isPending
               }
             >
-              {mutation.isPending ? "Saving..." : "Save Order"}
+              {mutation.isPending ? "Saving..." : "Simpan Pesanan"}
             </Button>
           </div>
         </form>

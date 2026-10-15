@@ -15,7 +15,7 @@ const konfigurasi = () => {
   const { MIDTRANS_MERCHANT_ID: merchant, MIDTRANS_SERVER_KEY: serverKey,
     MIDTRANS_CLIENT_KEY: clientKey, MIDTRANS_IS_PRODUCTION: production } = process.env;
   if (!merchant?.trim() || !serverKey?.trim() || !clientKey?.trim() || production !== "false") {
-    throw new KesalahanMidtrans(503, "Konfigurasi Midtrans Sandbox belum valid; Production dinonaktifkan");
+    throw new KesalahanMidtrans(503, "Pembayaran online belum tersedia. Silakan hubungi pengelola.");
   }
   return { merchant:merchant.trim(), serverKey:serverKey.trim(), clientKey:clientKey.trim(), isProduction: false };
 };
@@ -51,18 +51,21 @@ export const gerbangMidtrans: GerbangMidtrans = {
       const hasil = z.object({ token: z.string().min(1), redirect_url: z.url() }).parse(await snap.createTransaction(data));
       if (new URL(hasil.redirect_url).hostname !== "app.sandbox.midtrans.com") throw new Error("Host provider invalid");
       return hasil;
-    } catch(error) { throw new KesalahanMidtrans(503, `Pembuatan Snap belum dapat dipastikan (${kodeAman(error)}); jangan membuat pembayaran pengganti`); }
+    } catch { throw new KesalahanMidtrans(503, "Pembayaran belum dapat disiapkan. Periksa status sebelum mencoba kembali."); }
   },
   async status(orderId) {
     const core = new midtrans.CoreApi(konfigurasi()) as unknown as CoreLengkap;
     core.httpClient.http_client.defaults.timeout = 15000;
     try { return await core.transaction.status(encodeURIComponent(orderId)); }
-    catch { throw new KesalahanMidtrans(503, "Status Midtrans belum dapat diverifikasi; silakan ulangi"); }
+    catch(error) {
+      if (kodeAman(error) === "HTTP_404") throw new KesalahanMidtrans(404, "Pembayaran belum ditemukan. Silakan periksa kembali beberapa saat lagi.");
+      throw new KesalahanMidtrans(503, "Pembayaran belum dapat diverifikasi. Silakan coba beberapa saat lagi.");
+    }
   },
   async refund(orderId, data) {
     const core = new midtrans.CoreApi(konfigurasi()) as unknown as CoreLengkap;
     core.httpClient.http_client.defaults.timeout = 15000;
     try { return await core.transaction.refund(encodeURIComponent(orderId), data); }
-    catch { throw new KesalahanMidtrans(503, "Hasil refund belum dapat dipastikan; rekonsiliasi dengan key yang sama diperlukan"); }
+    catch { throw new KesalahanMidtrans(503, "Pengembalian dana belum dapat dipastikan. Periksa status sebelum mencoba kembali."); }
   },
 };

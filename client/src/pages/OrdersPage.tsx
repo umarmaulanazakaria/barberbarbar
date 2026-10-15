@@ -43,24 +43,24 @@ export default function OrdersPage() {
   return (
     <>
       <PageTitle
-        title="Orders"
-        subtitle="Manage check-in and service workflow"
+        title="Pesanan"
+        subtitle="Kelola kedatangan dan proses layanan"
         action={
-          <Button onClick={() => setNewOrderOpen(true)}>+ New Order</Button>
+          <Button onClick={() => setNewOrderOpen(true)}>+ Pesanan Baru</Button>
         }
       />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <Card className="p-4">
-          <div className="text-xs text-slate-500">Waiting</div>
+          <div className="text-xs text-slate-500">Menunggu</div>
           <div className="text-2xl font-black">{count("WAITING")}</div>
         </Card>
         <Card className="p-4">
-          <div className="text-xs text-slate-500">In Service</div>
+          <div className="text-xs text-slate-500">Sedang Dilayani</div>
           <div className="text-2xl font-black">{count("IN_SERVICE")}</div>
         </Card>
         <Card className="p-4">
-          <div className="text-xs text-slate-500">Completed (Unpaid)</div>
+          <div className="text-xs text-slate-500">Layanan Selesai, Belum Lunas</div>
           <div className="text-2xl font-black">
             {
               data.filter(
@@ -86,7 +86,7 @@ export default function OrdersPage() {
                 {status === "ALL"
                   ? "All"
                   : status === "IN_SERVICE"
-                    ? "In Service"
+                    ? "Sedang Dilayani"
                     : status[0] + status.slice(1).toLowerCase()}
               </button>
             ),
@@ -95,24 +95,24 @@ export default function OrdersPage() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading active orders..." />
+            <LoadingState text="Memuat pesanan aktif..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load orders."
+              text="Pesanan belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : shown.length === 0 ? (
-            <Empty text="No active orders" />
+            <Empty text="Belum ada pesanan aktif" />
           ) : (
             <table className="w-full min-w-[800px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Order No.</th>
-                  <th>Customer</th>
+                  <th className="px-4 py-3">Nomor Pesanan</th>
+                  <th>Pelanggan</th>
                   <th>Barber</th>
-                  <th>Items</th>
+                  <th>Layanan</th>
                   <th>Status</th>
-                  <th>Payment</th>
+                  <th>Pembayaran</th>
                   <th>Check-in</th>
                 </tr>
               </thead>
@@ -122,7 +122,7 @@ export default function OrdersPage() {
                     key={order.id}
                     role="button"
                     tabIndex={0}
-                    aria-label={`Open order ${order.nomorPesanan}`}
+                    aria-label={`Buka pesanan ${order.nomorPesanan}`}
                     onClick={() => setSelectedOrderId(order.id)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -141,7 +141,7 @@ export default function OrdersPage() {
                     <td>{order.barber?.nama ?? "Belum ditentukan"}</td>
                     <td>
                       {order.items.reduce((sum, item) => sum + item.qty, 0)}{" "}
-                      items
+                      layanan
                     </td>
                     <td>
                       <StatusBadge value={order.status} />

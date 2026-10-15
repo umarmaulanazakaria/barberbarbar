@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -59,8 +60,8 @@ export default function HistoryPage() {
   return (
     <>
       <PageTitle
-        title="Order History"
-        subtitle="Completed and paid order history"
+        title="Riwayat Pesanan"
+        subtitle="Riwayat pesanan yang telah selesai dan lunas"
       />
       <Card className="overflow-hidden">
         <div className="grid gap-3 border-b border-slate-200 p-4 lg:grid-cols-[1fr_180px_180px]">
@@ -72,7 +73,7 @@ export default function HistoryPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search order, customer, barber, service..."
+              placeholder="Cari pesanan, pelanggan, barber, atau layanan..."
               className="pl-9"
             />
           </div>
@@ -80,43 +81,43 @@ export default function HistoryPage() {
             type="date"
             value={dateFrom}
             onChange={(event) => setDateFrom(event.target.value)}
-            aria-label="History from date"
+            aria-label="Riwayat dari tanggal"
           />
           <Input
             type="date"
             value={dateTo}
             onChange={(event) => setDateTo(event.target.value)}
-            aria-label="History to date"
+            aria-label="Riwayat sampai tanggal"
           />
         </div>
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading order history..." />
+            <LoadingState text="Memuat riwayat pesanan..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load order history."
+              text="Riwayat pesanan belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : !filteredOrders.length ? (
             <Empty
               text={
                 search || dateFrom || dateTo
-                  ? "No order history matches your filters"
-                  : "No completed order history yet"
+                  ? "Tidak ada riwayat pesanan yang sesuai filter"
+                  : "Belum ada riwayat pesanan selesai"
               }
             />
           ) : (
             <table className="w-full min-w-[760px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Order No.</th>
-                  <th>Customer</th>
+                  <th className="px-4 py-3">Nomor Pesanan</th>
+                  <th>Pelanggan</th>
                   <th>Barber</th>
-                  <th>Date</th>
-                  <th>Items</th>
+                  <th>Tanggal</th>
+                  <th>Layanan</th>
                   <th>Total</th>
-                  <th>Payment</th>
+                  <th>Pembayaran</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,7 +126,7 @@ export default function HistoryPage() {
                     key={order.id}
                     role="button"
                     tabIndex={0}
-                    aria-label={`Open order ${order.nomorPesanan}`}
+                    aria-label={`Buka pesanan ${order.nomorPesanan}`}
                     onClick={() => setSelectedOrderId(order.id)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -145,10 +146,10 @@ export default function HistoryPage() {
                     <td>{tanggal(order.diperbaruiPada)}</td>
                     <td>
                       {order.items.reduce((total, item) => total + item.qty, 0)}{" "}
-                      items
+                      layanan
                     </td>
                     <td className="font-bold">{rupiah(order.total)}</td>
-                    <td>{order.pembayaran?.metode ?? "-"}</td>
+                    <td>{statusRamah(order.pembayaran?.metode ?? null)}</td>
                   </tr>
                 ))}
               </tbody>

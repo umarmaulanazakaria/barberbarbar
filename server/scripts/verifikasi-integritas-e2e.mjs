@@ -12,7 +12,7 @@ const {default:db}=await import('../dist/lib/prisma.js');
 const models=['pelanggan','akunPelanggan','pengguna','barber','layanan','membership','pesanan','itemPesanan','pembayaran','riwayatStatusPesanan','passwordResetToken','permohonanPengaitanAkun','permohonanMembership','booking','itemBooking','usulanBarberBooking','riwayatBooking','transaksiPembayaranBooking','buktiProviderBooking','invoiceBooking','percobaanSnapBooking','permohonanRefundBooking'];
 const digest=x=>createHash('sha256').update(x).digest('hex');
 try{
- const data=await db.$transaction(async tx=>{const r={};for(const m of models)r[m]=await tx[m].findMany({orderBy:{id:'asc'}});return r;},{isolationLevel:'RepeatableRead'}),snapshot=JSON.stringify(data),baseline=await readFile(path.join(folder,'snapshot.json'),'utf8');
+ const data=await db.$transaction(async tx=>{const r={};for(const m of models)r[m]=await tx[m].findMany({orderBy:{id:'asc'}});return r;},{isolationLevel:'RepeatableRead'}),snapshot=JSON.stringify(data,(_k,v)=>typeof v==='bigint'?v.toString():v),baseline=await readFile(path.join(folder,'snapshot.json'),'utf8');
  assert.ok(snapshot===baseline,'22 model harus identik dengan baseline backup');
  const checks={};
  for(const [name,sql]of[

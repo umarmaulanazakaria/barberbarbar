@@ -195,7 +195,7 @@ export default function MembershipPage() {
 
       toast.success(
         edit
-          ? "Membership updated successfully"
+          ? "Membership berhasil diperbarui"
           : `Membership ${savedMembership.memberCode} created successfully`,
       );
 
@@ -221,7 +221,7 @@ export default function MembershipPage() {
         }),
       ]);
 
-      toast.success("Membership deleted successfully");
+      toast.success("Membership berhasil dihapus");
 
       setConfirmDelete(false);
 
@@ -235,10 +235,10 @@ export default function MembershipPage() {
     <>
       <PageTitle
         title="Membership"
-        subtitle="Membership codes and customer discounts"
+        subtitle="Kelola kode membership dan diskon pelanggan"
         action={
           canCreate ? (
-            <Button onClick={() => start()}>+ New Membership</Button>
+            <Button onClick={() => start()}>+ Tambah Membership</Button>
           ) : undefined
         }
       />
@@ -255,7 +255,7 @@ export default function MembershipPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search member code, customer, phone..."
+              placeholder="Cari kode member, pelanggan, atau telepon..."
               className="pl-9"
             />
           </div>
@@ -264,18 +264,18 @@ export default function MembershipPage() {
             value={statusFilter}
             onChange={(value) => setStatusFilter(String(value))}
             placeholder="Filter status"
-            searchPlaceholder="Search status..."
-            ariaLabel="Filter membership status"
+            searchPlaceholder="Cari status..."
+            ariaLabel="Filter status membership"
             options={[
               {
                 value: "ALL",
-                label: "All statuses",
+                label: "Semua status",
               },
 
               {
                 value: "ACTIVE",
 
-                label: "Active",
+                label: "Aktif",
               },
 
               {
@@ -289,31 +289,31 @@ export default function MembershipPage() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading memberships..." />
+            <LoadingState text="Memuat membership..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load memberships."
+              text="Membership belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : !filteredMemberships.length ? (
             <Empty
               text={
                 search || statusFilter !== "ALL"
-                  ? "No memberships match your filters"
-                  : "No memberships yet"
+                  ? "Tidak ada membership yang sesuai filter"
+                  : "Belum ada membership"
               }
             />
           ) : (
             <table className="w-full min-w-[680px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Member Code</th>
+                  <th className="px-4 py-3">Kode Member</th>
 
-                  <th>Customer</th>
+                  <th>Pelanggan</th>
 
-                  <th>Phone</th>
+                  <th>Telepon</th>
 
-                  <th>Discount</th>
+                  <th>Diskon</th>
 
                   <th>Status</th>
                 </tr>
@@ -365,9 +365,9 @@ export default function MembershipPage() {
         title={
           edit
             ? canManage
-              ? "Edit Membership"
-              : "Membership Details"
-            : "New Membership"
+              ? "Ubah Membership"
+              : "Detail Membership"
+            : "Tambah Membership"
         }
         onClose={() => setOpen(false)}
       >
@@ -376,7 +376,7 @@ export default function MembershipPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                  Joined
+                  Bergabung
                 </p>
 
                 <p className="mt-1 font-bold text-slate-900">
@@ -386,7 +386,7 @@ export default function MembershipPage() {
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                  Total Visits
+                  Jumlah Kunjungan
                 </p>
 
                 <p className="mt-1 font-bold text-slate-900">
@@ -396,7 +396,7 @@ export default function MembershipPage() {
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                  Total Spending
+                  Total Belanja
                 </p>
 
                 <p className="mt-1 font-bold text-slate-900">
@@ -406,13 +406,13 @@ export default function MembershipPage() {
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                  Last Visit
+                  Kunjungan Terakhir
                 </p>
 
                 <p className="mt-1 font-bold text-slate-900">
                   {selectedStats.lastVisit
                     ? tanggal(selectedStats.lastVisit)
-                    : "No visit yet"}
+                    : "Belum ada kunjungan"}
                 </p>
               </div>
             </div>
@@ -421,15 +421,15 @@ export default function MembershipPage() {
           {!edit && (
             <>
               <div>
-                <Label>Customer</Label>
+                <Label>Pelanggan</Label>
 
                 <SearchableSelect
                   value={customer}
                   onChange={(value) => setCustomer(Number(value))}
-                  placeholder="Select customer"
-                  searchPlaceholder="Search customer name or phone..."
-                  emptyText="Customer not found"
-                  ariaLabel="Select membership customer"
+                  placeholder="Pilih pelanggan"
+                  searchPlaceholder="Cari nama atau nomor telepon pelanggan..."
+                  emptyText="Pelanggan tidak ditemukan"
+                  ariaLabel="Pilih pelanggan membership"
                   options={customers
                     .filter(
                       (item) => item.status === "AKTIF" && !item.membership,
@@ -446,12 +446,12 @@ export default function MembershipPage() {
 
               <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-4">
                 <p className="text-xs font-semibold text-indigo-600">
-                  New Membership
+                  Tambah Membership
                 </p>
 
                 <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-xs text-slate-500">Discount</div>
+                    <div className="text-xs text-slate-500">Diskon</div>
 
                     <div className="font-bold text-slate-900">10%</div>
                   </div>
@@ -459,7 +459,7 @@ export default function MembershipPage() {
                   <div>
                     <div className="text-xs text-slate-500">Status</div>
 
-                    <div className="font-bold text-emerald-600">Active</div>
+                    <div className="font-bold text-emerald-600">Aktif</div>
                   </div>
                 </div>
               </div>
@@ -468,7 +468,7 @@ export default function MembershipPage() {
 
           {edit && (
             <div>
-              <Label>Customer</Label>
+              <Label>Pelanggan</Label>
 
               <Input
                 value={`${edit.pelanggan?.nama ?? "-"} — ${edit.pelanggan?.nomorTelepon ?? "-"}`}
@@ -479,7 +479,7 @@ export default function MembershipPage() {
 
           {edit && (
             <div>
-              <Label>Member Code</Label>
+              <Label>Kode Member</Label>
 
               <Input value={edit.memberCode} disabled />
             </div>
@@ -487,7 +487,7 @@ export default function MembershipPage() {
 
           {edit && (
             <div>
-              <Label>Discount (%)</Label>
+              <Label>Diskon (%)</Label>
 
               <Input
                 type="number"
@@ -508,7 +508,7 @@ export default function MembershipPage() {
                 onChange={(event) => setActive(event.target.checked)}
                 disabled={!canManage}
               />
-              Active
+              Aktif
             </label>
           )}
 
@@ -518,7 +518,7 @@ export default function MembershipPage() {
               onClick={() => save.mutate()}
               disabled={!customer || save.isPending}
             >
-              {save.isPending ? "Saving..." : "Create Membership"}
+              {save.isPending ? "Saving..." : "Tambah Membership"}
             </Button>
           )}
 
@@ -528,7 +528,7 @@ export default function MembershipPage() {
               onClick={() => save.mutate()}
               disabled={save.isPending}
             >
-              {save.isPending ? "Saving..." : "Save Membership"}
+              {save.isPending ? "Saving..." : "Simpan Membership"}
             </Button>
           )}
 
@@ -540,7 +540,7 @@ export default function MembershipPage() {
                 onClick={() => setConfirmDelete(true)}
                 disabled={remove.isPending}
               >
-                Delete Membership
+                Hapus Membership
               </Button>
             </div>
           )}
@@ -549,9 +549,9 @@ export default function MembershipPage() {
 
       <ConfirmDialog
         open={confirmDelete}
-        title="Delete Membership?"
-        description="The membership will be removed from this customer. This action cannot be undone."
-        confirmLabel="Delete Membership"
+        title="Hapus Membership?"
+        description="Membership pelanggan akan dihapus. Tindakan ini tidak dapat dibatalkan."
+        confirmLabel="Hapus Membership"
         loading={remove.isPending}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={() => edit && remove.mutate(edit.id)}

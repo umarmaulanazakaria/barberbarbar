@@ -3,7 +3,7 @@ import { z } from "zod";
 import { KesalahanMidtrans } from "../lib/midtrans.js";
 import { KesalahanPembayaranBooking } from "../services/pembayaran-booking.service.js";
 import { skemaKunciPembayaranBooking } from "../schemas/pembayaran-booking.schema.js";
-import { buatSnapBooking, notifikasiMidtrans, sinkronkanPembayaran, daftarRefund, keputusanRefund, prosesRefund } from "../services/midtrans-booking.service.js";
+import { buatSnapBooking, notifikasiMidtrans, sinkronkanPembayaranPelanggan, daftarRefund, keputusanRefund, prosesRefund } from "../services/midtrans-booking.service.js";
 const baca = <T>(skema:z.ZodType<T>,data:unknown):T=>{
  const v=skema.safeParse(data);if(!v.success)throw new KesalahanPembayaranBooking(400,"Data request tidak valid");return v.data;
 };
@@ -25,7 +25,7 @@ export const webhookMidtrans=bungkus(req=>notifikasiMidtrans(req.body));
 export const sinkronCustomer=bungkus(async req=>{
  if(!req.akunPelanggan)throw new KesalahanPembayaranBooking(401,"Customer belum login");
  baca(z.object({}).strict(),req.body??{});
- return sinkronkanPembayaran(id(req),req.akunPelanggan.pelangganId);
+ return sinkronkanPembayaranPelanggan(id(req),req.akunPelanggan.pelangganId);
 });
 export const refundCustomer=bungkus(async req=>{
  if(!req.akunPelanggan)throw new KesalahanPembayaranBooking(401,"Customer belum login");

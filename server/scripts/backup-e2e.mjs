@@ -7,7 +7,7 @@ import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import path from "node:path";
 const { default: db } = await import("../dist/lib/prisma.js");
 const model = ["pelanggan","akunPelanggan","pengguna","barber","layanan","membership","pesanan","itemPesanan","pembayaran","riwayatStatusPesanan","passwordResetToken","permohonanPengaitanAkun","permohonanMembership","booking","itemBooking","usulanBarberBooking","riwayatBooking","transaksiPembayaranBooking","buktiProviderBooking","invoiceBooking","percobaanSnapBooking","permohonanRefundBooking"];
-const snapshot = () => db.$transaction(async tx => { const hasil = {}; for (const nama of model) hasil[nama] = await tx[nama].findMany({orderBy:{id:"asc"}}); return JSON.stringify(hasil); }, {isolationLevel:"RepeatableRead"});
+const snapshot = () => db.$transaction(async tx => { const hasil = {}; for (const nama of model) hasil[nama] = await tx[nama].findMany({orderBy:{id:"asc"}}); return JSON.stringify(hasil, (_k, v) => typeof v === 'bigint' ? v.toString() : v); }, {isolationLevel:"RepeatableRead"});
 const tool = (nama,args,env=process.env,buang=false) => { const r=spawnSync(nama,args,{env,windowsHide:true,encoding:"utf8",stdio:["ignore",buang?"ignore":"pipe","pipe"],maxBuffer:8*1024*1024}); if(r.error||r.status!==0)throw new Error("BACKUP_TOOL_GAGAL");return r.stdout??""; };
 try {
  const url=new URL(process.env.DATABASE_URL??"");assert.ok(["localhost","127.0.0.1","[::1]"].includes(url.hostname));

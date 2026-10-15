@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -40,7 +41,7 @@ export default function InvoicesPage() {
 
   return (
     <>
-      <PageTitle title="Invoices" subtitle="Paid invoice list" />
+      <PageTitle title="Invoice" subtitle="Daftar invoice yang telah lunas" />
       <Card className="overflow-hidden">
         <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_220px]">
           <div className="relative">
@@ -48,37 +49,37 @@ export default function InvoicesPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search invoice, order, customer..."
+              placeholder="Cari invoice, pesanan, atau pelanggan..."
               className="pl-9"
             />
           </div>
           <SearchableSelect
             value={methodFilter}
             onChange={(value) => setMethodFilter(String(value))}
-            placeholder="Filter payment"
-            searchPlaceholder="Search payment method..."
-            ariaLabel="Filter invoice payment method"
+            placeholder="Filter pembayaran"
+            searchPlaceholder="Cari metode pembayaran..."
+            ariaLabel="Filter metode pembayaran invoice"
             options={[
-              { value: "ALL", label: "All payment methods" },
-              { value: "CASH", label: "Cash" },
+              { value: "ALL", label: "Semua metode pembayaran" },
+              { value: "CASH", label: "Tunai" },
               { value: "QRIS", label: "QRIS" },
-              { value: "CARD", label: "Card" },
+              { value: "CARD", label: "Kartu" },
               { value: "TRANSFER", label: "Transfer" },
-              { value: "OTHER", label: "Other" },
+              { value: "OTHER", label: "Lainnya" },
             ]}
           />
         </div>
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading invoices..." />
+            <LoadingState text="Memuat invoice..." />
           ) : isError ? (
-            <ErrorState text="Failed to load invoices." onRetry={() => void refetch()} />
+            <ErrorState text="Invoice belum dapat dimuat." onRetry={() => void refetch()} />
           ) : !filteredInvoices.length ? (
-            <Empty text={search || methodFilter !== "ALL" ? "No invoices match your filters" : "No paid invoices yet"} />
+            <Empty text={search || methodFilter !== "ALL" ? "Tidak ada invoice yang sesuai filter" : "Belum ada invoice lunas"} />
           ) : (
             <table className="w-full min-w-[760px] text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500"><tr><th className="px-4 py-3">Invoice No.</th><th>Order No.</th><th>Customer</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+              <thead className="bg-slate-50 text-slate-500"><tr><th className="px-4 py-3">Nomor Invoice</th><th>Nomor Pesanan</th><th>Pelanggan</th><th>Tanggal</th><th>Total</th><th>Pembayaran</th><th>Status</th></tr></thead>
               <tbody>
                 {filteredInvoices.map((invoice) => (
                   <tr
@@ -91,7 +92,7 @@ export default function InvoicesPage() {
                     className="group cursor-pointer border-t border-slate-100 transition-all duration-200 hover:bg-indigo-50/70 hover:shadow-[inset_4px_0_0_#4f46e5] focus-visible:bg-indigo-50/70 focus-visible:outline-none focus-visible:shadow-[inset_4px_0_0_#4f46e5] active:bg-indigo-100/70"
                   >
                     <td className="px-4 py-3 font-bold text-indigo-600"><span className="inline-flex transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">{invoice.nomorInvoice}</span></td>
-                    <td>{invoice.pesanan.nomorPesanan}</td><td>{invoice.pesanan.pelanggan.nama}</td><td>{tanggal(invoice.dibayarPada)}</td><td className="font-bold">{rupiah(invoice.pesanan.total)}</td><td>{invoice.metode}</td><td><StatusBadge value="PAID" /></td>
+                    <td>{invoice.pesanan.nomorPesanan}</td><td>{invoice.pesanan.pelanggan.nama}</td><td>{tanggal(invoice.dibayarPada)}</td><td className="font-bold">{rupiah(invoice.pesanan.total)}</td><td>{statusRamah(invoice.metode)}</td><td><StatusBadge value="PAID" /></td>
                   </tr>
                 ))}
               </tbody>

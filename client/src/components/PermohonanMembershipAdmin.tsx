@@ -1,3 +1,4 @@
+import { statusRamah } from '../lib/teks';
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, pesanError } from "../lib/api";
@@ -27,7 +28,7 @@ export default function PermohonanMembershipAdmin() {
       <p>Permohonan belum dapat dimuat. <button type="button" onClick={() => void daftar.refetch()}>Coba lagi</button></p> :
       daftar.data.length === 0 ? <p>Belum ada permohonan.</p> :
         <ul className="space-y-3">{daftar.data.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded border p-3">
-          <div><strong>{item.pelanggan.nama}</strong><p>{item.status} · Pelanggan {item.pelanggan.status}</p></div>
+          <div><strong>{item.pelanggan.nama}</strong><p>{statusRamah(item.status)} · Pelanggan {statusRamah(item.pelanggan.status)}</p></div>
           {item.status === "PENDING_APPROVAL" && <div className="flex gap-2">
             <Button disabled={keputusan.isPending || item.pelanggan.status !== "AKTIF"}
               onClick={() => keputusan.mutate({ id: item.id, aksi: "approve" })}>Setujui</Button>

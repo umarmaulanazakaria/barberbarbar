@@ -116,8 +116,8 @@ export default function CustomersPage() {
       await qc.invalidateQueries({ queryKey: ["customers"] });
       toast.success(
         edit
-          ? "Customer updated successfully"
-          : "Customer created successfully",
+          ? "Data pelanggan berhasil diperbarui"
+          : "Pelanggan berhasil ditambahkan",
       );
       setOpen(false);
     },
@@ -149,8 +149,8 @@ export default function CustomersPage() {
       );
       toast.success(
         unblock
-          ? "Customer unblocked successfully"
-          : "Customer blocked successfully",
+          ? "Blokir pelanggan berhasil dibuka"
+          : "Pelanggan berhasil diblokir",
       );
       setConfirmAction(null);
       await refreshAndClose();
@@ -167,7 +167,7 @@ export default function CustomersPage() {
     setDeletePending(true);
     try {
       await api.delete(`/pelanggan/${edit.id}`);
-      toast.success("Customer deleted successfully");
+      toast.success("Pelanggan berhasil dihapus");
       setConfirmAction(null);
       await refreshAndClose();
     } catch (error) {
@@ -179,25 +179,25 @@ export default function CustomersPage() {
 
   const confirmTitle =
     confirmAction === "delete"
-      ? "Delete Customer?"
+      ? "Hapus Pelanggan?"
       : confirmAction === "unblock"
-        ? "Unblock Customer?"
-        : "Block Customer?";
+        ? "Buka Blokir Pelanggan?"
+        : "Blokir Pelanggan?";
 
   const confirmDescription =
     confirmAction === "delete"
-      ? "This action cannot be undone. Customers with order history cannot be deleted."
+      ? "Tindakan ini tidak dapat dibatalkan. Pelanggan dengan riwayat pesanan tidak dapat dihapus."
       : confirmAction === "unblock"
-        ? "This customer will be allowed to create new orders again."
-        : "Blocked customers cannot create new orders until they are unblocked.";
+        ? "Pelanggan ini dapat membuat pesanan kembali."
+        : "Pelanggan yang diblokir tidak dapat membuat pesanan hingga blokir dibuka.";
 
   return (
     <>
       {user?.role === "ADMIN" && <PermohonanPengaitanAdmin />}
       <PageTitle
-        title="Customers"
-        subtitle="Customer information and blocked customers"
-        action={<Button onClick={() => start()}>+ New Customer</Button>}
+        title="Pelanggan"
+        subtitle="Kelola informasi dan status pelanggan"
+        action={<Button onClick={() => start()}>+ Tambah Pelanggan</Button>}
       />
 
       <Card className="overflow-hidden">
@@ -210,7 +210,7 @@ export default function CustomersPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search customer, phone, address, membership..."
+              placeholder="Cari pelanggan, telepon, alamat, atau membership..."
               className="pl-9"
             />
           </div>
@@ -218,25 +218,25 @@ export default function CustomersPage() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading customers..." />
+            <LoadingState text="Memuat pelanggan..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load customers."
+              text="Data pelanggan belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : filteredCustomers.length === 0 ? (
             <Empty
               text={
-                search ? "No customers match your search" : "No customers yet"
+                search ? "Tidak ada pelanggan yang sesuai pencarian" : "Belum ada pelanggan"
               }
             />
           ) : (
             <table className="w-full min-w-[720px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Customer</th>
-                  <th>Phone</th>
-                  <th>Address</th>
+                  <th className="px-4 py-3">Pelanggan</th>
+                  <th>Telepon</th>
+                  <th>Alamat</th>
                   <th>Membership</th>
                   <th>Status</th>
                 </tr>
@@ -284,7 +284,7 @@ export default function CustomersPage() {
 
       <Modal
         open={open}
-        title={edit ? "Edit Customer" : "New Customer"}
+        title={edit ? "Ubah Pelanggan" : "Tambah Pelanggan"}
         onClose={() => setOpen(false)}
       >
         <div className="space-y-4">
@@ -293,7 +293,7 @@ export default function CustomersPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                    Total Visits
+                    Jumlah Kunjungan
                   </p>
                   <p className="mt-1 text-lg font-black text-slate-900">
                     {customerStats.visits}
@@ -301,7 +301,7 @@ export default function CustomersPage() {
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                    Total Spending
+                    Total Belanja
                   </p>
                   <p className="mt-1 text-lg font-black text-slate-900">
                     {rupiah(customerStats.spending)}
@@ -312,13 +312,13 @@ export default function CustomersPage() {
               <div className="rounded-xl border border-slate-200">
                 <div className="border-b border-slate-200 px-3 py-2.5">
                   <p className="text-xs font-black text-slate-800">
-                    Visit History
+                    Riwayat Kunjungan
                   </p>
                 </div>
                 <div className="max-h-56 overflow-y-auto">
                   {!customerHistory.length ? (
                     <p className="px-3 py-5 text-center text-xs text-slate-400">
-                      No order history yet
+                      Belum ada riwayat pesanan
                     </p>
                   ) : (
                     customerHistory.map((order) => (
@@ -366,7 +366,7 @@ export default function CustomersPage() {
           )}
 
           <div>
-            <Label>Name</Label>
+            <Label>Nama</Label>
             <Input
               value={nama}
               onChange={(event) => setNama(event.target.value)}
@@ -374,7 +374,7 @@ export default function CustomersPage() {
           </div>
 
           <div>
-            <Label>Phone</Label>
+            <Label>Telepon</Label>
             <Input
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
@@ -382,13 +382,13 @@ export default function CustomersPage() {
             />
             {edit?.status === "DIBLOKIR" && (
               <p className="mt-1.5 text-xs text-slate-500">
-                Phone number cannot be changed while this customer is blocked.
+                Nomor telepon tidak dapat diubah selama pelanggan diblokir.
               </p>
             )}
           </div>
 
           <div>
-            <Label>Address</Label>
+            <Label>Alamat</Label>
             <Input
               value={alamat}
               onChange={(event) => setAlamat(event.target.value)}
@@ -400,7 +400,7 @@ export default function CustomersPage() {
             disabled={!nama || !phone || save.isPending}
             onClick={() => save.mutate()}
           >
-            {save.isPending ? "Saving..." : "Save Customer"}
+            {save.isPending ? "Saving..." : "Simpan Pelanggan"}
           </Button>
 
           {edit && (
@@ -416,8 +416,8 @@ export default function CustomersPage() {
                   }
                 >
                   {edit.status === "DIBLOKIR"
-                    ? "Unblock Customer"
-                    : "Block Customer"}
+                    ? "Buka Blokir Pelanggan"
+                    : "Blokir Pelanggan"}
                 </Button>
 
                 {user?.role === "ADMIN" && (
@@ -426,7 +426,7 @@ export default function CustomersPage() {
                     disabled={deletePending}
                     onClick={() => setConfirmAction("delete")}
                   >
-                    Delete Customer
+                    Hapus Pelanggan
                   </Button>
                 )}
               </div>
@@ -441,10 +441,10 @@ export default function CustomersPage() {
         description={confirmDescription}
         confirmLabel={
           confirmAction === "delete"
-            ? "Delete Customer"
+            ? "Hapus Pelanggan"
             : confirmAction === "unblock"
-              ? "Unblock Customer"
-              : "Block Customer"
+              ? "Buka Blokir Pelanggan"
+              : "Blokir Pelanggan"
         }
         variant={confirmAction === "unblock" ? "success" : "danger"}
         loading={statusPending || deletePending}

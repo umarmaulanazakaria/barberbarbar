@@ -10,6 +10,7 @@ export type Booking = {
   riwayat: { aksi: string; statusSebelum: string | null; statusSetelah: string; rincian: unknown; dibuatPada: string }[];
 };
 export type RingkasanBooking = {
+  pembayaranPercobaan?: boolean;
   subtotal: number; diskon: number; total: number; jumlahDibayar: number; balance: number; kelebihan: number;
   nominalDpAwal: number; dpTerverifikasi: boolean; statusPembayaran: string; invoiceSementara: boolean;
   invoice: { id: number; nomorInvoice: string; total: number; dibuatPada: string } | null;

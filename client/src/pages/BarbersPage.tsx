@@ -93,7 +93,7 @@ export default function BarbersPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["barbers"] });
       toast.success(
-        edit ? "Barber updated successfully" : "Barber created successfully",
+        edit ? "Data barber berhasil diperbarui" : "Barber berhasil ditambahkan",
       );
       setOpen(false);
     },
@@ -107,7 +107,7 @@ export default function BarbersPage() {
     try {
       await api.delete(`/barbers/${edit.id}`);
       await queryClient.invalidateQueries({ queryKey: ["barbers"] });
-      toast.success("Barber deleted successfully");
+      toast.success("Barber berhasil dihapus");
       setConfirmDelete(false);
       setOpen(false);
     } catch (error) {
@@ -120,11 +120,11 @@ export default function BarbersPage() {
   return (
     <>
       <PageTitle
-        title="Barbers"
-        subtitle="Manage barber staff"
+        title="Barber"
+        subtitle="Kelola data barber"
         action={
           canManage ? (
-            <Button onClick={() => start()}>+ New Barber</Button>
+            <Button onClick={() => start()}>+ Tambah Barber</Button>
           ) : undefined
         }
       />
@@ -139,7 +139,7 @@ export default function BarbersPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search barber name or phone..."
+              placeholder="Cari nama atau nomor telepon barber..."
               className="pl-9"
             />
           </div>
@@ -147,11 +147,11 @@ export default function BarbersPage() {
             value={statusFilter}
             onChange={(value) => setStatusFilter(String(value))}
             placeholder="Filter status"
-            searchPlaceholder="Search status..."
-            ariaLabel="Filter barber status"
+            searchPlaceholder="Cari status..."
+            ariaLabel="Filter status barber"
             options={[
-              { value: "ALL", label: "All statuses" },
-              { value: "ACTIVE", label: "Active" },
+              { value: "ALL", label: "Semua status" },
+              { value: "ACTIVE", label: "Aktif" },
               { value: "INACTIVE", label: "Inactive" },
             ]}
           />
@@ -159,26 +159,26 @@ export default function BarbersPage() {
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <LoadingState text="Loading barbers..." />
+            <LoadingState text="Memuat barber..." />
           ) : isError ? (
             <ErrorState
-              text="Failed to load barbers."
+              text="Data barber belum dapat dimuat."
               onRetry={() => void refetch()}
             />
           ) : !filteredBarbers.length ? (
             <Empty
               text={
                 search || statusFilter !== "ALL"
-                  ? "No barbers match your filters"
-                  : "No barbers yet"
+                  ? "Tidak ada barber yang sesuai filter"
+                  : "Belum ada barber"
               }
             />
           ) : (
             <table className="w-full min-w-[600px] text-left text-xs">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Name</th>
-                  <th>Phone</th>
+                  <th className="px-4 py-3">Nama</th>
+                  <th>Telepon</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -217,13 +217,13 @@ export default function BarbersPage() {
       <Modal
         open={open}
         title={
-          edit ? (canManage ? "Edit Barber" : "Barber Details") : "New Barber"
+          edit ? (canManage ? "Ubah Barber" : "Detail Barber") : "Tambah Barber"
         }
         onClose={() => setOpen(false)}
       >
         <div className="space-y-4">
           <div>
-            <Label>Name</Label>
+            <Label>Nama</Label>
             <Input
               value={nama}
               onChange={(event) => setNama(event.target.value)}
@@ -231,7 +231,7 @@ export default function BarbersPage() {
             />
           </div>
           <div>
-            <Label>Phone</Label>
+            <Label>Telepon</Label>
             <Input
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
@@ -245,7 +245,7 @@ export default function BarbersPage() {
               onChange={(event) => setAktif(event.target.checked)}
               disabled={!canManage}
             />
-            Active
+            Aktif
           </label>
 
           {canManage && (
@@ -254,7 +254,7 @@ export default function BarbersPage() {
               onClick={() => save.mutate()}
               disabled={!nama || save.isPending}
             >
-              {save.isPending ? "Saving..." : "Save Barber"}
+              {save.isPending ? "Saving..." : "Simpan Barber"}
             </Button>
           )}
 
@@ -266,7 +266,7 @@ export default function BarbersPage() {
                 onClick={() => setConfirmDelete(true)}
                 disabled={deletePending}
               >
-                Delete Barber
+                Hapus Barber
               </Button>
             </div>
           )}
@@ -275,9 +275,9 @@ export default function BarbersPage() {
 
       <ConfirmDialog
         open={confirmDelete}
-        title="Delete Barber?"
-        description="This barber can only be deleted if they do not have any order history."
-        confirmLabel="Delete Barber"
+        title="Hapus Barber?"
+        description="Barber hanya dapat dihapus jika belum memiliki riwayat pesanan."
+        confirmLabel="Hapus Barber"
         loading={deletePending}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={deleteBarber}

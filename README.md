@@ -34,6 +34,19 @@ Mobile Staff memakai JWT operator; Customer memakai JWT CUSTOMER tanpa akses ope
 
 ## Menjalankan lokal
 
+Untuk dependency dan environment yang sudah tersedia, gunakan satu launcher Windows dari folder ini:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\jalankan-barberbarbar.ps1 -HanyaBackend
+# Tambahkan -Ngrok hanya saat menguji pembayaran; forwarding wajib ke proxy 3001.
+# Tambahkan -Periksa untuk pemeriksaan read-only tanpa menjalankan proses baru.
+```
+
+Launcher memeriksa identitas backend, memakai port 3000 dan proxy webhook 3001,
+serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web dan kedua
+Expo ikut dijalankan bila port kosong. Panduan pemulihan status, hasil pengujian
+dan batas webhook laptop ada di [audit pembayaran dan antarmuka](docs/PAYMENT-WEBHOOK-UI-COPY-AUDIT.md).
+
 Persyaratan: Node.js/npm sesuai lockfile (baseline Node 24), PostgreSQL, serta `pg_dump`/`pg_restore` untuk backup. Database existing memerlukan konfigurasi pemilik. Dari `server`, pasang dependency lalu buat `.env` berdasarkan `.env.example`:
 
 ```powershell

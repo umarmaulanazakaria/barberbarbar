@@ -1,0 +1,26 @@
+{
+  "jenis": "Entrypoint aktual, error sintetis, tanpa mutasi DB/provider",
+  "results": [
+    {
+      "jenis": "rejection",
+      "kode": 1,
+      "logAman": true,
+      "listenerTertutup": true,
+      "status": "PASS"
+    },
+    {
+      "jenis": "exception",
+      "kode": 1,
+      "logAman": true,
+      "listenerTertutup": true,
+      "status": "PASS"
+    },
+    {
+      "jenis": "disconnect",
+      "kode": 1,
+      "logAman": true,
+      "listenerTertutup": true,
+      "status": "PASS"
+    }
+  ]
+}

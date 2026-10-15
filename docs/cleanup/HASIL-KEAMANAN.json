@@ -1,0 +1,10 @@
+{
+  "tanggal": "2026-10-15T02:25:09.845Z",
+  "berkasDipindai": 78,
+  "temuanRahasia": 0,
+  "temuanDataPribadi": 0,
+  "envAsliTracked": 0,
+  "historisUtuh": true,
+  "status": "PASS",
+  "batas": "Pencocokan exact terhadap credential proses dan email/telepon/nama>=8 karakter pada snapshot; bukan jaminan menyeluruh semua secret/PII di seluruh repo/history."
+}

@@ -8,6 +8,15 @@ import routerPesanan from "./routes/pesanan.routes.js";
 import routerInvoice from "./routes/invoice.routes.js";
 import routerDashboard from "./routes/dashboard.routes.js";
 import routerItemPesanan from "./routes/item-pesanan.routes.js";
+import routerAuthPelanggan from "./routes/auth-pelanggan.routes.js";
+import routerPublik from "./routes/publik.routes.js";
+import routerMembershipPelanggan from "./routes/membership-pelanggan.routes.js";
+import routerPermohonanMembership from "./routes/permohonan-membership.routes.js";
+import routerBooking from "./routes/booking.routes.js";
+import routerOperasionalBooking from "./routes/operasional-booking.routes.js";
+import routerMidtrans from "./routes/midtrans.routes.js";
+import routerRefundBooking from "./routes/refund-booking.routes.js";
+import routerPaymentCustomer from "./routes/payment-customer.routes.js";
 import { autentikasi } from "./middleware/auth.middleware.js";
 import {
   tidakDitemukan,
@@ -20,6 +29,15 @@ aplikasi.get("/", (_req, res) =>
   res.json({ pesan: "Barbershop Management API berjalan" }),
 );
 aplikasi.use("/auth", routerAuth);
+aplikasi.use("/auth/customer", routerAuthPelanggan);
+aplikasi.use("/public", routerPublik);
+aplikasi.use("/customer/membership", routerMembershipPelanggan);
+aplikasi.use("/customer/bookings", routerBooking);
+aplikasi.use("/bookings", autentikasi, routerOperasionalBooking);
+aplikasi.use("/midtrans",routerMidtrans);
+aplikasi.use("/refund-requests",routerRefundBooking);
+aplikasi.use("/customer",routerPaymentCustomer);
+aplikasi.use("/membership-requests", routerPermohonanMembership);
 aplikasi.use("/pelanggan", autentikasi, routerPelanggan);
 aplikasi.use("/customers", autentikasi, routerPelanggan);
 aplikasi.use("/barbers", autentikasi, routerBarber);

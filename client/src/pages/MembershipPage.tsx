@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 import ConfirmDialog from "../components/ConfirmDialog";
+import PermohonanMembershipAdmin from "../components/PermohonanMembershipAdmin";
 
 import { rupiah, tanggal } from "../lib/format";
 
@@ -242,6 +243,7 @@ export default function MembershipPage() {
         }
       />
 
+      {canManage && <PermohonanMembershipAdmin />}
       <Card className="overflow-hidden">
         <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_220px]">
           <div className="relative">

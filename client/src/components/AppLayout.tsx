@@ -17,10 +17,13 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import RealtimeOperator from "./RealtimeOperator";
 
 const menu = [
   ["Dashboard", "/", LayoutDashboard],
   ["Orders", "/orders", CalendarDays],
+  ["Booking Customer", "/bookings", CalendarDays],
+  ["Refund", "/refunds", ReceiptText],
   ["Customers", "/customers", Users],
   ["Membership", "/membership", Tags],
   ["Barbers", "/barbers", UserRound],
@@ -54,6 +57,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-[#f6f8fc]">
+      <RealtimeOperator />
       {open && (
         <button
           type="button"
@@ -93,7 +97,7 @@ export default function AppLayout() {
         </div>
 
         <nav className="scrollbar-thin h-[calc(100dvh-160px)] overflow-y-auto p-3">
-          {menu.map(([label, to, Icon]) => (
+          {menu.filter(([, to]) => to !== "/refunds" || user?.role === "ADMIN").map(([label, to, Icon]) => (
             <NavLink
               key={to}
               to={to}

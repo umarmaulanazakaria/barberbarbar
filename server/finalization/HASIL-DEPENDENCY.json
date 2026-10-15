@@ -1,0 +1,686 @@
+{
+  "tanggal": "2026-10-15T01:07:37.746Z",
+  "catatan": "omitDev adalah klasifikasi npm; tooling Expo dapat tercantum sebagai dependencies produksi, bukan bukti seluruh advisory dapat dicapai bundle mobile",
+  "results": [
+    {
+      "project": "backend",
+      "paketLangsung": {
+        "@prisma/adapter-pg": "^7.10.0",
+        "@prisma/client": "^7.10.0",
+        "bcrypt": "^6.0.0",
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "midtrans-client": "^1.4.3",
+        "pg": "^8.23.0",
+        "socket.io": "^4.8.4",
+        "zod": "^4.5.4"
+      },
+      "paketDevelopment": {
+        "@types/bcrypt": "^6.0.0",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/midtrans-client": "^1.4.0",
+        "@types/node": "^26.4.1",
+        "@types/pg": "^8.23.1",
+        "eslint": "^10.10.0",
+        "prisma": "^7.10.0",
+        "socket.io-client": "^4.8.4",
+        "tsx": "^4.23.13",
+        "typescript": "^7.0.2"
+      },
+      "terpasang": {
+        "@prisma/adapter-pg": "7.10.0",
+        "@prisma/client": "7.10.0",
+        "bcrypt": "6.0.0",
+        "dotenv": "17.4.2",
+        "express": "5.2.1",
+        "jsonwebtoken": "9.0.3",
+        "midtrans-client": "1.4.3",
+        "pg": "8.23.0",
+        "socket.io": "4.8.4",
+        "zod": "4.5.4",
+        "@types/bcrypt": "6.0.0",
+        "@types/express": "5.0.6",
+        "@types/jsonwebtoken": "9.0.10",
+        "@types/midtrans-client": "1.4.0",
+        "@types/node": "26.4.1",
+        "@types/pg": "8.23.1",
+        "eslint": "10.10.0",
+        "prisma": "7.10.0",
+        "socket.io-client": "4.8.4",
+        "tsx": "4.23.13",
+        "typescript": "7.0.2"
+      },
+      "lengkap": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 4,
+          "critical": 0,
+          "total": 4
+        },
+        "akar": [
+          {
+            "name": "deepmerge-ts",
+            "severity": "high",
+            "direct": false,
+            "range": "<8.0.0",
+            "fixAvailable": {
+              "name": "prisma",
+              "version": "6.19.3",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "DeepmergeTS has stack exhaustion when merging recursive object graphs",
+                "url": "https://github.com/advisories/GHSA-ggr8-5vv4-36mx",
+                "range": "<8.0.0"
+              }
+            ],
+            "effects": [
+              "@prisma/config"
+            ]
+          },
+          {
+            "name": "mysql2",
+            "severity": "high",
+            "direct": false,
+            "range": "<=3.23.0",
+            "fixAvailable": {
+              "name": "prisma",
+              "version": "6.19.3",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "MySQL2: Auth Plugin Downgrade to mysql_clear_password Leaks Plaintext Credentials",
+                "url": "https://github.com/advisories/GHSA-3f6p-5ww8-9rcr",
+                "range": "<3.22.0"
+              },
+              {
+                "title": "MySQL2: Unbounded zlib inflate in compressed MySQL protocol handler allows decompression-bomb DoS",
+                "url": "https://github.com/advisories/GHSA-rgwj-5xj2-c3m3",
+                "range": "<=3.23.0"
+              }
+            ],
+            "effects": [
+              "prisma"
+            ]
+          }
+        ]
+      },
+      "omitDev": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 4,
+          "critical": 0,
+          "total": 4
+        },
+        "akar": [
+          {
+            "name": "deepmerge-ts",
+            "severity": "high",
+            "direct": false,
+            "range": "<8.0.0",
+            "fixAvailable": {
+              "name": "prisma",
+              "version": "6.19.3",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "DeepmergeTS has stack exhaustion when merging recursive object graphs",
+                "url": "https://github.com/advisories/GHSA-ggr8-5vv4-36mx",
+                "range": "<8.0.0"
+              }
+            ],
+            "effects": [
+              "@prisma/config"
+            ]
+          },
+          {
+            "name": "mysql2",
+            "severity": "high",
+            "direct": false,
+            "range": "<=3.23.0",
+            "fixAvailable": {
+              "name": "prisma",
+              "version": "6.19.3",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "MySQL2: Auth Plugin Downgrade to mysql_clear_password Leaks Plaintext Credentials",
+                "url": "https://github.com/advisories/GHSA-3f6p-5ww8-9rcr",
+                "range": "<3.22.0"
+              },
+              {
+                "title": "MySQL2: Unbounded zlib inflate in compressed MySQL protocol handler allows decompression-bomb DoS",
+                "url": "https://github.com/advisories/GHSA-rgwj-5xj2-c3m3",
+                "range": "<=3.23.0"
+              }
+            ],
+            "effects": [
+              "prisma"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "project": "web",
+      "paketLangsung": {
+        "@tanstack/react-query": "^5.87.1",
+        "axios": "^1.11.0",
+        "lucide-react": "^0.542.0",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "react-router-dom": "^6.30.1",
+        "socket.io-client": "^4.8.4",
+        "zod": "^4.1.5"
+      },
+      "paketDevelopment": {
+        "@playwright/test": "^1.64.1",
+        "@tailwindcss/vite": "^4.1.13",
+        "@types/react": "^19.1.12",
+        "@types/react-dom": "^19.1.9",
+        "@vitejs/plugin-react": "^5.0.2",
+        "tailwindcss": "^4.1.13",
+        "typescript": "^5.9.2",
+        "vite": "^7.1.5"
+      },
+      "terpasang": {
+        "@tanstack/react-query": "5.102.8",
+        "axios": "1.20.0",
+        "lucide-react": "0.542.0",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+        "react-router-dom": "6.30.6",
+        "socket.io-client": "4.8.4",
+        "zod": "4.6.2",
+        "@playwright/test": "1.64.1",
+        "@tailwindcss/vite": "4.3.3",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "5.2.0",
+        "tailwindcss": "4.3.3",
+        "typescript": "5.9.3",
+        "vite": "7.3.6"
+      },
+      "lengkap": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 2,
+          "high": 0,
+          "critical": 0,
+          "total": 2
+        },
+        "akar": [
+          {
+            "name": "react-router",
+            "severity": "moderate",
+            "direct": false,
+            "range": "6.0.0 - 7.17.0",
+            "fixAvailable": {
+              "name": "react-router-dom",
+              "version": "7.18.4",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+                "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+                "range": ">=6.0.0 <7.18.0"
+              },
+              {
+                "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+                "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+                "range": ">=6.4.0 <7.18.0"
+              }
+            ],
+            "effects": [
+              "react-router-dom"
+            ]
+          }
+        ]
+      },
+      "omitDev": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 2,
+          "high": 0,
+          "critical": 0,
+          "total": 2
+        },
+        "akar": [
+          {
+            "name": "react-router",
+            "severity": "moderate",
+            "direct": false,
+            "range": "6.0.0 - 7.17.0",
+            "fixAvailable": {
+              "name": "react-router-dom",
+              "version": "7.18.4",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+                "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+                "range": ">=6.0.0 <7.18.0"
+              },
+              {
+                "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+                "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+                "range": ">=6.4.0 <7.18.0"
+              }
+            ],
+            "effects": [
+              "react-router-dom"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "project": "staff",
+      "paketLangsung": {
+        "@expo/vector-icons": "^15.0.2",
+        "@react-navigation/bottom-tabs": "^7.19.2",
+        "@react-navigation/native": "^7.4.1",
+        "@react-navigation/native-stack": "^7.18.10",
+        "axios": "^1.20.0",
+        "expo": "~57.0.29",
+        "expo-secure-store": "~57.0.4",
+        "expo-status-bar": "~57.0.1",
+        "react": "19.2.3",
+        "react-native": "0.86.3",
+        "react-native-safe-area-context": "~5.7.0",
+        "react-native-screens": "~4.26.0",
+        "socket.io-client": "^4.8.4",
+        "zustand": "^5.0.15"
+      },
+      "paketDevelopment": {
+        "@types/react": "~19.2.2",
+        "typescript": "~6.0.3"
+      },
+      "terpasang": {
+        "@expo/vector-icons": "15.1.1",
+        "@react-navigation/bottom-tabs": "7.19.2",
+        "@react-navigation/native": "7.4.1",
+        "@react-navigation/native-stack": "7.18.10",
+        "axios": "1.20.0",
+        "expo": "57.0.29",
+        "expo-secure-store": "57.0.4",
+        "expo-status-bar": "57.0.1",
+        "react": "19.2.3",
+        "react-native": "0.86.3",
+        "react-native-safe-area-context": "5.7.0",
+        "react-native-screens": "4.26.2",
+        "socket.io-client": "4.8.4",
+        "zustand": "5.0.15",
+        "@types/react": "19.2.18",
+        "typescript": "6.0.3"
+      },
+      "lengkap": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 7,
+          "high": 15,
+          "critical": 0,
+          "total": 22
+        },
+        "akar": [
+          {
+            "name": "braces",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+                "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+                "range": "<=3.0.3"
+              }
+            ],
+            "effects": [
+              "micromatch"
+            ]
+          },
+          {
+            "name": "node-forge",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+                "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+                "range": "<=1.4.0"
+              }
+            ],
+            "effects": [
+              "@expo/cli",
+              "@expo/code-signing-certificates"
+            ]
+          },
+          {
+            "name": "uuid",
+            "severity": "moderate",
+            "direct": false,
+            "range": "<11.1.1",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+                "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+                "range": "<11.1.1"
+              }
+            ],
+            "effects": [
+              "xcode"
+            ]
+          }
+        ]
+      },
+      "omitDev": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 7,
+          "high": 15,
+          "critical": 0,
+          "total": 22
+        },
+        "akar": [
+          {
+            "name": "braces",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+                "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+                "range": "<=3.0.3"
+              }
+            ],
+            "effects": [
+              "micromatch"
+            ]
+          },
+          {
+            "name": "node-forge",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+                "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+                "range": "<=1.4.0"
+              }
+            ],
+            "effects": [
+              "@expo/cli",
+              "@expo/code-signing-certificates"
+            ]
+          },
+          {
+            "name": "uuid",
+            "severity": "moderate",
+            "direct": false,
+            "range": "<11.1.1",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+                "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+                "range": "<11.1.1"
+              }
+            ],
+            "effects": [
+              "xcode"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "project": "customer",
+      "paketLangsung": {
+        "@expo/vector-icons": "^15.0.2",
+        "@react-native-community/datetimepicker": "9.1.0",
+        "@react-navigation/bottom-tabs": "7.19.2",
+        "@react-navigation/native": "7.4.1",
+        "@react-navigation/native-stack": "7.18.10",
+        "@tanstack/react-query": "5.102.8",
+        "axios": "1.20.0",
+        "expo": "~57.0.28",
+        "expo-crypto": "~57.0.4",
+        "expo-secure-store": "~57.0.4",
+        "expo-status-bar": "~57.0.1",
+        "expo-web-browser": "~57.0.3",
+        "react": "19.2.3",
+        "react-native": "0.86.3",
+        "react-native-safe-area-context": "~5.7.0",
+        "react-native-screens": "~4.26.0",
+        "socket.io-client": "4.8.4"
+      },
+      "paketDevelopment": {
+        "@types/react": "~19.2.2",
+        "esbuild": "0.28.2",
+        "typescript": "~6.0.3"
+      },
+      "terpasang": {
+        "@expo/vector-icons": "15.1.1",
+        "@react-native-community/datetimepicker": "9.1.0",
+        "@react-navigation/bottom-tabs": "7.19.2",
+        "@react-navigation/native": "7.4.1",
+        "@react-navigation/native-stack": "7.18.10",
+        "@tanstack/react-query": "5.102.8",
+        "axios": "1.20.0",
+        "expo": "57.0.29",
+        "expo-crypto": "57.0.4",
+        "expo-secure-store": "57.0.4",
+        "expo-status-bar": "57.0.1",
+        "expo-web-browser": "57.0.3",
+        "react": "19.2.3",
+        "react-native": "0.86.3",
+        "react-native-safe-area-context": "5.7.0",
+        "react-native-screens": "4.26.2",
+        "socket.io-client": "4.8.4",
+        "@types/react": "19.2.18",
+        "esbuild": "0.28.2",
+        "typescript": "6.0.3"
+      },
+      "lengkap": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 7,
+          "high": 16,
+          "critical": 0,
+          "total": 23
+        },
+        "akar": [
+          {
+            "name": "braces",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+                "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+                "range": "<=3.0.3"
+              }
+            ],
+            "effects": [
+              "micromatch"
+            ]
+          },
+          {
+            "name": "node-forge",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+                "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+                "range": "<=1.4.0"
+              }
+            ],
+            "effects": [
+              "@expo/cli",
+              "@expo/code-signing-certificates"
+            ]
+          },
+          {
+            "name": "uuid",
+            "severity": "moderate",
+            "direct": false,
+            "range": "<11.1.1",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+                "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+                "range": "<11.1.1"
+              }
+            ],
+            "effects": [
+              "xcode"
+            ]
+          }
+        ]
+      },
+      "omitDev": {
+        "jumlah": {
+          "info": 0,
+          "low": 0,
+          "moderate": 7,
+          "high": 16,
+          "critical": 0,
+          "total": 23
+        },
+        "akar": [
+          {
+            "name": "braces",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+                "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+                "range": "<=3.0.3"
+              }
+            ],
+            "effects": [
+              "micromatch"
+            ]
+          },
+          {
+            "name": "node-forge",
+            "severity": "high",
+            "direct": false,
+            "range": "*",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+                "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+                "range": "<=1.4.0"
+              }
+            ],
+            "effects": [
+              "@expo/cli",
+              "@expo/code-signing-certificates"
+            ]
+          },
+          {
+            "name": "uuid",
+            "severity": "moderate",
+            "direct": false,
+            "range": "<11.1.1",
+            "fixAvailable": {
+              "name": "expo",
+              "version": "44.0.6",
+              "isSemVerMajor": true
+            },
+            "via": [
+              {
+                "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+                "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+                "range": "<11.1.1"
+              }
+            ],
+            "effects": [
+              "xcode"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

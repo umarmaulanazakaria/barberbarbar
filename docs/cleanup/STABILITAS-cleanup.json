@@ -1,0 +1,13 @@
+{
+  "jenis": "Edge headless, browser UI aktual; SDK native adapter, provider MOCK",
+  "hasil": [
+    {
+      "urutan": 1,
+      "exit": 0,
+      "detik": 17,
+      "status": "PASS",
+      "cleanup": true,
+      "bukti": "artifacts/stabilitas/browser-cleanup-1/HASIL-BROWSER.json"
+    }
+  ]
+}

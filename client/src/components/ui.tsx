@@ -390,18 +390,25 @@ export const Modal = ({
 
 export const StatusBadge = ({ value }: { value: string }) => {
   const cls =
-    value === "WAITING"
+    value === "WAITING" || value === "PENDING_CONFIRMATION" || value === "PENDING_APPROVAL"
       ? "bg-indigo-50 text-indigo-600"
-      : value === "IN_SERVICE"
+      : value === "IN_SERVICE" || value === "PROCESSING" || value === "PENDING"
         ? "bg-amber-50 text-amber-600"
-        : value === "COMPLETED" || value === "PAID" || value === "AKTIF"
+        : value === "COMPLETED" || value === "PAID" || value === "AKTIF" || value === "SUCCEEDED" || value === "CONFIRMED" || value === "CHECKED_IN" || value === "DP_PAID"
           ? "bg-emerald-50 text-emerald-600"
-          : value === "UNPAID" || value === "DIBLOKIR"
+          : value === "UNPAID" || value === "DIBLOKIR" || value === "OVERDUE" || value === "REJECTED" || value === "FAILED" || value === "NO_SHOW"
             ? "bg-red-50 text-red-600"
             : value === "INACTIVE"
               ? "bg-slate-100 text-slate-500"
               : "bg-slate-100 text-slate-600";
   const labels: Record<string, string> = {
+    PENDING_CONFIRMATION: "Menunggu konfirmasi",
+    CONFIRMED: "Dikonfirmasi", CHECKED_IN: "Check-in", NO_SHOW: "Tidak hadir",
+    REJECTED: "Ditolak", PENDING_APPROVAL: "Menunggu ADMIN", PENDING: "Menunggu",
+    PROCESSING: "Diproses provider", SUCCEEDED: "Berhasil", FAILED: "Gagal",
+    UNSUPPORTED: "Tidak didukung", APPROVED: "Disetujui", OVERDUE: "Lewat batas pelunasan",
+    DP_PAID: "DP terverifikasi", AWAITING_DP: "Menunggu DP", PARTIALLY_PAID: "Dibayar sebagian",
+    REFUND_REVIEW: "Peninjauan refund", DP_FORFEITED: "DP hangus",
     WAITING: "Waiting",
     IN_SERVICE: "In Service",
     COMPLETED: "Completed",

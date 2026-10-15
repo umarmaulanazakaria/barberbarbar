@@ -98,7 +98,7 @@ export default function PaymentModal({
 
   const itemMutation = useMutation({
     mutationFn: async (action: ItemAction) => {
-      if (!order) throw new Error("Order tidak tersedia");
+      if (!order || order.booking) throw new Error("Gunakan detail booking untuk pesanan customer");
 
       if (action.tipe === "tambah") {
         return api.post("/order-items", {
@@ -139,7 +139,7 @@ export default function PaymentModal({
 
   const paymentMutation = useMutation({
     mutationFn: () => {
-      if (!order) throw new Error("Order tidak tersedia");
+      if (!order || order.booking) throw new Error("Gunakan detail booking untuk pelunasan customer");
 
       return api.post(`/orders/${order.id}/payment`, {
         metode: method,
@@ -204,7 +204,7 @@ export default function PaymentModal({
     }));
   }, [order, services]);
 
-  if (!open || !order) return null;
+  if (!open || !order || order.booking) return null;
 
   const editable =
     order.statusPembayaran === "UNPAID" && order.status !== "CANCELLED";

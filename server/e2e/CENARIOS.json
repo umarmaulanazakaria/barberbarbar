@@ -1,0 +1,1327 @@
+[
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Registrasi customer baru."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Pengaitan akun ke pelanggan existing."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Approval pengaitan akun jika diperlukan."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Login menggunakan email."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Login menggunakan nomor telepon."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Password salah."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Duplicate email."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Duplicate nomor telepon."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Logout."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Token invalid."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Session expired."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Restart aplikasi dan pemulihan sesi."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Pergantian akun tanpa data bocor."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Edit profil."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Ubah password."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "7. E2E CUSTOMER AUTH",
+    "skenario": "Perubahan email/nomor telepon dengan verifikasi password sesuai PRD."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Reset token sekali pakai."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Masa berlaku 30 menit."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Token tidak valid."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Token kedaluwarsa."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Pengiriman email aktual jika sudah tersedia."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Jangan mengarang konfigurasi."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Jangan hardcode credential."
+  },
+  {
+    "bagian": 7,
+    "kelompok": "FORGOT PASSWORD:",
+    "skenario": "Laporkan kebutuhan dan minta persetujuan sebelum instalasi/konfigurasi baru."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "Pengajuan masuk PENDING_APPROVAL."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "ADMIN dapat menolak."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "STAFF tidak boleh approve/reject pengajuan customer."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "NON_MEMBER tetap bisa booking."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "Membership dinonaktifkan tidak memblokir customer."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "Snapshot harga booking existing tidak berubah saat status member berubah."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "Diskon 10% dihitung backend."
+  },
+  {
+    "bagian": 8,
+    "kelompok": "8. E2E MEMBERSHIP",
+    "skenario": "DP dihitung dari total setelah diskon."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Customer membuka Project 5."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Melihat layanan dan barber publik."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Memilih layanan."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Login jika belum login."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Pilihan layanan tetap tersimpan."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Memilih multi-service."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Mengubah qty."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Memilih barber."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Memilih tanggal/jam."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Membuat booking."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Booking masuk ke PostgreSQL."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Booking muncul pada Project 3 Web."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Booking muncul pada Project 4 Mobile."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "ADMIN/STAFF mengonfirmasi."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "9. E2E BOOKING — CUSTOMER KE STAFF",
+    "skenario": "Project 5 menerima status terbaru melalui Socket.IO/refetch REST."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Pencarian nama barber."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Case-insensitive search."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Hasil kosong."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Loading."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Error/retry."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Memilih barber ID."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Memilih \"Barber siapa saja\" dengan nilai null."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Menutup modal tanpa perubahan."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Pindah langkah dan kembali."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Keyboard Android."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Scroll daftar barber panjang."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji searchable dropdown terbaru:",
+    "skenario": "Reschedule menggunakan komponen yang sama."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Senin–Minggu."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "09.00–23.00 WIB."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Minimal 3 jam untuk hari yang sama."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Maksimal 14 hari."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Waktu fleksibel sampai menit."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Durasi tidak melewati jam tutup."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Customer self-overlap."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Barber specific overlap."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Any-barber capacity."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Concurrent booking race."
+  },
+  {
+    "bagian": 9,
+    "kelompok": "Uji batas booking:",
+    "skenario": "Pending booking tetap menahan slot."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "DP sebelum konfirmasi ditolak."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "DP 50% setelah diskon."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Nominal berasal dari backend."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Snap/redirect checkout React Native."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Alur kembali dari WebBrowser."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "App foreground/refetch setelah checkout."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Transaksi pending."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Pembayaran berhasil."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Pembayaran gagal."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Pembayaran dibatalkan."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Session pembayaran expired."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Webhook valid."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Signature invalid."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Amount mismatch."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Duplicate webhook."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Out-of-order webhook."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Race pembayaran terhadap deadline."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Duplicate payment initiation."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "Callback frontend tidak boleh menetapkan PAID."
+  },
+  {
+    "bagian": 10,
+    "kelompok": "TARGET:",
+    "skenario": "DP manual melalui kasir ditolak."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "ADMIN/STAFF melihat booking."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "ADMIN/STAFF melakukan check-in."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Customer melihat status check-in."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "STAFF menentukan barber final."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Pesanan operasional dibuat sesuai lifecycle."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Layanan masuk IN_SERVICE."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Progres tampil pada Web/Staff/Customer."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Layanan diselesaikan."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Status COMPLETED."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Customer dapat melunasi sisa pembayaran."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Customer tidak boleh melakukan check-in sendiri."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Check-in lebih awal diperbolehkan."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Booking CHECKED_IN tidak boleh menjadi NO_SHOW."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Barber final wajib sebelum IN_SERVICE sesuai kontrak."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Walk-in boleh dibuat tanpa barber."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Walk-in memilih barber saat mulai layanan."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Booking dengan \"barber siapa saja\" tidak memerlukan approval barber replacement."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Booking dengan barber spesifik memerlukan consent jika diganti."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Tanpa consent tidak boleh IN_SERVICE."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Customer dapat approve/reject sesuai PRD."
+  },
+  {
+    "bagian": 11,
+    "kelompok": "11. E2E CHECK-IN DAN PELAYANAN",
+    "skenario": "Consent pending tidak memiliki timeout otomatis."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Pelunasan sebelum COMPLETED ditolak."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "COMPLETED dengan balance unpaid valid."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Pelunasan melalui kasir Web Project 3."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Pelunasan melalui Mobile Staff Project 4."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Pelunasan online Midtrans dari Customer Project 5."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Ledger tidak double count."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Paid amount benar."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Outstanding balance benar."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Invoice sementara tersedia sebelum lunas."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Invoice final setelah PAID."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Satu invoice final."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Timeline pembayaran sinkron di ketiga aplikasi."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Tambah layanan."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Tambah qty."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Kurangi qty."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Hapus layanan."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Total direkalkulasi."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Membership snapshot tetap dipertahankan."
+  },
+  {
+    "bagian": 12,
+    "kelompok": "12. E2E PELUNASAN DAN INVOICE",
+    "skenario": "Kelebihan pembayaran menghasilkan refund request yang sesuai."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "30 menit tanpa konfirmasi."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Booking auto-cancel."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Slot dilepas."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Timeline menampilkan alasan."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "1 jam setelah konfirmasi tanpa DP."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Booking auto-cancel."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Slot dilepas."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Tidak terjadi double cancellation."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "15 menit setelah jadwal."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Belum CHECKED_IN."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Belum IN_SERVICE."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Status NO_SHOW."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "DP hangus."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Sisa tagihan tidak ditagih."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Tidak ada refund yang tidak semestinya."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "1 jam setelah COMPLETED."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Balance belum lunas."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Status OVERDUE sebagai pemberitahuan."
+  },
+  {
+    "bagian": 13,
+    "kelompok": "13. E2E SCHEDULER DAN TIMEOUT",
+    "skenario": "Customer masih bisa melunasi."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "CANCEL:",
+    "skenario": "Cancel lebih dari/sama dengan 1 jam sebelum jadwal."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "CANCEL:",
+    "skenario": "Cancel kurang dari 1 jam sebelum jadwal."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "CANCEL:",
+    "skenario": "Refund DP sesuai kebijakan."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "CANCEL:",
+    "skenario": "DP hangus ketika sesuai aturan."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "CANCEL:",
+    "skenario": "Riwayat dan slot availability berubah benar."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Minimal 1 jam sebelum jadwal."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Pilih ulang tanggal/jam."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Ganti barber."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Ubah service/qty."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Slot lama dilepas."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Slot baru ditahan."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Konfirmasi ulang."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Timeout 30 menit."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Penolakan reschedule."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Total naik."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Total turun."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Refund difference bila berlaku."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "RESCHEDULE:",
+    "skenario": "Barber dropdown tetap berjalan."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Refund request dibuat sesuai aturan."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "STAFF tidak dapat approve."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "ADMIN dapat approve."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Backend mencoba refund provider."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Gagal diproses dengan status benar."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Retry hanya ADMIN."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Retry tidak double refund."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Refund penuh/sebagian sesuai batas provider."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND:",
+    "skenario": "Histori dan balance tetap konsisten."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Status lokal."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Status provider."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Bukti transaksi/refund."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Apakah menunggu callback."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Apakah refund tidak didukung oleh metode."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Apakah perlu retry."
+  },
+  {
+    "bagian": 14,
+    "kelompok": "REFUND HISTORIS RP2.000:",
+    "skenario": "Apakah memerlukan tindakan merchant."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Booking baru muncul realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Konfirmasi/reject tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Payment status tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Check-in tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Barber assignment tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Consent barber tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Perubahan layanan tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "COMPLETED tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Refund status tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Membership status tampil realtime."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Socket disconnect."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Reconnect."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "App background."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "App foreground."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Login/logout."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Token expired."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Pergantian customer."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Dua operator aktif."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Dua customer berbeda."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Event duplicate."
+  },
+  {
+    "bagian": 15,
+    "kelompok": "15. E2E REALTIME ANTARAPLIKASI",
+    "skenario": "Event out-of-order."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Login."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Dashboard."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Booking."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Konfirmasi/reject."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Check-in."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Membership."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Payment."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Refund."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Invoice."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 3 — WEB:",
+    "skenario": "Responsif pada ukuran layar relevan."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Login."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Booking list."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Detail booking."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Confirm/reject."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Check-in."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Barber assignment."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "IN_SERVICE."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Payment."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Realtime."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 4 — ANDROID STAFF:",
+    "skenario": "Session cleanup."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Splash/login/register."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Beranda."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Booking."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Searchable dropdown barber."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Keyboard Android."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Scroll."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Modal Back Android."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Safe area."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Riwayat."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Akun."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Membership."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Payment WebBrowser."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Realtime/foreground."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Selesaikan automated test yang dapat dijalankan."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Siapkan panduan pengujian fisik Android yang jelas."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Cantumkan langkah menjalankan Project 4 dan Project 5 di Expo."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Cantumkan cara memastikan backend LAN terjangkau."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Cantumkan skenario yang harus dicoba pada HP."
+  },
+  {
+    "bagian": 16,
+    "kelompok": "PROJECT 5 — ANDROID CUSTOMER:",
+    "skenario": "Tandai device test sebagai DEFERRED."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "API authorization."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Customer isolation."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "ADMIN/STAFF RBAC."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "JWT handling."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Socket.IO room authorization."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Midtrans signature."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Server Key confidentiality."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Payment amount tampering."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Rate limiting."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Sensitive data logging."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Input validation."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Concurrent mutations."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Race condition."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Invoice/refund data integrity."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Dependency runtime."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Dependency development."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Advisory transitive."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Exploitability aktual."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Patch compatible."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Breaking-change risk."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Temuan yang dapat diperbaiki di F13."
+  },
+  {
+    "bagian": 17,
+    "kelompok": "17. SECURITY DAN DEPENDENCY AUDIT",
+    "skenario": "Temuan yang perlu keputusan F14."
+  }
+]

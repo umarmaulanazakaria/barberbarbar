@@ -1,0 +1,1041 @@
+{
+  "graph": [
+    {
+      "nama": "backend",
+      "roots": [
+        "barberbarbar/server/src/server.ts",
+        "barberbarbar/server/src/seed.ts"
+      ],
+      "files": 85,
+      "reachable": 83,
+      "kandidat": [
+        "barberbarbar/server/src/cekDatabase.ts",
+        "barberbarbar/server/src/types/express.d.ts"
+      ],
+      "batas": "Unreached bukan bukti final dead code: declaration global/manual tool/test/external consumer harus ditinjau sebelum penghapusan."
+    },
+    {
+      "nama": "web",
+      "roots": [
+        "barberbarbar/client/src/main.tsx"
+      ],
+      "files": 38,
+      "reachable": 37,
+      "kandidat": [
+        "barberbarbar/client/src/components/customer/MembershipPelanggan.tsx"
+      ],
+      "batas": "Unreached bukan bukti final dead code: declaration global/manual tool/test/external consumer harus ditinjau sebelum penghapusan."
+    },
+    {
+      "nama": "staff",
+      "roots": [
+        "barberbarbar-mobile/index.ts"
+      ],
+      "files": 45,
+      "reachable": 45,
+      "kandidat": [],
+      "batas": "Unreached bukan bukti final dead code: declaration global/manual tool/test/external consumer harus ditinjau sebelum penghapusan."
+    },
+    {
+      "nama": "customer",
+      "roots": [
+        "barberbarbar-customer/index.ts"
+      ],
+      "files": 17,
+      "reachable": 17,
+      "kandidat": [],
+      "batas": "Unreached bukan bukti final dead code: declaration global/manual tool/test/external consumer harus ditinjau sebelum penghapusan."
+    }
+  ],
+  "paket": [
+    {
+      "project": "barberbarbar/server",
+      "nama": "@prisma/adapter-pg",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/src/lib/prisma.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@prisma/client",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "bcrypt",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/scripts/test-api-publik.mjs",
+        "barberbarbar/server/scripts/test-batas-reschedule-e2e.mjs",
+        "barberbarbar/server/scripts/test-booking-f4.mjs",
+        "barberbarbar/server/scripts/test-fondasi-pelanggan.mjs",
+        "barberbarbar/server/scripts/test-membership-f3.mjs",
+        "barberbarbar/server/scripts/test-midtrans-f7.mjs",
+        "barberbarbar/server/scripts/test-operasional-f5.mjs",
+        "barberbarbar/server/scripts/test-payment-f6.mjs",
+        "barberbarbar/server/scripts/test-realtime.mjs",
+        "barberbarbar/server/scripts/test-reset-password-pelanggan.mjs",
+        "barberbarbar/server/scripts/test-sandbox-f7.mjs",
+        "barberbarbar/server/scripts/test-scheduler-booking.mjs",
+        "barberbarbar/server/src/seed.ts",
+        "barberbarbar/server/src/services/auth-pelanggan.service.ts",
+        "barberbarbar/server/src/services/auth.service.ts",
+        "barberbarbar/server/src/services/barber.service.ts",
+        "barberbarbar/server/src/services/reset-password-pelanggan.service.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "dotenv",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/prisma.config.ts",
+        "barberbarbar/server/scripts/audit-provider-e2e.mjs",
+        "barberbarbar/server/scripts/backup-e2e.mjs",
+        "barberbarbar/server/scripts/backup-f3.mjs",
+        "barberbarbar/server/scripts/backup-f4.mjs",
+        "barberbarbar/server/scripts/backup-f5.mjs",
+        "barberbarbar/server/scripts/backup-f6.mjs",
+        "barberbarbar/server/scripts/backup-f7.mjs",
+        "barberbarbar/server/scripts/backup-integrasi-mobile.mjs",
+        "barberbarbar/server/scripts/bersihkan-hash-permohonan.mjs",
+        "barberbarbar/server/scripts/cadangkan-database-f2.mjs",
+        "barberbarbar/server/scripts/diagnosis-midtrans-sandbox.mjs",
+        "barberbarbar/server/scripts/jalankan-regresi-e2e.mjs",
+        "barberbarbar/server/scripts/jalankan-server-uji-log.mjs",
+        "barberbarbar/server/scripts/jalankan-server-uji-scheduler.mjs",
+        "barberbarbar/server/scripts/test-api-publik.mjs",
+        "barberbarbar/server/scripts/test-batas-reschedule-e2e.mjs",
+        "barberbarbar/server/scripts/test-booking-f4.mjs",
+        "barberbarbar/server/scripts/test-fondasi-pelanggan.mjs",
+        "barberbarbar/server/scripts/test-membership-f3.mjs",
+        "barberbarbar/server/scripts/test-midtrans-f7.mjs",
+        "barberbarbar/server/scripts/test-operasional-f5.mjs",
+        "barberbarbar/server/scripts/test-payment-f6.mjs",
+        "barberbarbar/server/scripts/test-realtime.mjs",
+        "barberbarbar/server/scripts/test-reset-password-pelanggan.mjs",
+        "barberbarbar/server/scripts/test-sandbox-f7.mjs",
+        "barberbarbar/server/scripts/test-scheduler-booking.mjs",
+        "barberbarbar/server/scripts/verifikasi-integritas-e2e.mjs",
+        "barberbarbar/server/scripts/verifikasi-rilis.mjs",
+        "barberbarbar/server/src/lib/midtrans.ts",
+        "barberbarbar/server/src/lib/prisma.ts",
+        "barberbarbar/server/src/middleware/auth-pelanggan.middleware.ts",
+        "barberbarbar/server/src/middleware/auth.middleware.ts",
+        "barberbarbar/server/src/seed.ts",
+        "barberbarbar/server/src/server.ts",
+        "barberbarbar/server/src/services/auth.service.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "express",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/src/app.ts",
+        "barberbarbar/server/src/controllers/auth-pelanggan.controller.ts",
+        "barberbarbar/server/src/controllers/auth.controller.ts",
+        "barberbarbar/server/src/controllers/barber.controller.ts",
+        "barberbarbar/server/src/controllers/booking.controller.ts",
+        "barberbarbar/server/src/controllers/dashboard.controller.ts",
+        "barberbarbar/server/src/controllers/item-pesanan.controller.ts",
+        "barberbarbar/server/src/controllers/layanan.controller.ts",
+        "barberbarbar/server/src/controllers/membership.controller.ts",
+        "barberbarbar/server/src/controllers/midtrans-booking.controller.ts",
+        "barberbarbar/server/src/controllers/operasional-booking.controller.ts",
+        "barberbarbar/server/src/controllers/pelanggan.controller.ts",
+        "barberbarbar/server/src/controllers/pembayaran-booking.controller.ts",
+        "barberbarbar/server/src/controllers/pengaitan-akun.controller.ts",
+        "barberbarbar/server/src/controllers/permohonan-membership.controller.ts",
+        "barberbarbar/server/src/controllers/pesanan.controller.ts",
+        "barberbarbar/server/src/controllers/publik.controller.ts",
+        "barberbarbar/server/src/controllers/reset-password-pelanggan.controller.ts",
+        "barberbarbar/server/src/middleware/auth-pelanggan.middleware.ts",
+        "barberbarbar/server/src/middleware/auth.middleware.ts",
+        "barberbarbar/server/src/middleware/batas-percobaan-pelanggan.middleware.ts",
+        "barberbarbar/server/src/middleware/error.middleware.ts",
+        "barberbarbar/server/src/middleware/role.middleware.ts",
+        "barberbarbar/server/src/routes/auth-pelanggan.routes.ts",
+        "barberbarbar/server/src/routes/auth.routes.ts",
+        "barberbarbar/server/src/routes/barber.routes.ts",
+        "barberbarbar/server/src/routes/booking.routes.ts",
+        "barberbarbar/server/src/routes/dashboard.routes.ts",
+        "barberbarbar/server/src/routes/invoice.routes.ts",
+        "barberbarbar/server/src/routes/item-pesanan.routes.ts",
+        "barberbarbar/server/src/routes/layanan.routes.ts",
+        "barberbarbar/server/src/routes/membership-pelanggan.routes.ts",
+        "barberbarbar/server/src/routes/membership.routes.ts",
+        "barberbarbar/server/src/routes/midtrans.routes.ts",
+        "barberbarbar/server/src/routes/operasional-booking.routes.ts",
+        "barberbarbar/server/src/routes/payment-customer.routes.ts",
+        "barberbarbar/server/src/routes/pelanggan.routes.ts",
+        "barberbarbar/server/src/routes/permohonan-membership.routes.ts",
+        "barberbarbar/server/src/routes/pesanan.routes.ts",
+        "barberbarbar/server/src/routes/publik.routes.ts",
+        "barberbarbar/server/src/routes/refund-booking.routes.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "jsonwebtoken",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/scripts/test-batas-reschedule-e2e.mjs",
+        "barberbarbar/server/scripts/test-fondasi-pelanggan.mjs",
+        "barberbarbar/server/scripts/test-realtime.mjs",
+        "barberbarbar/server/src/middleware/auth-pelanggan.middleware.ts",
+        "barberbarbar/server/src/middleware/auth.middleware.ts",
+        "barberbarbar/server/src/realtime/autentikasi.ts",
+        "barberbarbar/server/src/services/auth-pelanggan.service.ts",
+        "barberbarbar/server/src/services/auth.service.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "midtrans-client",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/scripts/diagnosis-midtrans-sandbox.mjs",
+        "barberbarbar/server/src/lib/midtrans.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "pg",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/src/realtime/server.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "socket.io",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/src/realtime/server.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "zod",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/src/controllers/booking.controller.ts",
+        "barberbarbar/server/src/controllers/midtrans-booking.controller.ts",
+        "barberbarbar/server/src/controllers/operasional-booking.controller.ts",
+        "barberbarbar/server/src/controllers/pembayaran-booking.controller.ts",
+        "barberbarbar/server/src/controllers/pengaitan-akun.controller.ts",
+        "barberbarbar/server/src/controllers/permohonan-membership.controller.ts",
+        "barberbarbar/server/src/lib/midtrans.ts",
+        "barberbarbar/server/src/realtime/server.ts",
+        "barberbarbar/server/src/schemas/auth-pelanggan.schema.ts",
+        "barberbarbar/server/src/schemas/auth.schema.ts",
+        "barberbarbar/server/src/schemas/barber.schema.ts",
+        "barberbarbar/server/src/schemas/booking.schema.ts",
+        "barberbarbar/server/src/schemas/item-pesanan.schema.ts",
+        "barberbarbar/server/src/schemas/layanan.schema.ts",
+        "barberbarbar/server/src/schemas/membership.schema.ts",
+        "barberbarbar/server/src/schemas/operasional-booking.schema.ts",
+        "barberbarbar/server/src/schemas/pelanggan.schema.ts",
+        "barberbarbar/server/src/schemas/pembayaran-booking.schema.ts",
+        "barberbarbar/server/src/schemas/pesanan.schema.ts",
+        "barberbarbar/server/src/schemas/reset-password-pelanggan.schema.ts",
+        "barberbarbar/server/src/services/midtrans-booking.service.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/bcrypt",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/express",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/jsonwebtoken",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/midtrans-client",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/node",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "@types/pg",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "prisma",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/prisma.config.ts"
+      ],
+      "packageScripts": [
+        "prisma generate"
+      ],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "socket.io-client",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/scripts/klien-realtime.mjs",
+        "barberbarbar/server/scripts/test-realtime.mjs"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/server",
+      "nama": "typescript",
+      "pengguna": [
+        "barberbarbar/server/artifacts/cleanup/HASIL-DEPENDENCY.json",
+        "barberbarbar/server/scripts/dev.mjs",
+        "barberbarbar/server/scripts/jalankan-regresi-e2e.mjs"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@tanstack/react-query",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-integrasi-web.mjs",
+        "barberbarbar/client/src/components/NewOrderModal.tsx",
+        "barberbarbar/client/src/components/OrderDetailModal.tsx",
+        "barberbarbar/client/src/components/PaymentModal.tsx",
+        "barberbarbar/client/src/components/PembayaranBooking.tsx",
+        "barberbarbar/client/src/components/PermohonanMembershipAdmin.tsx",
+        "barberbarbar/client/src/components/PermohonanPengaitanAdmin.tsx",
+        "barberbarbar/client/src/components/RealtimeOperator.tsx",
+        "barberbarbar/client/src/components/RingkasanBookingDashboard.tsx",
+        "barberbarbar/client/src/context/AuthContext.tsx",
+        "barberbarbar/client/src/lib/sinkronisasi-realtime.ts",
+        "barberbarbar/client/src/main.tsx",
+        "barberbarbar/client/src/pages/BarbersPage.tsx",
+        "barberbarbar/client/src/pages/BookingPage.tsx",
+        "barberbarbar/client/src/pages/CustomersPage.tsx",
+        "barberbarbar/client/src/pages/DashboardPage.tsx",
+        "barberbarbar/client/src/pages/DetailBookingPage.tsx",
+        "barberbarbar/client/src/pages/HistoryPage.tsx",
+        "barberbarbar/client/src/pages/InvoicesPage.tsx",
+        "barberbarbar/client/src/pages/MembershipPage.tsx",
+        "barberbarbar/client/src/pages/OrdersPage.tsx",
+        "barberbarbar/client/src/pages/RefundPage.tsx",
+        "barberbarbar/client/src/pages/ReportsPage.tsx",
+        "barberbarbar/client/src/pages/ServicesPage.tsx",
+        "barberbarbar/client/src/pages/SettingsPage.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "axios",
+      "pengguna": [
+        "barberbarbar/client/src/components/PembayaranBooking.tsx",
+        "barberbarbar/client/src/lib/api.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "lucide-react",
+      "pengguna": [
+        "barberbarbar/client/src/components/AppLayout.tsx",
+        "barberbarbar/client/src/components/ConfirmDialog.tsx",
+        "barberbarbar/client/src/components/NewOrderModal.tsx",
+        "barberbarbar/client/src/components/OrderDetailModal.tsx",
+        "barberbarbar/client/src/components/PaymentModal.tsx",
+        "barberbarbar/client/src/components/ui.tsx",
+        "barberbarbar/client/src/context/ToastContext.tsx",
+        "barberbarbar/client/src/pages/BarbersPage.tsx",
+        "barberbarbar/client/src/pages/CustomersPage.tsx",
+        "barberbarbar/client/src/pages/DashboardPage.tsx",
+        "barberbarbar/client/src/pages/HistoryPage.tsx",
+        "barberbarbar/client/src/pages/InvoicesPage.tsx",
+        "barberbarbar/client/src/pages/MembershipPage.tsx",
+        "barberbarbar/client/src/pages/ServicesPage.tsx",
+        "barberbarbar/client/src/pages/SettingsPage.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "react",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-integrasi-web.mjs",
+        "barberbarbar/client/src/components/AppLayout.tsx",
+        "barberbarbar/client/src/components/ConfirmDialog.tsx",
+        "barberbarbar/client/src/components/customer/MembershipPelanggan.tsx",
+        "barberbarbar/client/src/components/NewOrderModal.tsx",
+        "barberbarbar/client/src/components/OrderDetailModal.tsx",
+        "barberbarbar/client/src/components/PaymentModal.tsx",
+        "barberbarbar/client/src/components/PembayaranBooking.tsx",
+        "barberbarbar/client/src/components/PermohonanMembershipAdmin.tsx",
+        "barberbarbar/client/src/components/PermohonanPengaitanAdmin.tsx",
+        "barberbarbar/client/src/components/ProtectedRoute.tsx",
+        "barberbarbar/client/src/components/RealtimeOperator.tsx",
+        "barberbarbar/client/src/components/ui.tsx",
+        "barberbarbar/client/src/context/AuthContext.tsx",
+        "barberbarbar/client/src/context/ToastContext.tsx",
+        "barberbarbar/client/src/main.tsx",
+        "barberbarbar/client/src/pages/BarbersPage.tsx",
+        "barberbarbar/client/src/pages/BookingPage.tsx",
+        "barberbarbar/client/src/pages/CustomersPage.tsx",
+        "barberbarbar/client/src/pages/DashboardPage.tsx",
+        "barberbarbar/client/src/pages/DetailBookingPage.tsx",
+        "barberbarbar/client/src/pages/HistoryPage.tsx",
+        "barberbarbar/client/src/pages/InvoicesPage.tsx",
+        "barberbarbar/client/src/pages/LoginPage.tsx",
+        "barberbarbar/client/src/pages/MembershipPage.tsx",
+        "barberbarbar/client/src/pages/OrdersPage.tsx",
+        "barberbarbar/client/src/pages/RefundPage.tsx",
+        "barberbarbar/client/src/pages/ReportsPage.tsx",
+        "barberbarbar/client/src/pages/ServicesPage.tsx",
+        "barberbarbar/client/src/pages/SettingsPage.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "react-dom",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-integrasi-web.mjs",
+        "barberbarbar/client/src/components/ConfirmDialog.tsx",
+        "barberbarbar/client/src/components/ui.tsx",
+        "barberbarbar/client/src/main.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "react-router-dom",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-integrasi-web.mjs",
+        "barberbarbar/client/src/App.tsx",
+        "barberbarbar/client/src/components/AppLayout.tsx",
+        "barberbarbar/client/src/components/NewOrderModal.tsx",
+        "barberbarbar/client/src/components/OrderDetailModal.tsx",
+        "barberbarbar/client/src/components/ProtectedRoute.tsx",
+        "barberbarbar/client/src/components/RingkasanBookingDashboard.tsx",
+        "barberbarbar/client/src/main.tsx",
+        "barberbarbar/client/src/pages/BookingPage.tsx",
+        "barberbarbar/client/src/pages/DashboardPage.tsx",
+        "barberbarbar/client/src/pages/DetailBookingPage.tsx",
+        "barberbarbar/client/src/pages/LoginPage.tsx",
+        "barberbarbar/client/src/pages/RefundPage.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "socket.io-client",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-e2e-browser.mjs",
+        "barberbarbar/client/src/lib/sinkronisasi-realtime.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "zod",
+      "pengguna": [
+        "barberbarbar/client/src/pages/LoginPage.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@playwright/test",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-e2e-browser.mjs"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@tailwindcss/vite",
+      "pengguna": [
+        "barberbarbar/client/vite.config.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@types/react",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@types/react-dom",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "@vitejs/plugin-react",
+      "pengguna": [
+        "barberbarbar/client/vite.config.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "tailwindcss",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "typescript",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar/client",
+      "nama": "vite",
+      "pengguna": [
+        "barberbarbar/client/scripts/test-e2e-browser.mjs",
+        "barberbarbar/client/vite.config.ts"
+      ],
+      "packageScripts": [
+        "vite --configLoader runner",
+        "tsc -b && vite build --configLoader runner",
+        "vite preview"
+      ],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "@expo/vector-icons",
+      "pengguna": [
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiTabUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "@react-navigation/bottom-tabs",
+      "pengguna": [
+        "barberbarbar-mobile/src/komponen/RingkasanBookingBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBeranda.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiTabUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "@react-navigation/native",
+      "pengguna": [
+        "barberbarbar-mobile/src/hooks/usePenyegaranRealtime.ts",
+        "barberbarbar-mobile/src/komponen/PenentuanBarberWalkin.tsx",
+        "barberbarbar-mobile/src/komponen/RingkasanBookingBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPayment.tsx",
+        "barberbarbar-mobile/src/layar/LayarPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiTabUtama.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "@react-navigation/native-stack",
+      "pengguna": [
+        "barberbarbar-mobile/src/layar/LayarBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPayment.tsx",
+        "barberbarbar-mobile/src/layar/LayarPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiBooking.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiPelanggan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiPesanan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "axios",
+      "pengguna": [
+        "barberbarbar-mobile/src/komponen/PembayaranBooking.tsx",
+        "barberbarbar-mobile/src/layanan/api.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "expo",
+      "pengguna": [
+        "barberbarbar-mobile/app.json",
+        "barberbarbar-mobile/index.ts",
+        "barberbarbar-mobile/tsconfig.json"
+      ],
+      "packageScripts": [
+        "expo start",
+        "expo start --android",
+        "expo start --ios",
+        "expo start --web"
+      ],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "expo-secure-store",
+      "pengguna": [
+        "barberbarbar-mobile/app.json",
+        "barberbarbar-mobile/src/penyimpanan/penyimpananSesi.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "expo-status-bar",
+      "pengguna": [
+        "barberbarbar-mobile/App.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "react",
+      "pengguna": [
+        "barberbarbar-mobile/src/hooks/usePenyegaranRealtime.ts",
+        "barberbarbar-mobile/src/komponen/PembayaranBooking.tsx",
+        "barberbarbar-mobile/src/komponen/PenentuanBarberWalkin.tsx",
+        "barberbarbar-mobile/src/komponen/RealtimeOperator.tsx",
+        "barberbarbar-mobile/src/komponen/RingkasanBookingBeranda.tsx",
+        "barberbarbar-mobile/src/komponen/UiBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarLogin.tsx",
+        "barberbarbar-mobile/src/layar/LayarPayment.tsx",
+        "barberbarbar-mobile/src/layar/LayarPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarProfil.tsx",
+        "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiTabUtama.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "react-native",
+      "pengguna": [
+        "barberbarbar-mobile/src/komponen/ModalAksi.tsx",
+        "barberbarbar-mobile/src/komponen/PembayaranBooking.tsx",
+        "barberbarbar-mobile/src/komponen/PenentuanBarberWalkin.tsx",
+        "barberbarbar-mobile/src/komponen/RealtimeOperator.tsx",
+        "barberbarbar-mobile/src/komponen/RingkasanBookingBeranda.tsx",
+        "barberbarbar-mobile/src/komponen/TombolKembali.tsx",
+        "barberbarbar-mobile/src/komponen/UiBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarLogin.tsx",
+        "barberbarbar-mobile/src/layar/LayarPayment.tsx",
+        "barberbarbar-mobile/src/layar/LayarPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarProfil.tsx",
+        "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+        "barberbarbar-mobile/src/navigasi/NavigasiUtama.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "react-native-safe-area-context",
+      "pengguna": [
+        "barberbarbar-mobile/App.tsx",
+        "barberbarbar-mobile/src/layar/LayarBeranda.tsx",
+        "barberbarbar-mobile/src/layar/LayarBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarBuatPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailBooking.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarDetailPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarLogin.tsx",
+        "barberbarbar-mobile/src/layar/LayarPayment.tsx",
+        "barberbarbar-mobile/src/layar/LayarPelanggan.tsx",
+        "barberbarbar-mobile/src/layar/LayarPesanan.tsx",
+        "barberbarbar-mobile/src/layar/LayarProfil.tsx",
+        "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "react-native-screens",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "socket.io-client",
+      "pengguna": [
+        "barberbarbar-mobile/scripts/test-integrasi-mobile.mjs",
+        "barberbarbar-mobile/src/komponen/RealtimeOperator.tsx",
+        "barberbarbar-mobile/src/layanan/sinyalRealtime.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "zustand",
+      "pengguna": [
+        "barberbarbar-mobile/src/store/useSesiStore.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "@types/react",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-mobile",
+      "nama": "typescript",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@expo/vector-icons",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/scripts/test-pilihan-barber.mjs",
+        "barberbarbar-customer/src/komponen/PilihanBerpencarian.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@react-native-community/datetimepicker",
+      "pengguna": [
+        "barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs",
+        "barberbarbar-customer/src/layar/Booking.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@react-navigation/bottom-tabs",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/src/layar/Beranda.tsx",
+        "barberbarbar-customer/src/layar/Booking.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@react-navigation/native",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs",
+        "barberbarbar-customer/src/layar/Akun.tsx",
+        "barberbarbar-customer/src/layar/Beranda.tsx",
+        "barberbarbar-customer/src/layar/Booking.tsx",
+        "barberbarbar-customer/src/layar/Riwayat.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@react-navigation/native-stack",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/src/layar/Akun.tsx",
+        "barberbarbar-customer/src/layar/Beranda.tsx",
+        "barberbarbar-customer/src/layar/Booking.tsx",
+        "barberbarbar-customer/src/layar/Riwayat.tsx",
+        "barberbarbar-customer/src/navigasi.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@tanstack/react-query",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/src/layanan/cache.ts",
+        "barberbarbar-customer/src/layanan/kueri.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "axios",
+      "pengguna": [
+        "barberbarbar-customer/src/layanan/api.ts",
+        "barberbarbar-customer/src/layanan/sesi.ts",
+        "barberbarbar-customer/src/layar/Booking.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "expo",
+      "pengguna": [
+        "barberbarbar-customer/app.json",
+        "barberbarbar-customer/index.ts",
+        "barberbarbar-customer/tsconfig.json"
+      ],
+      "packageScripts": [
+        "expo start",
+        "expo start --android",
+        "expo export --platform android --output-dir dist"
+      ],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "expo-crypto",
+      "pengguna": [
+        "barberbarbar-customer/scripts/test-detail-customer.mjs",
+        "barberbarbar-customer/src/layar/DetailBooking.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "expo-secure-store",
+      "pengguna": [
+        "barberbarbar-customer/app.json",
+        "barberbarbar-customer/src/layanan/sesi.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "expo-status-bar",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "expo-web-browser",
+      "pengguna": [
+        "barberbarbar-customer/scripts/test-detail-customer.mjs",
+        "barberbarbar-customer/src/layar/DetailBooking.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "react",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/src/komponen/PilihanBerpencarian.tsx",
+        "barberbarbar-customer/src/komponen/ui.tsx",
+        "barberbarbar-customer/src/layanan/sesi.ts",
+        "barberbarbar-customer/src/layar/Akun.tsx",
+        "barberbarbar-customer/src/layar/Autentikasi.tsx",
+        "barberbarbar-customer/src/layar/Booking.tsx",
+        "barberbarbar-customer/src/layar/DetailBooking.tsx",
+        "barberbarbar-customer/src/layar/Riwayat.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "react-native",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/scripts/test-customer.mjs",
+        "barberbarbar-customer/scripts/test-detail-customer.mjs",
+        "barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs",
+        "barberbarbar-customer/scripts/test-pilihan-barber.mjs",
+        "barberbarbar-customer/src/komponen/PilihanBerpencarian.tsx",
+        "barberbarbar-customer/src/komponen/ui.tsx",
+        "barberbarbar-customer/src/layanan/realtime.ts",
+        "barberbarbar-customer/src/layar/Akun.tsx",
+        "barberbarbar-customer/src/layar/Autentikasi.tsx",
+        "barberbarbar-customer/src/layar/Beranda.tsx",
+        "barberbarbar-customer/src/layar/Booking.tsx",
+        "barberbarbar-customer/src/layar/DetailBooking.tsx",
+        "barberbarbar-customer/src/layar/Riwayat.tsx",
+        "barberbarbar-customer/src/tema.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "react-native-safe-area-context",
+      "pengguna": [
+        "barberbarbar-customer/App.tsx",
+        "barberbarbar-customer/scripts/test-pilihan-barber.mjs",
+        "barberbarbar-customer/src/komponen/PilihanBerpencarian.tsx"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "react-native-screens",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "socket.io-client",
+      "pengguna": [
+        "barberbarbar-customer/scripts/test-customer.mjs",
+        "barberbarbar-customer/src/layanan/realtime.ts"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "@types/react",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "esbuild",
+      "pengguna": [
+        "barberbarbar-customer/scripts/test-customer.mjs",
+        "barberbarbar-customer/scripts/test-detail-customer.mjs",
+        "barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs",
+        "barberbarbar-customer/scripts/test-pilihan-barber.mjs"
+      ],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    },
+    {
+      "project": "barberbarbar-customer",
+      "nama": "typescript",
+      "pengguna": [],
+      "packageScripts": [],
+      "catatan": "Nol literal tidak cukup untuk menghapus toolchain/type/plugin; periksa config dan entrypoint."
+    }
+  ]
+}

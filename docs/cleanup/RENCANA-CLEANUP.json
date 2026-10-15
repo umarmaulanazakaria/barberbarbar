@@ -1,0 +1,149 @@
+{
+    "backup":  "C:\\Users\\raifa\\AppData\\Local\\BARBERBARBAR\\workspace-backups\\cleanup-2026-10-15T02-07-15-699Z",
+    "verifikasi":  "PASS",
+    "files":  619,
+    "bytes":  23015529,
+    "hapus":  [
+                  ".hintrc",
+                  "backup-arsip",
+                  "backup-database",
+                  "BARBERBARBAR-F12-CUSTOMER-APP.zip",
+                  "BARBERBARBAR-F12-CUSTOMER-APP.zip.manifest.json",
+                  "BARBERBARBAR-F12-CUSTOMER-APP.zip.sha256",
+                  "BARBERBARBAR-F13-E2E.manifest.json",
+                  "BARBERBARBAR-F13-E2E.zip",
+                  "BARBERBARBAR-F13-E2E.zip.sha256",
+                  "BARBERBARBAR-F14-FINALIZATION.manifest.json",
+                  "BARBERBARBAR-F14-FINALIZATION.zip",
+                  "BARBERBARBAR-F14-FINALIZATION.zip.sha256",
+                  "barberbarbar/START-HERE.txt",
+                  "barberbarbar-mobile/assets/splash-icon.png",
+                  "barberbarbar/server/dist",
+                  "barberbarbar/client/dist",
+                  "barberbarbar-mobile/dist",
+                  "barberbarbar-mobile/.expo",
+                  "barberbarbar-customer/dist",
+                  "barberbarbar-customer/.expo",
+                  "barberbarbar/server/scripts/buat-cadangan-e2e.ps1",
+                  "barberbarbar/server/scripts/buat-cadangan-final.ps1"
+              ],
+    "pindah":  [
+                   {
+                       "dari":  "barberbarbar/F10-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F10-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/F13-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F13-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/F14-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F14-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/PANDUAN-DEMO.md",
+                       "ke":  "barberbarbar/docs/PANDUAN-DEMO.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/PULL-REQUEST.md",
+                       "ke":  "barberbarbar/docs/PULL-REQUEST.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/README-FINAL.md",
+                       "ke":  "barberbarbar/docs/README-FINAL.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/README-INSTALASI.md",
+                       "ke":  "barberbarbar/docs/README-INSTALASI.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/README-PENGUJIAN-ANDROID.md",
+                       "ke":  "barberbarbar/docs/README-PENGUJIAN-ANDROID.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/README-PENGUJIAN.md",
+                       "ke":  "barberbarbar/docs/README-PENGUJIAN.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/RELEASE-CHECKLIST.md",
+                       "ke":  "barberbarbar/docs/RELEASE-CHECKLIST.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/TEMUAN-LANJUTAN.md",
+                       "ke":  "barberbarbar/docs/TEMUAN-LANJUTAN.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-mobile/F11-AUDIT.md",
+                       "ke":  "barberbarbar-mobile/docs/audit/F11-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-mobile/F13-AUDIT.md",
+                       "ke":  "barberbarbar-mobile/docs/audit/F13-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-mobile/F14-AUDIT.md",
+                       "ke":  "barberbarbar-mobile/docs/audit/F14-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-mobile/PULL-REQUEST.md",
+                       "ke":  "barberbarbar-mobile/docs/PULL-REQUEST.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-customer/F12-AUDIT.md",
+                       "ke":  "barberbarbar-customer/docs/audit/F12-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-customer/F13-AUDIT.md",
+                       "ke":  "barberbarbar-customer/docs/audit/F13-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-customer/F14-AUDIT.md",
+                       "ke":  "barberbarbar-customer/docs/audit/F14-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-customer/PULL-REQUEST.md",
+                       "ke":  "barberbarbar-customer/docs/PULL-REQUEST.md"
+                   },
+                   {
+                       "dari":  "barberbarbar-customer/README-INSTALASI.md",
+                       "ke":  "barberbarbar-customer/docs/README-INSTALASI.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F2-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F2-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F3-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F3-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F4-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F4-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F5-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F5-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F6-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F6-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F7-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F7-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F7-SANDBOX.md",
+                       "ke":  "barberbarbar/docs/audit/F7-SANDBOX.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F8-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F8-AUDIT.md"
+                   },
+                   {
+                       "dari":  "barberbarbar/server/F9-AUDIT.md",
+                       "ke":  "barberbarbar/docs/audit/F9-AUDIT.md"
+                   }
+               ],
+    "alasan":  "Root diarsipkan di backup privat; output dapat dibangun ulang; START-HERE duplikat usang; splash-icon tidak direferensikan konfigurasi Expo atau runtime; dokumentasi dipusatkan tanpa menghapus bukti audit."
+}

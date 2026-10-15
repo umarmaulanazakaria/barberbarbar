@@ -1,4 +1,12 @@
 import type { Request, Response } from "express";
+import { statusMembershipPelanggan } from "../services/permohonan-membership.service.js";
+export const statusMembershipOperator = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ pesan: "ID pelanggan tidak valid" });
+  if (!await ambilDataPelangganBerdasarkanId(id)) return res.status(404).json({ pesan: "Pelanggan tidak ditemukan" });
+  const status = await statusMembershipPelanggan(id);
+  return res.json({ status: status.status, diskonPersen: status.diskonPersen });
+};
 import {
   ambilDataSemuaPelanggan,
   tambahDataPelanggan,
@@ -42,8 +50,6 @@ export const ambilPelangganBerdasarkanId = async (
     return res.status(404).json({ pesan: "Pelanggan tidak ditemukan" });
   return res.json(data);
 };
-
-//video
 
 export const ubahPelanggan = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
@@ -91,6 +97,9 @@ export const hapusPelanggan = async (req: Request, res: Response) => {
       DIBLOKIR: "Pelanggan diblokir dan tidak dapat dihapus",
       PUNYA_RIWAYAT:
         "Pelanggan memiliki riwayat pesanan dan tidak dapat dihapus",
+      PUNYA_AKUN: "Pelanggan memiliki akun customer dan tidak dapat dihapus",
+      PUNYA_PERMOHONAN:
+        "Pelanggan memiliki riwayat permohonan pengaitan akun dan tidak dapat dihapus",
     }[hasil.alasan];
     return res
       .status(hasil.alasan === "TIDAK_DITEMUKAN" ? 404 : 409)

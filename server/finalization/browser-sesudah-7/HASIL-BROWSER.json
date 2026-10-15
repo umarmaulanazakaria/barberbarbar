@@ -1,0 +1,1649 @@
+{
+  "tanggal": "2026-10-15",
+  "browser": "Edge headless existing",
+  "provider": "MOCK",
+  "nativeUI": "DEFERRED",
+  "diagnostik": [
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457.7900085449219,
+          "y": 250.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457.7900085449219,
+          "y": 250.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457,
+          "y": 250
+        },
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457.7900085449219,
+          "y": 250.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457.7900085449219,
+          "y": 250.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 457,
+          "y": 250
+        },
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "click",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365,
+          "y": 779
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "click",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365,
+          "y": 779
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "click",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347,
+          "y": 530
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "save-services",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367.6000061035156,
+          "y": 639.5
+        },
+        {
+          "type": "click",
+          "label": "Konfirmasi booking",
+          "disabled": false,
+          "x": 367,
+          "y": 639
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "click",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365,
+          "y": 779
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "click",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347,
+          "y": 530
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        }
+      ],
+      "qty": "3",
+      "edit": true
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365.05999755859375,
+          "y": 779.5
+        },
+        {
+          "type": "click",
+          "label": "Check-in customer",
+          "disabled": false,
+          "x": 365,
+          "y": 779
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "click",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347,
+          "y": 530
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "save-services",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "click",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347,
+          "y": 530
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698,
+          "y": 472
+        }
+      ],
+      "qty": "3",
+      "edit": true
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347.9200134277344,
+          "y": 530.5
+        },
+        {
+          "type": "click",
+          "label": "Mulai layanan",
+          "disabled": false,
+          "x": 347,
+          "y": 530
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698,
+          "y": 472
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 470
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "save-services",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698,
+          "y": 472
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356,
+          "y": 470
+        }
+      ],
+      "qty": "3",
+      "edit": true
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698,
+          "y": 472
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "save-services",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698.6199951171875,
+          "y": 472.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 698,
+          "y": 472
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        }
+      ],
+      "qty": "1",
+      "edit": true
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "confirm /bookings/3167",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356.82000732421875,
+          "y": 470.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 356,
+          "y": 470
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "pointerup",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527.27001953125,
+          "y": 528.5
+        },
+        {
+          "type": "click",
+          "label": "Simpan layanan dan qty",
+          "disabled": false,
+          "x": 527,
+          "y": 528
+        },
+        {
+          "type": "pointerdown",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "pointerup",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796.7100219726562,
+          "y": 463
+        },
+        {
+          "type": "click",
+          "label": "Confirm",
+          "disabled": false,
+          "x": 796,
+          "y": 463
+        },
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 867.25,
+          "y": 563.1500244140625
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 867.25,
+          "y": 563.1500244140625
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 867,
+          "y": 563
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "confirm /bookings/3168",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348.5,
+          "y": 779.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348.5,
+          "y": 779.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348,
+          "y": 779
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    },
+    {
+      "etape": "confirm /refunds",
+      "pointer": [
+        {
+          "type": "pointerdown",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348.5,
+          "y": 437.5
+        },
+        {
+          "type": "pointerup",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348.5,
+          "y": 437.5
+        },
+        {
+          "type": "click",
+          "label": "OTHER",
+          "disabled": false,
+          "x": 348,
+          "y": 437
+        }
+      ],
+      "sebelum": 1,
+      "hasil": "CLICK_HTTP_UI_SELESAI"
+    }
+  ],
+  "results": [
+    {
+      "id": "WEB-LOGIN",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing"
+    },
+    {
+      "id": "WEB-MEMBER",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN"
+    },
+    {
+      "id": "WEB-DIALOG",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Role/nama dialog, fokus awal, trap Tab, Escape dan pengembalian fokus; cancel tanpa mutasi booking"
+    },
+    {
+      "id": "WEB-BOOKING",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED"
+    },
+    {
+      "id": "WEB-LIFECYCLE",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "DP MOCK sah → check-in Web lebih awal → barber final any → Pesanan/IN_SERVICE terpantau Customer/Staff SDK"
+    },
+    {
+      "id": "WEB-ITEMS",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Web tambah/kurangi qty, hapus/tambah layanan merekalkulasi tagihan; snapshot diskon tetap10% (provider MOCK)"
+    },
+    {
+      "id": "WEB-INVOICE",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Staff SDK complete → Web kasir bayar sisa DB → Customer SDK PAID/balance0/satu invoice final"
+    },
+    {
+      "id": "WEB-REJECT",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Reject Web wajib alasan dan alasan tersimpan pada detail customer"
+    },
+    {
+      "id": "WEB-REFUND",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "ADMIN approve MOCK202 → PROCESSING tanpa debit/refund ganda/retry; STAFF ditolak halaman refund"
+    },
+    {
+      "id": "WEB-RESPONSIVE",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Daftar booking fixture pada viewport390px tidak overflow horizontal; bukan Android UI"
+    },
+    {
+      "id": "WEB-LOGOUT",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Logout Web membersihkan token, route kembali login; tidak ada pageerror JS selama skenario"
+    },
+    {
+      "id": "CLEANUP",
+      "status": "PASS",
+      "actual": "22 model domain existing identik; hanya fixture suite dibersihkan"
+    }
+  ]
+}

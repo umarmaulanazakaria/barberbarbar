@@ -7,6 +7,9 @@ const kunciPesananSebelumPembayaran = async (
   tx: Prisma.TransactionClient,
   pesananId: number,
 ) => {
+  // Booking-linked service edits remain gated until verified DP + F7 lifecycle.
+  // Ordinary walk-in orders keep the existing cashier behavior.
+  if (await tx.booking.findUnique({ where: { pesananId }, select: { id: true } })) return false;
   const hasil = await tx.pesanan.updateMany({
     where: {
       id: pesananId,

@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { KesalahanPembayaranBooking } from "../services/pembayaran-booking.service.js";
 import {
   ambilSemuaPesanan,
   ambilPesananAktif,
@@ -78,6 +79,7 @@ export const ubahStatus = async (req: Request, res: Response) => {
     id,
     validasi.data.status,
     req.pengguna.id,
+    validasi.data.barberId,
   );
   if (!hasil.berhasil)
     return res.status(hasil.alasan === "TIDAK_DITEMUKAN" ? 404 : 409).json({
@@ -96,6 +98,9 @@ export const bayar = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (Number.isNaN(id))
     return res.status(400).json({ pesan: "ID pesanan tidak valid" });
+  if (req.body?.tujuan === "DP" || req.body?.purpose === "DP") {
+    return res.status(400).json({ pesan: "DP booking hanya melalui provider Midtrans; kasir hanya pelunasan" });
+  }
   const validasi = skemaPembayaran.safeParse(req.body);
   if (!validasi.success)
     return res
@@ -104,7 +109,12 @@ export const bayar = async (req: Request, res: Response) => {
         pesan: "Data pembayaran tidak valid",
         kesalahan: validasi.error.issues,
       });
-  const hasil = await bayarPesanan(id, validasi.data);
+  let hasil: Awaited<ReturnType<typeof bayarPesanan>>;
+  try { hasil = await bayarPesanan(id, validasi.data, req.pengguna?.id); }
+  catch (error) {
+    if (error instanceof KesalahanPembayaranBooking) return res.status(error.kode).json({ pesan: error.pesan });
+    throw error;
+  }
   if (!hasil.berhasil) {
     const pesan = {
       TIDAK_DITEMUKAN: "Pesanan tidak ditemukan",

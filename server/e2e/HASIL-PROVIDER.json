@@ -1,0 +1,32 @@
+{
+  "tanggal": "2026-10-14T18:55:29.873Z",
+  "jenis": "Midtrans Sandbox Get Status read-only; bukan checkout Customer App",
+  "status": "DEFERRED",
+  "konfigurasi": {
+    "MIDTRANS_MERCHANT_ID": true,
+    "MIDTRANS_SERVER_KEY": true,
+    "MIDTRANS_CLIENT_KEY": true
+  },
+  "lokal": {
+    "transaksiAda": false,
+    "refundAda": false,
+    "statusRefund": null
+  },
+  "provider": {
+    "order_id": "BBF7-DP-157-a9a8c1a770be4a92",
+    "transaction_id": "10cb3319-9196-463d-8484-715d01485c9f",
+    "status_code": "200",
+    "transaction_status": "settlement",
+    "payment_type": "qris",
+    "nominalAsal": 5000,
+    "identitasCocok": true,
+    "signatureValid": true,
+    "refund_key": "F7-REFUND-48",
+    "entriRefund": 0,
+    "nominalRefund": [],
+    "bankConfirmed": []
+  },
+  "catatan": "Tidak ada bukti final Rp2.000 yang cocok; tidak menyimpulkan sukses/gagal atau retry aman dari settlement saja.",
+  "refundAtauRetryDikirim": false,
+  "databaseDiubah": false
+}

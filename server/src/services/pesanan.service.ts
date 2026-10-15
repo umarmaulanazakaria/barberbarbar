@@ -1,8 +1,11 @@
 import basisData from "../lib/prisma.js";
+import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
+import { bayarPelunasanKasirBooking, KesalahanPembayaranBooking } from "./pembayaran-booking.service.js";
 type StatusPesanan = "WAITING" | "IN_SERVICE" | "COMPLETED" | "CANCELLED";
 type MetodePembayaran = "CASH" | "QRIS" | "CARD" | "TRANSFER" | "OTHER";
 
 const detailPesanan = {
+  booking: { select: { id: true, nomorBooking: true } },
   pelanggan: { include: { membership: true } },
   barber: true,
   items: { include: { layanan: true } },
@@ -40,7 +43,7 @@ export const ambilPesananBerdasarkanId = async (id: number) => {
 };
 
 export const tambahPesanan = async (
-  data: { pelangganId: number; barberId: number; items: Array<{ layananId: number; qty: number }>; catatan?: string | undefined },
+  data: { pelangganId: number; barberId?: number | null | undefined; items: Array<{ layananId: number; qty: number }>; catatan?: string | undefined },
   penggunaId: number,
 ) => {
   const pelanggan = await basisData.pelanggan.findUnique({
@@ -50,9 +53,11 @@ export const tambahPesanan = async (
   if (!pelanggan) return { berhasil: false, alasan: "PELANGGAN_TIDAK_DITEMUKAN" } as const;
   if (pelanggan.status === "DIBLOKIR") return { berhasil: false, alasan: "PELANGGAN_DIBLOKIR" } as const;
 
-  const barber = await basisData.barber.findUnique({ where: { id: data.barberId } });
-  if (!barber) return { berhasil: false, alasan: "BARBER_TIDAK_DITEMUKAN" } as const;
-  if (!barber.aktif) return { berhasil: false, alasan: "BARBER_TIDAK_AKTIF" } as const;
+  if (data.barberId != null) {
+    const barber = await basisData.barber.findUnique({ where: { id: data.barberId } });
+    if (!barber) return { berhasil: false, alasan: "BARBER_TIDAK_DITEMUKAN" } as const;
+    if (!barber.aktif) return { berhasil: false, alasan: "BARBER_TIDAK_AKTIF" } as const;
+  }
 
   const ids = [...new Set(data.items.map((item) => item.layananId))];
   const layanan = await basisData.layanan.findMany({ where: { id: { in: ids } } });
@@ -82,7 +87,7 @@ export const tambahPesanan = async (
     data: {
       nomorPesanan: nomorUnik("ORD"),
       pelangganId: data.pelangganId,
-      barberId: data.barberId,
+      barberId: data.barberId ?? null,
       catatan: data.catatan ?? null,
       subtotal,
       discountPercent,
@@ -97,7 +102,7 @@ export const tambahPesanan = async (
   return { berhasil: true, data: pesanan } as const;
 };
 
-export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, penggunaId: number) => {
+export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, penggunaId: number, barberPilihanId?: number) => {
   const pesanan = await basisData.pesanan.findUnique({ where: { id } });
   if (!pesanan) return { berhasil: false, alasan: "TIDAK_DITEMUKAN" } as const;
 
@@ -114,9 +119,17 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
   }
 
   const diperbarui = await basisData.$transaction(async (tx) => {
+    await kunciJadwalBooking(tx);
+    if (await tx.booking.findUnique({ where: { pesananId: id }, select: { id: true } })) return null;
+    let barberId: number | undefined;
+    if (statusBaru === "IN_SERVICE") {
+      barberId = barberPilihanId ?? pesanan.barberId ?? undefined;
+      if (!barberId || !(await tx.barber.findFirst({ where: { id: barberId, aktif: true } }))) return null;
+      if (await tx.pesanan.count({ where: { id: { not: id }, barberId, status: "IN_SERVICE" } })) return null;
+    }
     const hasil = await tx.pesanan.updateMany({
       where: { id, status: pesanan.status },
-      data: { status: statusBaru },
+      data: { status: statusBaru, ...(barberId === undefined ? {} : { barberId }) },
     });
 
     if (hasil.count !== 1) return null;
@@ -137,10 +150,24 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
 
 export const bayarPesanan = async (
   id: number,
-  data: { metode: MetodePembayaran; jumlahDiterima: number; catatan?: string | undefined },
+  data: { metode: MetodePembayaran; jumlahDiterima: number; catatan?: string | undefined; kunciIdempotensi?: string | undefined },
+  penggunaId?: number,
 ) => {
   const pesanan = await basisData.pesanan.findUnique({ where: { id } });
   if (!pesanan) return { berhasil: false, alasan: "TIDAK_DITEMUKAN" } as const;
+  const booking = await basisData.booking.findUnique({ where: { pesananId: id }, select: { id: true } });
+  if (booking) {
+    if (!penggunaId) throw new KesalahanPembayaranBooking(401, "Operator belum login");
+    const hasil = await bayarPelunasanKasirBooking(booking.id, penggunaId, { ...data,
+      kunciIdempotensi: data.kunciIdempotensi ?? `legacy_order_${id}` }, data.kunciIdempotensi !== undefined);
+    const pembayaranId = hasil.ringkasan.invoice?.pembayaranLegacyId;
+    if (!pembayaranId) throw new KesalahanPembayaranBooking(409, "Invoice booking tidak terhubung dengan kasir");
+    const [pembayaran, pesananBaru] = await Promise.all([
+      basisData.pembayaran.findUniqueOrThrow({ where: { id: pembayaranId } }),
+      basisData.pesanan.findUniqueOrThrow({ where: { id }, include: detailPesanan }),
+    ]);
+    return { berhasil: true, data: { pembayaran, pesanan: pesananBaru } } as const;
+  }
   if (pesanan.status !== "COMPLETED") return { berhasil: false, alasan: "BELUM_SELESAI" } as const;
 
   const hasil = await basisData.$transaction(async (tx) => {
@@ -157,6 +184,11 @@ export const bayarPesanan = async (
 
     if (dikunci.count !== 1) {
       return { tipe: "SUDAH_DIBAYAR" } as const;
+    }
+    // Jika F7 mengaitkan booking ketika request legacy sedang menunggu row lock,
+    // jangan masuk ke pencatatan kasir biasa yang belum memahami DP.
+    if (await tx.booking.findUnique({ where: { pesananId: id }, select: { id: true } })) {
+      throw new KesalahanPembayaranBooking(409, "Pembayaran booking harus menghitung DP dan balance pada ledger");
     }
 
     const pesananTerkini = await tx.pesanan.findUniqueOrThrow({

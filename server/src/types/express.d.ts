@@ -7,6 +7,10 @@ declare global {
         id: number;
         role: Role;
       };
+      akunPelanggan?: {
+        id: number;
+        pelangganId: number;
+      };
     }
   }
 }

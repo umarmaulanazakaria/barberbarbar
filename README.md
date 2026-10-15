@@ -1,76 +1,98 @@
-# BarberShop Management App — Project 3
+﻿# BARBER BARBAR
 
-Full-stack barbershop management project based on the provided reference UI.
+Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer App melalui satu API dan satu database PostgreSQL.
 
-## Features
-- JWT authentication, register/login, ADMIN & STAFF authorization
-- Customers + blacklist and protected history
-- Membership + discount
-- Barbers master data
-- Services master data
-- New Order / check-in with multiple service items
-- Snapshot price/duration per order item
-- Service workflow: Waiting → In Service → Completed
-- Separate payment status: Unpaid / Paid
-- Cash, QRIS, Card, Transfer, Other payment methods
-- Order history, invoices, service ticket print
-- Dashboard and reports
-- Responsive React UI with dark navy sidebar and indigo accent based on the reference design
+**Status: siap ditinjau dengan syarat; belum siap Production.** Acceptance Android, checkout Sandbox langsung dari Customer App, refund historis Rp2.000, pengiriman recovery email, advisory dependency, dan sejumlah keputusan bisnis masih terbuka. Lihat [audit workspace](docs/WORKSPACE-CLEANUP-AUDIT.md) dan [release checklist](docs/RELEASE-CHECKLIST.md).
 
-## Stack
-Frontend: React + Vite + TypeScript + Tailwind CSS + TanStack Query + Axios + Zod + React Router
+## Teknologi dan fitur
 
-Backend: Node.js + Express + TypeScript + Prisma + PostgreSQL + JWT + bcrypt + Zod
+- Web: React, TypeScript, Vite, Tailwind CSS, React Query, Socket.IO.
+- Backend: Express, TypeScript, Prisma, PostgreSQL, bcrypt, JWT, Midtrans Sandbox.
+- Pelanggan, barber, layanan, membership, pesanan walk-in, kasir, laporan, dan invoice.
+- Akun CUSTOMER terpisah dari operator; pengaitan akun dan membership memerlukan keputusan ADMIN.
+- Booking multiservice, pemilihan barber, persetujuan usulan, reschedule, pembatalan, dan lifecycle layanan.
+- DP/pelunasan berdasarkan database, ledger idempotent, webhook terverifikasi, dan refund melalui ADMIN.
+- Scheduler deadline persisten; realtime menjadi sinyal refetch. REST/database tetap sumber data utama.
 
-## Run the project
+## Arsitektur dan folder
 
-### 1. Backend
-Open terminal in `server`:
-
-```bash
-npm install
-npx prisma generate
-npx prisma migrate dev
-npm run seed
-npm run dev
+```text
+client/src/pages/          Halaman operasional Web
+client/src/components/     Komponen antarmuka
+client/scripts/            Integrasi dan browser E2E
+server/src/routes/         API customer dan operator
+server/src/controllers/    Penanganan HTTP
+server/src/services/       Aturan bisnis
+server/src/middleware/     Autentikasi dan validasi
+server/src/realtime/       Otorisasi dan event Socket.IO
+server/prisma/             Schema dan riwayat migration
+server/scripts/            Pengujian, backup, dan audit
+docs/                      Panduan dan bukti audit
 ```
 
-Backend: `http://localhost:3000`
+Mobile Staff memakai JWT operator; Customer memakai JWT CUSTOMER tanpa akses operator. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
 
-If `.env` is missing, copy `.env.example` to `.env` and set your PostgreSQL `DATABASE_URL` and `JWT_SECRET`.
+## Menjalankan lokal
 
-### 2. Frontend
-Open a second terminal in `client`:
+Persyaratan: Node.js/npm sesuai lockfile (baseline Node 24), PostgreSQL, serta `pg_dump`/`pg_restore` untuk backup. Database existing memerlukan konfigurasi pemilik. Dari `server`, pasang dependency lalu buat `.env` berdasarkan `.env.example`:
 
-```bash
-npm install
-npm run dev
+```powershell
+npm.cmd ci
+npm.cmd run prisma:generate
+node node_modules/prisma/build/index.js validate
+node node_modules/prisma/build/index.js migrate status
+npm.cmd run build
+npm.cmd start
 ```
 
-Frontend: `http://localhost:5173`
+Development: `npm.cmd run dev`. Backend memakai port 3000 secara default; periksa `GET http://127.0.0.1:3000/public/services`. Tinjau migration sebelum menyiapkan database baru. Jangan menjalankan reset atau seed demo pada data existing.
 
-Vite proxies `/api` automatically to `http://localhost:3000`.
+Dari `client`, pada terminal lain:
 
-## Demo accounts after `npm run seed`
-- ADMIN: `admin@barber.com` / `admin123`
-- STAFF: `staff@barber.com` / `staff123`
-
-Use the ADMIN account when testing Barbers, Services and Membership CRUD.
-
-## Important workflow
-1. Create/select Customer
-2. Create New Order and choose Barber + Service(s)
-3. Waiting → Start Service
-4. In Service → Mark as Completed
-5. Go to Payment
-6. Mark as Paid
-7. Paid order appears in Order History and Invoices
-
-## If Prisma types show red after replacing files
-Run:
-
-```bash
-npx prisma generate
+```powershell
+npm.cmd ci
+npm.cmd run dev -- --host 127.0.0.1
 ```
 
-Then in VS Code run **TypeScript: Restart TS Server** if necessary.
+Buka `http://127.0.0.1:5173`. Vite meneruskan `/api` dan `/socket.io` ke backend yang sama. Build Web: `npm.cmd run build`.
+
+## Environment
+
+Isi credential secara manual di `server/.env`; file asli diabaikan Git. Jangan memasukkan credential server ke bundle Web atau `EXPO_PUBLIC_*`.
+
+| Variabel | Kegunaan |
+|---|---|
+| `DATABASE_URL` | Koneksi PostgreSQL lokal |
+| `JWT_SECRET` | Secret panjang dan acak untuk JWT |
+| `PORT` | Port backend, default 3000 |
+| `MIDTRANS_MERCHANT_ID` | Identitas merchant Sandbox |
+| `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY` | Credential Sandbox, hanya di server |
+| `MIDTRANS_IS_PRODUCTION` | `false`; Production belum diaktifkan |
+| `SOCKET_ALLOWED_ORIGINS` | Origin Web yang diizinkan, dipisahkan koma |
+| `SCHEDULER_BOOKING_AKTIF` | Default aktif; dapat dimatikan untuk inspeksi terkontrol |
+| `SCHEDULER_BOOKING_INTERVAL_MS` | 1.000–60.000 ms, default 15.000 |
+
+Konfigurasi webhook dan batas provider: [panduan Midtrans](docs/audit/F7-SANDBOX.md). Forgot-password belum mengirim email; token tidak dikembalikan endpoint publik.
+
+## Pengujian dan backup
+
+Jalankan pada database lokal dengan fixture terisolasi dan backup terbaru. Runner memeriksa 22 model sesudah setiap tahap. Hasil baru berada di `server/artifacts/` yang diabaikan Git.
+
+```powershell
+# Dari server; MIDTRANS_IS_PRODUCTION=false
+node scripts/backup-e2e.mjs
+node scripts/jalankan-regresi-e2e.mjs
+node scripts/verifikasi-integritas-e2e.mjs "<folder-backup>"
+```
+
+Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar Stage 2. Dump, snapshot, environment asli, dan patch privat tidak boleh diunggah. Detail: [panduan pengujian](docs/PENGUJIAN.md).
+
+## Integrasi dan dokumentasi
+
+- [Web Management + Backend](https://github.com/umarmaulanazakaria/barberbarbar)
+- [Mobile ADMIN/STAFF](https://github.com/umarmaulanazakaria/barberbarbar-mobile)
+- [Customer App](https://github.com/umarmaulanazakaria/barberbarbar-customer)
+- [Panduan ekosistem](docs/README-FINAL.md), [pengujian Android](docs/README-PENGUJIAN-ANDROID.md), [demo](docs/PANDUAN-DEMO.md).
+- [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
+
+Branch review: `feature/project5-integration`. Build lokal dan provider MOCK tidak menggantikan acceptance perangkat atau pembayaran provider nyata.

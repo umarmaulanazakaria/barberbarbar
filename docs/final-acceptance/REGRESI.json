@@ -1,0 +1,648 @@
+{
+  "tanggal": "2026-10-15",
+  "jenis": "regresi lokal; native adapter/provider MOCK bukan device/Sandbox nyata",
+  "results": [
+    {
+      "id": "backend-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 1,
+      "bukti": [],
+      "snapshot22Identik": true,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-fondasi-pelanggan",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 9,
+      "bukti": [
+        "PASS: Unique constraint DB aktual: telepon, akun per pelanggan, email dan hash token",
+        "PASS: Registrasi baru bersamaan: satu pelanggan dan satu akun",
+        "PASS: Konflik email normalisasi/unique: rollback pelanggan dan respons umum",
+        "PASS: Registrasi menolak password lebih dari 72 byte bcrypt",
+        "PASS: Pengaitan existing bersamaan: satu permohonan tanpa akun prematur",
+        "PASS: Email pending tidak dapat dipakai permohonan/registrasi lain",
+        "PASS: Dua ADMIN menyetujui: satu keputusan/satu akun; STAFF ditolak; hash dibersihkan",
+        "PASS: Penolakan final tanpa akun dan tanpa retensi hash password",
+        "PASS: Approve versus reject bersamaan: satu keputusan konsisten",
+        "PASS: Persetujuan dengan email sudah dipakai: 409 umum tanpa akun/keputusan parsial",
+        "PASS: Login email/telepon dan pemisahan JWT CUSTOMER versus ADMIN/STAFF",
+        "PASS: JWT CUSTOMER versi lama tanpa sidik kredensial wajib login ulang",
+        "PASS: Profil sendiri saja; ID/email/status injection ditolak tanpa mengubah customer lain",
+        "PASS: DIBLOKIR ditolak pada registrasi, login, middleware dan persetujuan",
+        "PASS: Reset mencabut seluruh JWT CUSTOMER lama; JWT/password ADMIN/STAFF tetap berlaku",
+        "PASS: Penghapusan operator melindungi akun aktif dan riwayat pengaitan",
+        "PASS: Daftar permohonan ADMIN tidak mengirim hash password",
+        "PASS: Smoke API operator existing dengan JWT STAFF tetap berhasil",
+        "PASS: Jendela limiter pulih setelah 15 menit dan IP berbeda dipisahkan",
+        "PASS: Pembatasan register: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan login: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan forgot-password: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan reset-password: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: fixture audit dibersihkan"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "091b484840c18420eaf26205bba9a89bd8637bee46af6891834520b620995835",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-reset-password-pelanggan",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 4,
+      "bukti": [
+        "LULUS: Respons email terdaftar/tidak terdaftar identik, tanpa token",
+        "LULUS: Token random 32 byte, hanya SHA-256 tersimpan, expiry 30 menit",
+        "LULUS: Token valid mengubah hash password dan membatalkan seluruh token sebelumnya",
+        "LULUS: Token bekas dan token sebelumnya ditolak",
+        "LULUS: Password lama gagal login; password baru berhasil login",
+        "LULUS: Token kedaluwarsa, palsu, dan format tidak valid ditolak",
+        "LULUS: Password invalid tidak menghabiskan token; batas bcrypt 72 byte",
+        "LULUS: Kegagalan update password rollback klaim token; token masih dapat dipakai",
+        "LULUS: Dua request bersamaan: token yang sama hanya berhasil sekali",
+        "LULUS: Dua token untuk akun sama tidak dapat reset bersamaan dua kali",
+        "LULUS: Hash operator existing tetap; login ADMIN/STAFF dummy tidak terpengaruh",
+        "Total: 11 kelompok pengujian lulus."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "8925baa7f338cd002d69c25572f42415c166fcd3782069f25e834cd88f16638d",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-penutupan-akun",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 7,
+      "bukti": [
+        "PASS AKUN: Profil biasa kompatibel; identitas wajib password; konflik email/telepon umum dan rollback atomik tanpa mencabut sesi",
+        "PASS AKUN: Email/telepon ternormalisasi; sesi dan token reset lama dicabut; login identitas baru berhasil; akun lain utuh",
+        "PASS AKUN: Ganti password atomik, rollback injeksi, password lama/JWT lama ditolak dan password baru berhasil; operator tidak berubah",
+        "PASS AKUN: Transport MOCK: respons identik, template profesional/link 30 menit, SHA-256, dedup email, single-use, login password lama/baru",
+        "PASS AKUN: Delivery gagal tetap respons umum; token terkait dicabut; tidak ada pesan provider/token di log; akun tetap aktif",
+        "Total: 5 kelompok penutupan akun PASS; email transport MOCK, bukan inbox nyata."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "aa514fcd0c99854070c5c42543229abcff4f04b47d514d241a8ff039d719c42f",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-api-publik",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 1,
+      "bukti": [
+        "LULUS /public/services: tanpa JWT, hanya aktif, whitelist field publik",
+        "LULUS /public/barbers: tanpa JWT, hanya aktif, whitelist field publik",
+        "LULUS endpoint operator: tanpa JWT/JWT palsu ditolak",
+        "LULUS kontrak operator: STAFF masih dapat membaca aktif/nonaktif; staff-accounts tetap ADMIN-only"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "fead263077027aa5e39966f26346c6b0cf37f10efd7cb163dca52ce79e3dfcb8",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-membership-f3",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "PASS: Non-member melihat status sendiri; autentikasi CUSTOMER wajib",
+        "PASS: Pengajuan tanpa formulir; duplicate bersamaan dan constraint pending; injection ditolak",
+        "PASS: Daftar ADMIN aman; STAFF/CUSTOMER ditolak keputusan; customer tidak membaca customer lain",
+        "PASS: Non-member tetap dapat dibuatkan pesanan operator tanpa diskon (bukan booking F4)",
+        "PASS: Dua ADMIN approve: satu keputusan/satu Membership existing, diskon 10%, order historis tetap",
+        "PASS: Reject kembali NON_MEMBER, keputusan final tidak berulang, dapat mengajukan ulang",
+        "PASS: Approve versus reject serentak: satu keputusan konsisten",
+        "PASS: Regresi operator STAFF create/ADMIN update; INACTIVE reaktivasi ADMIN; diskon legacy authoritative",
+        "PASS: Customer DIBLOKIR tidak dapat mengajukan/diapprove; ADMIN dapat menolak",
+        "PASS: Kegagalan pembuatan Membership rollback keputusan; request masih dapat diapprove",
+        "PASS: Approval versus pendaftaran operator: satu Membership, benefit tetap existing",
+        "PASS: Benefit backend existing authoritative dan snapshot pesanan tetap; DP/booking F4 tidak ditambahkan",
+        "Total: 12 kelompok F3 PASS.",
+        "PASS: seluruh fixture F3 dibersihkan."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "955501b88b52a5379f8ee2c11b7972996708b2c627dd28631a4df04bf74ae351",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-booking-f4",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "PASS: Boundary waktu: 3 jam, 14x24 jam, 09-23, menit, UTC/Jakarta, sweep interval berurutan",
+        "PASS: Non-member multi-service/qty, menit fleksibel, snapshot harga/durasi/DP; tidak membuat Pesanan/Pembayaran",
+        "PASS: Constraint DB menolak snapshot nominal/qty invalid tanpa mengubah booking valid",
+        "PASS: Barber tertentu bentrok, customer overlap, pending menahan slot, batas berurutan diterima",
+        "PASS: ACTIVE snapshot 10% walau operator kustom25%, INACTIVE 0, perubahan harga/membership tidak retroaktif; DP rupiah ceil",
+        "PASS: HTTP menolak <3 jam/hari sama, >14 hari, luar jam, melewati23, detik/timezone invalid; hari14/end23 diterima",
+        "PASS: Harga/diskon/identitas/status/DP injection, qty invalid, service/barber nonaktif ditolak",
+        "PASS: Kapasitas aktif gabungan specific/any: last-slot bersamaan hanya satu berhasil, pending penuh menolak",
+        "PASS: Concurrency specific dan customer yang sama: satu booking aktif berhasil",
+        "PASS: Specific versus any serentak menghitung pool kapasitas yang sama",
+        "PASS: Own-booking scope, IDOR 404, query injection, tanpa JWT/operator ditolak; CUSTOMER ditolak operator",
+        "PASS: Customer DIBLOKIR ditolak membuat/membaca booking",
+        "PASS: Kegagalan setelah create nested rollback booking/items; slot tidak bocor",
+        "PASS: Status terminal fixture melepaskan slot; customer tidak memiliki API transisi F5",
+        "PASS: Regresi kasir Project3/4: STAFF order → IN_SERVICE → COMPLETED → PAID, invoice/kembalian, pembayaran ulang 409",
+        "Total: 15 kelompok F4 PASS.",
+        "PASS: fixture F4 dibersihkan; record existing tidak disentuh."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "25d0ce0e615cdb5ba25807352b1ea4c35d1aedda234fa2f77bf5b95ee7d23212",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-operasional-f5",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "PASS: ADMIN/STAFF confirm, deadline tepat1 jam, tidak menandai DP paid/membuat Pesanan",
+        "PASS: Reject wajib alasan, customer own dapat membaca, terminal tidak bisa diputuskan/check-in ulang",
+        "PASS: Double confirm / confirm-versus-reject serentak: satu keputusan dan audit record",
+        "PASS: Operator list/detail tersedia; CUSTOMER tidak memutuskan/check-in; own-booking scope",
+        "PASS: Check-in lebih awal dan seluruh check-in tanpa bukti DP diblokir sesuai keputusan C; payload fake-paid ditolak",
+        "PASS: Proposal pending tidak boleh start; own consent atomik, pengganti lain ditolak, final assignment tetap gate DP/F6",
+        "PASS: Persetujuan pengganti memindahkan barber efektif; F4 tetap menahan CHECKED_IN/pilihan disetujui",
+        "PASS: Customer reject usulan→reschedule tervalidasi→PENDING→konfirmasi ulang/deadline baru, snapshot harga utuh",
+        "PASS: Any menerima pilihan barber aktif pada validasi; alokasi final tidak dipersistenkan tanpa DP",
+        "PASS: Fixture IN_SERVICE→COMPLETED tidak berarti PAID; layanan/item/Pesanan deferred B, pembayaran legacy tidak disentuh",
+        "PASS: Kegagalan audit rollback status/deadline keputusan atomik",
+        "Total: 11 kelompok foundation F5 PASS; operasi dengan DP valid belum dapat diuji sampai F6.",
+        "PASS: fixture F5 dan riwayat/proposal cascade dibersihkan."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "dc5e95777225deeb0dcd03e9593d32276a8fe0c8a6f11f3d11663f24230d781f",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-payment-f6",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "PASS: Rupiah BigInt, snapshot10%, DPceil50%, total naik/turun, paid tidak hilang, excess/refund teridentifikasi",
+        "PASS: DP intent setelah confirm, satu pending per round, nominal authoritative, tidak PAID/mengubah booking, own-scope/injection",
+        "PASS: DP tanpa bukti provider ditolak DB; manualDP ditolak; pelunasan sebelum COMPLETED/tanpa DP valid ditolak; invoice palsu tidak dibuat",
+        "PASS: Fixture sink F7: COMPLETED/balance valid, OVERDUE tidak block, kasir bayar balance, retry idempotent, satu invoice, bukti unik",
+        "PASS: Concurrent settlement berbeda-key tidak overpay, satu ledger kredit/satu invoice",
+        "PASS: Total linked-order naik/turun dihitung ulang dari items, paid tetap, excess terdeteksi tanpa refund/invoice otomatis",
+        "PASS: Kasir Project3/4 payload existing mengkredit hanya balance, DTO/invoice legacy kompatibel; DP/manual/duplikat ditolak",
+        "PASS: Kegagalan invoice rollback kredit pelunasan/saldo; retry valid berhasil",
+        "Total: 8 kelompok F6 PASS. Provider/webhook/refund nyata DEFERRED F7; fixture bukti bukan verifikasi Midtrans.",
+        "PASS: seluruh fixture pembayaran/bukti/invoice dibersihkan, data existing tidak diubah."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "5cb818d6412752f17d441659142511a6811b37259fd08f83f2b619b11be89653",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-scheduler-booking",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 7,
+      "bukti": [
+        "PASS SCHEDULER: 29 menit/batas-1ms aman; tepat30 eligible; dua runner satu CANCELLED/riwayat; slot dilepas; scan ulang idempotent",
+        "PASS SCHEDULER: Konfirmasi sebelum deadline menang sah; already confirmed tidak dibatalkan oleh timeout konfirmasi",
+        "PASS SCHEDULER: ADMIN confirm / STAFF reject versus timeout tepatdeadline: satu keputusan terminal atomik",
+        "PASS SCHEDULER: DP sebelum deadline tetap; pending provider saat batas dibatalkan tanpa hilang payment atau kredit palsu",
+        "PASS SCHEDULER: GetStatus settlement tepatwaktu sebelum webhook mempertahankan booking dan mencatat DP sah",
+        "PASS SCHEDULER: Provider gagal tidak menahan slot; webhook terlambat/duplicate menyimpan kredit dan satu refund100% wajib ADMIN",
+        "PASS SCHEDULER: Webhook versus scanner: settlement tepatwaktu menang sebagai satu kredit, booking tidak batal",
+        "PASS SCHEDULER: Provider membayar lewat deadline: tidak memberi hak pelayanan; kredit utuh/refund request tunggal",
+        "PASS SCHEDULER: No-show tepat15menit: slot dilepas, DP utuh/hangus, nol refund/sisa tagihan, tidak membuat invoice palsu",
+        "PASS SCHEDULER: Consent pending tidak memiliki timeout proposal; setelah2jam dan DP sah sebelum jadwal tetap PENDING/CONFIRMED",
+        "PASS SCHEDULER: Early check-in, CHECKED_IN menunggu service dan IN_SERVICE tidak menjadi NO_SHOW",
+        "PASS SCHEDULER: IN_SERVICE versus scanner: CHECKED_IN tidak diterminalkan dan hanya satu Pesanan",
+        "PASS SCHEDULER: Check-in versus NO_SHOW tepat batas: check-in terlambat ditolak, satu riwayat NO_SHOW",
+        "PASS SCHEDULER: OVERDUE tepat1jam satu histori; kasir masih membayar, PAID/invoice final, COMPLETED/akun tetap, histori utuh",
+        "PASS SCHEDULER: Booking lunas tidak ditandai overdue",
+        "PASS SCHEDULER: Pelunasan online MOCK setelah overdue tetap aktif; webhook duplicate satu kredit/invoice, histori overdue utuh",
+        "PASS SCHEDULER: Kasir/webhook versus overdue atomik: paid selalu akhir, maksimal satu histori sah sebelum paid, satu invoice",
+        "PASS SCHEDULER: Reschedule lewat service existing: batas30menit versi aktif, slot baru dilepas/tidak restore lama, DP utuh/refund100% wajib ADMIN",
+        "PASS SCHEDULER: Deadline versi reschedule lama tidak membatalkan versi baru; reschedule dikonfirmasi tidak timeout",
+        "PASS SCHEDULER: Customer reschedule versus scanner DP: DP sah/versi baru tidak dibatalkan dari snapshot lama",
+        "PASS SCHEDULER: Kegagalan audit rollback status/histori; pengulangan aman berhasil",
+        "PASS SCHEDULER: Kegagalan refund request rollback pembatalan dan riwayat bersama; kredit DP tidak berubah; retry satu request",
+        "PASS SCHEDULER: Backend HTTP nyata startup/restart catch-up ketika mati; dua proses scanner satu histori; shutdown bersih exit0",
+        "PASS SCHEDULER: Satu booking gagal tidak menghentikan kandidat lain; retry scan berikutnya aman; log tidak memuat rahasia",
+        "PASS SCHEDULER: Pagination melampaui100 kandidat diproses tanpa starvation; scan ulang tidak menggandakan histori",
+        "PASS SCHEDULER: Runner singleton per proses; kandidat setelah startup diproses scan berkala; stop menunggu pekerjaan selesai",
+        "PASS SCHEDULER: Clock DB epoch independen clock proses/timezone; kill-switch tersedia; nol panggilan refund provider",
+        "Total: 27 kelompok SCHEDULER PASS; provider MOCK, pembayaran Sandbox nyata tidak diulang.",
+        "PASS cleanup: hanya fixture acak milik suite dibersihkan."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "e69b17587d307a9e9421ef0ad96e5a84532021351f7af45cd122575cd3a7b356",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "test-realtime",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 19,
+      "bukti": [
+        "PASS REALTIME: CUSTOMER/ADMIN/STAFF connect; WebSocket/polling dan REST pada HTTP server yang sama",
+        "PASS REALTIME: Origin web lokal diizinkan dengan CORS tepat; native tanpa Origin tetap wajib JWT",
+        "PASS REALTIME: JWT salah/expired/salah key, claim/auth role/identity spoof dan origin terlarang ditolak; room operator tidak bisa diambil customer",
+        "PASS REALTIME: Booking creation terisolasi; dua instance menerima NOTIFY; IDOR/generic denial, subscribe berulang/unsubscribe aman",
+        "PASS REALTIME: Konfirmasi ADMIN, penolakan STAFF dan pembatalan customer menghasilkan event setelah commit",
+        "PASS REALTIME: DP webhook MOCK terverifikasi memberi event; duplicate tidak kredit atau sinyal settlement ganda",
+        "PASS REALTIME: Proposal/consent barber, reschedule/confirm ulang, CHECKED_IN/barber final/Pesanan/IN_SERVICE/items/COMPLETED mengirim sinyal",
+        "PASS REALTIME: Pelunasan MOCK/balance/final invoice memberi event sah; duplicate tetap satu invoice",
+        "PASS REALTIME: Membership request/approval/status terpublikasi; keputusan admin tidak bocor ke STAFF/customer lain",
+        "PASS REALTIME: Refund dummy PENDING_APPROVAL/APPROVED/PROCESSING/FAILED sesuai DB; 202 tidak menjadi SUCCESS, STAFF/own-scope aman",
+        "PASS REALTIME: Regresi12 kelompok Midtrans/refund MOCK via API: approval/retry dan bank-confirmed menghasilkan SUCCEEDED sah, bukan refund historis",
+        "PASS REALTIME: Scheduler timeout, NO_SHOW dan OVERDUE nyata di DB mengirim event pascacommit",
+        "PASS REALTIME: Commit barrier: belum commit tidak emit; rollback tidak emit sukses",
+        "PASS REALTIME: Subscription dibatasi; subscribe idempotent dan unsubscribe tetap bekerja ketika kapasitas room penuh",
+        "PASS REALTIME: Reconnect/offline/foreground melakukan REST refetch; listener tidak ganda dan cleanup disconnect",
+        "PASS REALTIME: Transport terputus: reconnect otomatis SDK dan refetch ulang tanpa menggandakan listener",
+        "PASS REALTIME: Hanya koneksi LISTEN milik test diputus: instance lain tetap live, recovery meminta refetch atas event terlewat",
+        "PASS REALTIME: Payload semua event hanya ID/action/version/time/refetch; tanpa PII, JWT, hash atau Snap token",
+        "PASS REALTIME: Error emit tidak membatalkan DB/REST mutation; instance lain tetap menerima sinyal",
+        "PASS REALTIME: Koneksi aktif dicabut ketika CUSTOMER DIBLOKIR/reset password atau role operator berubah",
+        "PASS REALTIME: JWT kedaluwarsa pada koneksi aktif menyebabkan disconnect tanpa menunggu event resource",
+        "PASS REALTIME: Restart HTTP/realtime dan reconnect valid; shutdown socket/listener bersih",
+        "PASS REALTIME: Entrypoint gagal bind port berhenti dengan exit1 tanpa meninggalkan listener PostgreSQL atau timer",
+        "Total: 23 kelompok REALTIME PASS; provider MOCK, bukan pengulangan Sandbox nyata.",
+        "PASS cleanup: 22 model existing identik; hanya fixture milik suite dibersihkan."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "08b1d8ce2c5149aa34363536cb0b86daff3c956b4997f442b2c462ebd2f07657",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "web-build",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 12,
+      "bukti": [
+        "✓ built in 5.95s"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "74e1852b610313fca814ceed2e62960c29e6f6d0e1ef8ce2ad7c295eb123ce5e",
+      "warningPg": false,
+      "warningBundling": true,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "id": "web-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "PASS WEB: Batas konfirmasi >=30 menit, terminal dan round reschedule",
+        "PASS WEB: DP, early check-in, consent barber, IN_SERVICE dan perubahan layanan",
+        "PASS WEB: Pelunasan COMPLETED/OVERDUE, pending online, lunas dan refund tanpa retry PROCESSING",
+        "PASS WEB: Delapan event ke query terarah, catalog case dan pembatasan STAFF",
+        "PASS WEB: Booking muncul dari REST setelah event tanpa refresh manual; dedup dan cache unrelated tetap utuh",
+        "PASS WEB: Payload invalid diabaikan; reconnect/LISTEN ready dan foreground refetch REST",
+        "PASS WEB: Ganti akun/logout/unmount melepas listener/token; REST tetap beroperasi setelah socket terputus",
+        "PASS WEB: Render UI booking/refund PROCESSING, STAFF ditolak, pesanan booking dialihkan dan walk-in dipertahankan",
+        "PASS WEB: Render detail: reject wajib alasan, consent tidak dibypass, OVERDUE payable dan invoice final setelah PAID",
+        "HASIL: 9 kelompok PASS; browser E2E tidak termasuk suite ini."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "3765ab101db3920e4a2ca6a4b3c97f7489b2deb80944fce59586336853f14c35",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "id": "staff-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "bukti": [],
+      "snapshot22Identik": true,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "staff-expo-check",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [
+        "Dependencies are up to date"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "b7f69c94781182d5ffa31eb6f27bdcfba2beb5661d6c93486bd31530b1d35f96",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "staff-android-export",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 10,
+      "bukti": [
+        "Android Bundled 7026ms index.ts (990 modules)",
+        "Exported: dist"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "ca340761213b1e886a3c2824cd0e3e4a610b7da590a4391ee19a620730cd52ac",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "staff-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 5,
+      "bukti": [
+        "PASS MOBILE: Login operator aktual melalui layanan Mobile, auth socket, token SecureStore adapter dan REST",
+        "PASS MOBILE: API path/origin socket terpisah, emulator origin dan event admin tidak dipakai STAFF",
+        "PASS MOBILE: JWT invalid/claim operator palsu ditolak pada Socket.IO aktual",
+        "PASS MOBILE: Booking dari customer tampil tanpa refresh manual; confirm STAFF, reject wajib alasan dan DP palsu tidak membuka check-in",
+        "PASS MOBILE: Mobile REST→commit→Socket→controller Web→REST; customer/API Web-equivalent→Mobile REST (bukan klik browser/device)",
+        "PASS MOBILE: AppState background/foreground, reconnect SDK dan satu listener per event",
+        "PASS MOBILE: Walk-in tanpa barber/null; assignment atomik dan race satu barber; kasir/invoice/kembalian lama dan double-payment guard",
+        "PASS MOBILE: Status NON_MEMBER/PENDING_APPROVAL tersedia untuk STAFF; keputusan membership/refund ADMIN tetap ditolak STAFF",
+        "PASS MOBILE: Logout/token cleanup, response pemulihan lama tidak memulihkan sesi, 401 JWT invalid membersihkan sesi",
+        "PASS MOBILE: Aturan UI aktual: timeout, pending consent, COMPLETED/OVERDUE dan DP terverifikasi",
+        "Total: 10 kelompok MOBILE PASS; Android UI/device E2E tidak termasuk.",
+        "PASS cleanup:22 model existing identik; fixture suite saja."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "0224ffabb6eea52063c6a73436c8cdcc5280e5fe16b66776f3f5e9386c6af4c8",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-ts",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [],
+      "snapshot22Identik": true,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "id": "customer-expo-check",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 2,
+      "bukti": [
+        "Dependencies are up to date"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "b7f69c94781182d5ffa31eb6f27bdcfba2beb5661d6c93486bd31530b1d35f96",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-android-export",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 11,
+      "bukti": [
+        "Android Bundled 7890ms index.ts (1074 modules)",
+        "Exported: dist"
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "07691ca8dceed192061e0f9bc97a9b2f1941175e7bd0bf9a69719584c392d801",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "id": "customer-dropdown",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "bukti": [
+        "PASS DROPDOWN: Default tertutup, satu field, default null berlabel Barber siapa saja",
+        "PASS DROPDOWN: Buka modal; pencarian langsung trim/case-insensitive, pilihan umum tetap tersedia",
+        "PASS DROPDOWN: Query tanpa hasil menampilkan Barber tidak ditemukan",
+        "PASS DROPDOWN: Memilih ID aktual menutup modal, label field mengikuti pilihan",
+        "PASS DROPDOWN: Selected indicator, ganti pilihan, buka ulang reset search, memilih siapa saja tetap null",
+        "PASS DROPDOWN: Back Android dan cancel/tutup tidak mengubah pilihan",
+        "PASS DROPDOWN: Loading dan error/retry tidak menyajikan daftar cache sebagai pilihan aktif",
+        "PASS DROPDOWN: Disabled dan barber hilang memberi informasi tanpa mengganti ID menjadi null diam-diam",
+        "PASS DROPDOWN: Konfigurasi Android keyboard, safe-area container, FlatList/taps/a11y terpasang; bukan bukti keyboard native",
+        "PASS DROPDOWN: Remount komponen mempertahankan pilihan controlled dari draf parent",
+        "PASS DROPDOWN: Booking baru dan reschedule memakai komponen yang sama; daftar tombol lama dihapus",
+        "TOTAL 11 kelompok dropdown PASS; sentuhan/device/navigasi native DEFERRED."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "002085d0d707bb27f3b7a7bdc8f3d22786ba341973138a4917d07e74a100b045",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-integration",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 8,
+      "bukti": [
+        "PASS CUSTOMER: Katalog aktual tanpa JWT, filter aktif dan whitelist publik tanpa data internal",
+        "PASS CUSTOMER: Registrasi 201, login email/telepon, SecureStore adapter, profil sendiri dan CUSTOMER ditolak operator",
+        "PASS CUSTOMER: Nomor existing menghasilkan pending 202, bukan akun atau login otomatis",
+        "PASS CUSTOMER: Membership NON_MEMBER/pending/ACTIVE/INACTIVE dan pengajuan tunggal aktual; hanya admin memutuskan",
+        "PASS CUSTOMER: Multiservice/qty, estimate member10%, WIB minute-level, 3jam/14hari/end23, payload tanpa nominal",
+        "PASS CUSTOMER: Booking aktual pending/hold, DP diblokir sebelum confirm, snapshot10%; akun lain list/detail/payment IDOR404; sinyal socket",
+        "PASS CUSTOMER: Snap MOCK server amount18rb/idempotency, Sandbox URL whitelist, callback tidak kredit; webhook/sync/replay satu kredit",
+        "PASS CUSTOMER: Lifecycle existing sampai COMPLETED, pelunasan MOCK/satu kredit/balance0/PAID/invoice final tanpa token",
+        "PASS CUSTOMER: Usulan pengganti accept/reject sendiri, reschedule→pending ulang, pembatalan aktual; UI batas1jam/tepatbatas/past ditolak",
+        "PASS CUSTOMER: Pembatalan dengan DP membuat refund pending ADMIN; dana belum kembali, refund own-only tanpa provider retry",
+        "PASS CUSTOMER: Controller realtime aktual: satu socket sesi/auth-only, background tidak refetch, foreground invalidasi dan reconnect tanpa duplikat",
+        "PASS CUSTOMER: Persistence SecureStore adapter, logout menghapus, restore/response privat lama tidak memulihkan akun lama",
+        "PASS CUSTOMER: Forgot umum tanpa token, reset developer valid sekali, password lama/JWT lama ditolak dan password baru login; pengiriman belum tersedia",
+        "PASS CUSTOMER: 401 membersihkan credential/cache/socket, kesalahan API aman tanpa log credential",
+        "TOTAL 14 kelompok CUSTOMER PASS; adapter native bukan device UI, provider MOCK bukan Sandbox nyata.",
+        "PASS cleanup: 22 model domain existing identik setelah fixture suite dibersihkan."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "316772f1333713f11d4f24cebf6680f6bd9800d0bbaaf3bfe78e816cfd2f0563",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-detail",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "bukti": [
+        "PASS UI-REJECT: komponen detail aktual menampilkan alasan penolakan (host adapter, bukan device).",
+        "PASS UI-PAYMENT: komponen Customer menampilkan pemberitahuan percobaan hanya dari flag backend; tanpa jargon/konfirmasi sukses palsu (adapter, bukan device).",
+        "PASS UI-RETURN: tutup checkout memicu tiga REST refetch setelah verifikasi sukses maupun timeout; tidak menandai lunas dari callback."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "216438bb300dc3ec7298fa34b19c2f374ae8e5e4a6cb3d9ccfdb301c58e11cc1",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-recovery",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "bukti": [
+        "PASS PEMULIHAN-UI: tautan valid/berbahaya/duplikat, token params dibersihkan, formulir reset dan status delivery jujur; pembulatan estimasi mengikuti server (adapter, bukan Android/inbox)."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "96f6b8b03257f01afd27f5e81795eb88b51ef1e2b843875dfcdaad89670b9186",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "PASS",
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "id": "reschedule-boundary",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 2,
+      "bukti": [
+        "PASS cleanup reschedule:22 model existing identik."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "19fb0432a86cbe1ffc28164c88cd8079a7887ac6b4ba5e951a4c0123cca609b8",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "browser-e2e",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 31,
+      "bukti": [
+        "PASS WEB-LOGIN: ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing",
+        "PASS WEB-MEMBER: Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN",
+        "PASS WEB-DIALOG: Role/nama dialog, fokus awal, trap Tab, Escape dan pengembalian fokus; cancel tanpa mutasi booking",
+        "PASS WEB-BOOKING: Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED",
+        "PASS WEB-LIFECYCLE: DP MOCK sah → check-in Web lebih awal → barber final any → Pesanan/IN_SERVICE terpantau Customer/Staff SDK",
+        "PASS WEB-ITEMS: Web tambah/kurangi qty, hapus/tambah layanan merekalkulasi tagihan; snapshot diskon tetap10% (provider MOCK)",
+        "PASS WEB-INVOICE: Staff SDK complete → Web kasir bayar sisa DB → Customer SDK PAID/balance0/satu invoice final",
+        "PASS WEB-REJECT: Reject Web wajib alasan dan alasan tersimpan pada detail customer",
+        "PASS WEB-REFUND: ADMIN approve MOCK202 → PROCESSING tanpa debit/refund ganda/retry; STAFF ditolak halaman refund",
+        "PASS WEB-RESPONSIVE: Daftar booking fixture pada viewport390px tidak overflow horizontal; bukan Android UI",
+        "PASS WEB-LOGOUT: Logout Web membersihkan token, route kembali login; tidak ada pageerror JS selama skenario",
+        "PASS cleanup browser:22 model identik."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "ce4d157441f7a5ba46ca71651e9c412236662983ef01d8b73b4f23520a48c582",
+      "warningPg": true,
+      "warningBundling": false,
+      "sandboxError": false,
+      "sebelumnya": [
+        {
+          "status": "FAIL",
+          "exit": 1
+        },
+        {
+          "status": "FAIL",
+          "exit": 1
+        }
+      ]
+    },
+    {
+      "id": "log-safety",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "bukti": [],
+      "snapshot22Identik": true,
+      "outputSha256": "8792f8016666ba9c1e6b20cd8698ea58bf89c7aea3d099abb9bac50af18f6fbd",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "customer-draft",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 0,
+      "bukti": [
+        "PASS DRAF-ITEM: editor layanan/qty bertahan saat refetch dan terkirim bersama jadwal/barber null (adapter).",
+        "PASS DRAF: pilihan barber termasuk null bertahan saat refetch; route berbeda memuat drafnya sendiri (adapter)."
+      ],
+      "snapshot22Identik": true,
+      "outputSha256": "e69bc09cc4d540304988fc033f30828201278ac9e25b8a9c5d8675ddf1b8e04e",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    },
+    {
+      "id": "process-log",
+      "status": "PASS",
+      "exit": 0,
+      "detik": 3,
+      "bukti": [],
+      "snapshot22Identik": true,
+      "outputSha256": "bc6f4aac24635f79b7bd8c667a73f8ca7e82a731fa67382fa4618b45134ad93f",
+      "warningPg": false,
+      "warningBundling": false,
+      "sandboxError": false
+    }
+  ]
+}

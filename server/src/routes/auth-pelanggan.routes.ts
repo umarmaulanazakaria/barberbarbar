@@ -53,6 +53,6 @@ routerAuthPelanggan.post(
 
 routerAuthPelanggan.get("/me", autentikasiPelanggan, profilPelanggan);
 
-routerAuthPelanggan.patch("/me", autentikasiPelanggan, perbaruiProfilPelanggan);
+routerAuthPelanggan.patch("/me", autentikasiPelanggan, batasiPercobaanPelanggan(20), perbaruiProfilPelanggan);
 
 export default routerAuthPelanggan;

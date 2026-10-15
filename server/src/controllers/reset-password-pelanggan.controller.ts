@@ -4,19 +4,20 @@ import {
   skemaResetPasswordPelanggan,
 } from "../schemas/reset-password-pelanggan.schema.js";
 import {
-  buatTokenResetPelanggan,
   resetPasswordPelanggan,
 } from "../services/reset-password-pelanggan.service.js";
+import { ajukanEmailReset, emailResetTersedia } from "../services/email-reset-pelanggan.service.js";
 
 export const lupaPasswordPelanggan = async (permintaan: Request, respon: Response) => {
   const validasi = skemaLupaPasswordPelanggan.safeParse(permintaan.body);
   if (!validasi.success) {
     return respon.status(400).json({ pesan: "Email tidak valid" });
   }
-  await buatTokenResetPelanggan(validasi.data.email);
-  // Fondasi saja: belum ada pengiriman email. Jangan membocorkan token/akun.
+  // Pengiriman terpisah dari respons; latensi provider tidak membocorkan akun.
+  ajukanEmailReset(validasi.data.email);
   return respon.status(200).json({
     pesan: "Jika email terdaftar, permintaan reset password akan diproses",
+    pengirimanTersedia: emailResetTersedia(),
   });
 };
 

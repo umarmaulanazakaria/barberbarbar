@@ -18,7 +18,7 @@ const rahasia = ['DATABASE_URL', 'JWT_SECRET', 'MIDTRANS_SERVER_KEY', 'MIDTRANS_
 const terlarang = ['barberbarbar/server/src/lib/prisma.ts', 'barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx', 'barberbarbar-mobile/src/layanan/booking.ts'];
 let jumlah = 0, temuanRahasia = 0, temuanPribadi = 0;
 for (const rel of daftar) {
-  assert.ok(!terlarang.includes(rel) && !rel.split('/').some(p => p === '.git' || p === 'node_modules' || p.startsWith('.env')));
+  assert.ok(!terlarang.includes(rel) && !rel.split('/').some(p => p === '.git' || p === 'node_modules' || p.toLowerCase().startsWith('.env') && !['.env.example', '.env.sample'].includes(p.toLowerCase())));
   assert.ok(!rel.includes('..') && !path.isAbsolute(rel));
   let isi; try { isi = await readFile(path.join(akar, rel), 'utf8'); } catch (e) {
     if (e.code === 'ENOENT' && /(?:HASIL-KEAMANAN|MANIFEST-SUMBER)\.json$/.test(rel)) continue;
@@ -32,7 +32,7 @@ const git = (repo, args) => execFileSync('git', ['-c', `safe.directory=${repo.re
 const envTracked = [];
 for (const repo of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) {
   const files = git(path.join(akar, repo), ['ls-files']).split('\n');
-  envTracked.push(...files.filter(f => { const n = path.posix.basename(f); return (n === '.env' || n.startsWith('.env.')) && !['.env.example', '.env.sample'].includes(n); }));
+  envTracked.push(...files.filter(f => { const n = path.posix.basename(f).toLowerCase(); return (n === '.env' || n.startsWith('.env.')) && !['.env.example', '.env.sample'].includes(n); }));
 }
 const baseline = JSON.parse(await readFile((process.env.BB_AUDIT_OUTPUT_DIR ?? 'artifacts/regresi') + '/HASIL-INTEGRITAS.json', 'utf8'));
 for (const item of baseline.protectedFiles) assert.equal(createHash('sha256').update(await readFile(path.join(akar, item.path))).digest('hex'), item.sha256, 'File historis berubah');

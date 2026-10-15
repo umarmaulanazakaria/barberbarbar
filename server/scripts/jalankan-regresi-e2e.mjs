@@ -21,7 +21,7 @@ const baseline=await snapshot(), results=only?JSON.parse(await readFile(output,'
 const npm=path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js');
 const tasks=[
  ['backend-ts',server,['node_modules/typescript/bin/tsc','--noEmit','--noUnusedLocals','--noUnusedParameters']],
- ...['test-fondasi-pelanggan','test-reset-password-pelanggan','test-api-publik','test-membership-f3','test-booking-f4','test-operasional-f5','test-payment-f6','test-scheduler-booking','test-realtime'].map(n=>[n,server,[`scripts/${n}.mjs`]]),
+ ...['test-fondasi-pelanggan','test-reset-password-pelanggan','test-penutupan-akun','test-api-publik','test-membership-f3','test-booking-f4','test-operasional-f5','test-payment-f6','test-scheduler-booking','test-realtime'].map(n=>[n,server,[`scripts/${n}.mjs`]]),
  ['web-build',web,[npm,'run','build']],['web-integration',web,['scripts/test-integrasi-web.mjs']],
  ['staff-ts',path.join(stage,'barberbarbar-mobile'),['node_modules/typescript/bin/tsc','--noEmit']],
  ['staff-expo-check',path.join(stage,'barberbarbar-mobile'),['node_modules/expo/bin/cli','install','--check']],
@@ -33,6 +33,7 @@ const tasks=[
  ['customer-dropdown',path.join(stage,'barberbarbar-customer'),['scripts/test-pilihan-barber.mjs']],
  ['customer-integration',path.join(stage,'barberbarbar-customer'),['scripts/test-customer.mjs']],
  ['customer-detail',path.join(stage,'barberbarbar-customer'),['scripts/test-detail-customer.mjs']],
+ ['customer-recovery',path.join(stage,'barberbarbar-customer'),['scripts/test-pemulihan-customer.mjs']],
  ['reschedule-boundary',server,['scripts/test-batas-reschedule-e2e.mjs']],
  ['browser-e2e',web,['scripts/test-e2e-browser.mjs']],
  ['log-safety',server,['scripts/test-log-aman-e2e.mjs']],

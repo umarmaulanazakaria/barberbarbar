@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "tanggal": "2026-10-15T07:32:11.374Z",
+  "snapshot22Identik": true,
+  "baselineSha256": "9138fbd44e10570d98bc793b210e5483d21db8e93ccd6a31093e3b96255e3132",
+  "akhirSha256": "9138fbd44e10570d98bc793b210e5483d21db8e93ccd6a31093e3b96255e3132",
+  "jumlah": {
+    "pelanggan": 13,
+    "akunPelanggan": 3,
+    "pengguna": 4,
+    "barber": 4,
+    "layanan": 5,
+    "membership": 5,
+    "pesanan": 20,
+    "itemPesanan": 27,
+    "pembayaran": 20,
+    "riwayatStatusPesanan": 52,
+    "passwordResetToken": 0,
+    "permohonanPengaitanAkun": 2,
+    "permohonanMembership": 1,
+    "booking": 3,
+    "itemBooking": 3,
+    "usulanBarberBooking": 0,
+    "riwayatBooking": 14,
+    "transaksiPembayaranBooking": 6,
+    "buktiProviderBooking": 5,
+    "invoiceBooking": 3,
+    "percobaanSnapBooking": 5,
+    "permohonanRefundBooking": 0
+  },
+  "orphanDanIntegritas": {
+    "bookingCustomer": 0,
+    "ledgerBooking": 0,
+    "invoiceBooking": 0,
+    "refundSource": 0,
+    "invoiceDuplicate": 0,
+    "hashFinal": 0
+  },
+  "protectedFiles": [
+    {
+      "path": "barberbarbar/server/src/lib/prisma.ts",
+      "sha256": "d524d6701a23a32c66c42711102af799cad1d2425b13f47d85d81d987bc1672a"
+    },
+    {
+      "path": "barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx",
+      "sha256": "522ad8a3a03bd429b240519f2898bd4a45b88434eb941ab7904b3ae341cda941"
+    },
+    {
+      "path": "barberbarbar-mobile/src/layanan/booking.ts",
+      "sha256": "d6b8c45c859e05d32077819bc54631767a7d5a8c0f449af290f649b9784e12ea"
+    }
+  ],
+  "prismaIndexTerjaga": true,
+  "catatan": "Hanya rows22 model dibandingkan; sequence fixture dapat maju. Backup/dump/snapshot berisi data sensitif tetap di luar Git/ZIP."
+}

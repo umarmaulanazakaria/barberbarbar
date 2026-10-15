@@ -1,0 +1,60 @@
+[
+  {
+    "name": "backend",
+    "paths": [
+      "prisma@7.10.0 > @prisma/config@7.10.0 > deepmerge-ts@7.1.5",
+      "prisma@7.10.0 > mysql2@3.15.3"
+    ],
+    "pins": [
+      {
+        "parent": "node_modules/@prisma/config",
+        "package": "deepmerge-ts",
+        "range": "7.1.5"
+      },
+      {
+        "parent": "node_modules/prisma",
+        "package": "mysql2",
+        "range": "3.15.3"
+      }
+    ]
+  },
+  {
+    "name": "web",
+    "paths": [
+      "react-router-dom@6.30.6 > react-router@6.30.6"
+    ],
+    "pins": []
+  },
+  {
+    "name": "staff",
+    "paths": [
+      "expo@57.0.29 > @expo/cli@57.0.30 > @expo/code-signing-certificates@0.0.6 > node-forge@1.4.0",
+      "expo@57.0.29 > @expo/cli@57.0.30 > node-forge@1.4.0",
+      "expo@57.0.29 > @expo/config-plugins@57.0.10 > xcode@3.0.1 > uuid@7.0.3",
+      "expo@57.0.29 > @expo/metro@56.0.2 > metro-file-map@0.84.5 > micromatch@4.0.8 > braces@3.0.3"
+    ],
+    "pins": [
+      {
+        "parent": "node_modules/xcode",
+        "package": "uuid",
+        "range": "^7.0.3"
+      }
+    ]
+  },
+  {
+    "name": "customer",
+    "paths": [
+      "expo@57.0.29 > @expo/cli@57.0.30 > @expo/code-signing-certificates@0.0.6 > node-forge@1.4.0",
+      "expo@57.0.29 > @expo/cli@57.0.30 > node-forge@1.4.0",
+      "expo@57.0.29 > @expo/config-plugins@57.0.10 > xcode@3.0.1 > uuid@7.0.3",
+      "expo@57.0.29 > @expo/metro@56.0.2 > metro-file-map@0.84.5 > micromatch@4.0.8 > braces@3.0.3"
+    ],
+    "pins": [
+      {
+        "parent": "node_modules/xcode",
+        "package": "uuid",
+        "range": "^7.0.3"
+      }
+    ]
+  }
+]

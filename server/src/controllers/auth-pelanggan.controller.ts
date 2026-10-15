@@ -7,7 +7,7 @@ import { skemaLoginPelanggan } from "../schemas/auth-pelanggan.schema.js";
 import { loginPelanggan } from "../services/auth-pelanggan.service.js";
 import { ambilProfilPelanggan } from "../services/auth-pelanggan.service.js";
 import { skemaUbahProfilPelanggan } from "../schemas/auth-pelanggan.schema.js";
-import { ubahProfilPelanggan } from "../services/auth-pelanggan.service.js";
+import { ubahProfilPelanggan, KesalahanProfilPelanggan } from "../services/auth-pelanggan.service.js";
 
 export const daftarPelanggan = async (
   permintaan: Request,
@@ -139,12 +139,12 @@ export const perbaruiProfilPelanggan = async (
   }
 
   try {
-    const pelanggan = await ubahProfilPelanggan(
+    const hasil = await ubahProfilPelanggan(
       permintaan.akunPelanggan.id,
       validasi.data,
     );
 
-    if (!pelanggan) {
+    if (!hasil) {
       return respon.status(401).json({
         pesan: "Akun pelanggan tidak aktif atau tidak ditemukan",
       });
@@ -152,9 +152,11 @@ export const perbaruiProfilPelanggan = async (
 
     return respon.status(200).json({
       pesan: "Profil pelanggan berhasil diperbarui",
-      pelanggan,
+      pelanggan: hasil.pelanggan,
+      sesiDicabut: hasil.sesiDicabut,
     });
   } catch (kesalahan) {
+    if (kesalahan instanceof KesalahanProfilPelanggan) return respon.status(kesalahan.kode).json({ pesan: kesalahan.message });
     lanjut(kesalahan);
   }
 };

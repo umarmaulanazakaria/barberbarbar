@@ -1,0 +1,72 @@
+import 'dotenv/config';
+import assert from 'node:assert/strict';
+import { randomBytes, randomUUID, createHash } from 'node:crypto';
+import { once } from 'node:events';
+import bcrypt from 'bcrypt';
+assert.ok(['localhost','127.0.0.1','[::1]'].includes(new URL(process.env.DATABASE_URL).hostname));
+const {default:db}=await import('../dist/lib/prisma.js'),{default:app}=await import('../dist/app.js');
+const perfil=await import('../dist/services/auth-pelanggan.service.js');
+const {buatTokenResetPelanggan}=await import('../dist/services/reset-password-pelanggan.service.js');
+const email=await import('../dist/services/email-reset-pelanggan.service.js');
+const ids=[],tag=`uji-closure-${randomUUID()}`,passwordLama=randomBytes(18).toString('hex'),baru=randomBytes(18).toString('hex');
+const hash=x=>createHash('sha256').update(x).digest('hex');
+let server,base,total=0;
+const pass=s=>{total++;console.log('PASS AKUN: '+s);};
+const http=async(p,m='GET',data,token)=>{const r=await fetch(base+p,{method:m,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{})});return{status:r.status,body:await r.json()};};
+const login=(identitas,password=passwordLama)=>http('/auth/customer/login','POST',{identitas,password});
+const patch=(data,token)=>http('/auth/customer/me','PATCH',data,token);
+const digestOperator=async()=>hash(JSON.stringify(await db.pengguna.findMany({orderBy:{id:'asc'}})));
+try{
+ const operatorAwal=await digestOperator(),pw=await bcrypt.hash(passwordLama,12);
+ for(let i=0;i<2;i++){const p=await db.pelanggan.create({data:{nama:tag,nomorTelepon:'08'+randomBytes(8).readBigUInt64BE().toString().slice(0,11),akunPelanggan:{create:{email:`${tag}-${i}@example.invalid`,passwordHash:pw}}},include:{akunPelanggan:true}});ids.push(p.id);}
+ const [a,b]=await db.pelanggan.findMany({where:{id:{in:ids}},orderBy:{id:'asc'},include:{akunPelanggan:true}});
+ server=app.listen(0,'127.0.0.1');await once(server,'listening');base=`http://127.0.0.1:${server.address().port}`;
+ let token=(await login(a.akunPelanggan.email)).body.token;assert.ok(token);
+ assert.equal((await patch({nama:tag+'-ubah'},token)).status,200);
+ assert.equal((await http('/auth/customer/me','GET',undefined,token)).status,200);
+ assert.equal((await patch({email:`${tag}-baru@example.invalid`},token)).status,400);
+ assert.equal((await patch({email:`${tag}-baru@example.invalid`,passwordSaatIni:'salah'},token)).status,403);
+ assert.equal((await patch({email:b.akunPelanggan.email,passwordSaatIni:passwordLama},token)).status,409);
+ assert.equal((await patch({nomorTelepon:b.nomorTelepon,email:`${tag}-rollback@example.invalid`,passwordSaatIni:passwordLama},token)).status,409);
+ assert.equal((await db.akunPelanggan.findUniqueOrThrow({where:{id:a.akunPelanggan.id}})).email,a.akunPelanggan.email);
+ assert.equal((await http('/auth/customer/me','GET',undefined,token)).status,200);
+ pass('Profil biasa kompatibel; identitas wajib password; konflik email/telepon umum dan rollback atomik tanpa mencabut sesi');
+ const tokenLama=await buatTokenResetPelanggan(a.akunPelanggan.email),alamat=`${tag}-baru@example.invalid`,nomor='08'+randomBytes(8).readBigUInt64BE().toString().slice(0,11);
+ const ganti=await patch({email:alamat.toUpperCase(),nomorTelepon:nomor,passwordSaatIni:passwordLama},token);assert.equal(ganti.status,200);assert.equal(ganti.body.sesiDicabut,true);
+ assert.equal((await http('/auth/customer/me','GET',undefined,token)).status,401);
+ assert.equal((await http('/auth/customer/reset-password','POST',{token:tokenLama.token,password:baru})).status,400);
+ assert.equal((await login(a.akunPelanggan.email)).status,401);
+ assert.equal((await login(nomor)).status,200);token=(await login(alamat)).body.token;
+ assert.equal((await db.akunPelanggan.findUniqueOrThrow({where:{id:b.akunPelanggan.id}})).passwordHash,pw);
+ pass('Email/telepon ternormalisasi; sesi dan token reset lama dicabut; login identitas baru berhasil; akun lain utuh');
+ const sebelum=await db.akunPelanggan.findUniqueOrThrow({where:{id:a.akunPelanggan.id}}),asli=db.$transaction.bind(db);
+ db.$transaction=(jalan,opsi)=>asli(async tx=>jalan(new Proxy(tx,{get(t,k){if(k==='pelanggan')return new Proxy(t.pelanggan,{get(d,aksi){if(aksi==='update')return async()=>{throw Error('FIXTURE_ROLLBACK');};return Reflect.get(d,aksi);}});return Reflect.get(t,k);}})),opsi);
+ try{await assert.rejects(perfil.ubahProfilPelanggan(a.akunPelanggan.id,{passwordSaatIni:passwordLama,passwordBaru:baru}));}finally{db.$transaction=asli;}
+ assert.equal((await db.akunPelanggan.findUniqueOrThrow({where:{id:a.akunPelanggan.id}})).passwordHash,sebelum.passwordHash);
+ assert.equal((await patch({passwordSaatIni:passwordLama,passwordBaru:baru},token)).status,200);
+ assert.equal((await http('/auth/customer/me','GET',undefined,token)).status,401);
+ assert.equal((await login(alamat)).status,401);assert.equal((await login(alamat,baru)).status,200);
+ assert.equal(await digestOperator(),operatorAwal);
+ pass('Ganti password atomik, rollback injeksi, password lama/JWT lama ditolak dan password baru berhasil; operator tidak berubah');
+ const postForgot=e=>http('/auth/customer/forgot-password','POST',{email:e});
+ const nonaktif=await postForgot(alamat);assert.equal(nonaktif.body.pengirimanTersedia,false);
+ const messages=[];process.env.EMAIL_RESET_FROM='noreply@example.invalid';process.env.CUSTOMER_PASSWORD_RESET_URL='barberbarbar-customer://reset-password';email.gerbangEmailReset.kirim=async p=>{messages.push(p);};
+ const dikenal=await postForgot(alamat.toUpperCase()),tidak=await postForgot(`${tag}-tidak@example.invalid`);assert.deepEqual(dikenal,tidak);assert.equal(dikenal.body.pengirimanTersedia,true);
+ await email.tungguEmailReset();assert.equal(messages.length,1);
+ const msg=messages[0],raw=/barberbarbar-customer:\/\/reset-password#token=([a-f0-9]{64})/.exec(msg.teks)?.[1];assert.ok(raw);
+ assert.equal(msg.penerima,alamat);assert.ok(msg.html.includes('30 menit'));assert.ok(!msg.html.includes(baru));assert.ok(!JSON.stringify(dikenal).includes(raw));
+ const row=await db.passwordResetToken.findUniqueOrThrow({where:{tokenHash:hash(raw)}});assert.ok(row.kedaluwarsaPada>Date.now());assert.ok(row.kedaluwarsaPada.getTime()<=Date.now()+1800000);
+ await postForgot(alamat);await email.tungguEmailReset();assert.equal(messages.length,1);
+ const ketiga=randomBytes(18).toString('hex');assert.equal((await http('/auth/customer/reset-password','POST',{token:raw,password:ketiga})).status,200);
+ assert.equal((await http('/auth/customer/reset-password','POST',{token:raw,password:ketiga})).status,400);
+ assert.equal((await login(alamat,baru)).status,401);assert.equal((await login(alamat,ketiga)).status,200);
+ pass('Transport MOCK: respons identik, template profesional/link 30 menit, SHA-256, dedup email, single-use, login password lama/baru');
+ const logs=[],warn=console.warn;console.warn=(...args)=>logs.push(args);email.gerbangEmailReset.kirim=async()=>{throw Error('RAHASIA_PROVIDER_FIXTURE');};
+ try{assert.deepEqual(await postForgot(b.akunPelanggan.email),tidak);await email.tungguEmailReset();}finally{console.warn=warn;}
+ assert.equal(await db.passwordResetToken.count({where:{akunPelangganId:b.akunPelanggan.id,digunakanPada:null}}),0);
+ assert.ok(!JSON.stringify(logs).includes('RAHASIA_PROVIDER_FIXTURE'));
+ assert.equal((await login(b.akunPelanggan.email)).status,200);assert.equal(await digestOperator(),operatorAwal);
+ pass('Delivery gagal tetap respons umum; token terkait dicabut; tidak ada pesan provider/token di log; akun tetap aktif');
+ console.log(`Total: ${total} kelompok penutupan akun PASS; email transport MOCK, bukan inbox nyata.`);
+}catch(e){console.error(`FAIL AKUN ${e.name}; nilai credential/token tidak dicetak.`);console.error(e.stack?.split('\n').find(l=>l.includes('test-penutupan-akun.mjs'))?.split('test-penutupan-akun.mjs').pop());process.exitCode=1;}
+finally{email.gerbangEmailReset.kirim=null;await email.tungguEmailReset();try{if(ids.length)await db.pelanggan.deleteMany({where:{id:{in:ids}}});}finally{if(server)await new Promise(r=>server.close(r));await db.$disconnect();}}

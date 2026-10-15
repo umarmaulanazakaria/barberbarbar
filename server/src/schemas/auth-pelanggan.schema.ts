@@ -31,11 +31,20 @@ export const skemaUbahProfilPelanggan = z
   .object({
     nama: z.string().trim().min(2).max(100).optional(),
     alamat: z.string().trim().max(500).nullable().optional(),
+    email: skemaRegistrasiPelanggan.shape.email.optional(),
+    nomorTelepon: skemaRegistrasiPelanggan.shape.nomorTelepon.optional(),
+    passwordBaru: skemaRegistrasiPelanggan.shape.password.optional(),
+    passwordSaatIni: z.string().min(1).max(72).refine(p => Buffer.byteLength(p, "utf8") <= 72, "Kata sandi tidak valid").optional(),
   })
   .strict()
   .refine(
-    (data) => Object.keys(data).length > 0,
+    (data) => Object.keys(data).some(k => k !== "passwordSaatIni"),
     "Minimal satu data profil harus diisi",
-  );
+  )
+  .superRefine((data, konteks) => {
+    if ((data.email !== undefined || data.nomorTelepon !== undefined || data.passwordBaru !== undefined) && !data.passwordSaatIni) {
+      konteks.addIssue({ code: "custom", path: ["passwordSaatIni"], message: "Kata sandi saat ini wajib diisi" });
+    }
+  });
 
 export type DataUbahProfilPelanggan = z.infer<typeof skemaUbahProfilPelanggan>;

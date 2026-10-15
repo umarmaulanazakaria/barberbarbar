@@ -1,0 +1,1459 @@
+{
+  "tanggal": "2026-10-15T07:11:31.875Z",
+  "metode": "npm audit, npm audit --omit=dev, npm ls --all, lockfile; tidak menjalankan install/update/audit fix",
+  "counts": {
+    "backend": {
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 4,
+        "critical": 0,
+        "total": 4
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 4,
+        "critical": 0,
+        "total": 4
+      }
+    },
+    "web": {
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 0,
+        "critical": 0,
+        "total": 2
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 0,
+        "critical": 0,
+        "total": 2
+      }
+    },
+    "staff": {
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 15,
+        "critical": 0,
+        "total": 22
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 15,
+        "critical": 0,
+        "total": 22
+      }
+    },
+    "customer": {
+      "all": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 16,
+        "critical": 0,
+        "total": 23
+      },
+      "omitDev": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 16,
+        "critical": 0,
+        "total": 23
+      }
+    }
+  },
+  "findings": [
+    {
+      "workspace": "backend",
+      "package": "@prisma/config",
+      "severity": "high",
+      "direct": false,
+      "range": "6.13.0-dev.1 - 8.1.0-dev.4",
+      "installed": [
+        {
+          "node": "node_modules/@prisma/config",
+          "version": "7.10.0",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "deepmerge-ts"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "prisma",
+        "version": "6.19.3",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "backend",
+      "package": "deepmerge-ts",
+      "severity": "high",
+      "direct": false,
+      "range": "<8.0.0",
+      "installed": [
+        {
+          "node": "node_modules/deepmerge-ts",
+          "version": "7.1.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1145093,
+          "title": "DeepmergeTS has stack exhaustion when merging recursive object graphs",
+          "url": "https://github.com/advisories/GHSA-ggr8-5vv4-36mx",
+          "severity": "high",
+          "range": "<8.0.0"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "prisma",
+        "version": "6.19.3",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "backend",
+      "package": "mysql2",
+      "severity": "high",
+      "direct": false,
+      "range": "<=3.23.0",
+      "installed": [
+        {
+          "node": "node_modules/mysql2",
+          "version": "3.15.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1153173,
+          "title": "MySQL2: Auth Plugin Downgrade to mysql_clear_password Leaks Plaintext Credentials",
+          "url": "https://github.com/advisories/GHSA-3f6p-5ww8-9rcr",
+          "severity": "high",
+          "range": "<3.22.0"
+        },
+        {
+          "id": 1158532,
+          "title": "MySQL2: Unbounded zlib inflate in compressed MySQL protocol handler allows decompression-bomb DoS",
+          "url": "https://github.com/advisories/GHSA-rgwj-5xj2-c3m3",
+          "severity": "moderate",
+          "range": "<=3.23.0"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "prisma",
+        "version": "6.19.3",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "backend",
+      "package": "prisma",
+      "severity": "high",
+      "direct": true,
+      "range": "6.13.0-dev.1 - 8.1.0-dev.6",
+      "installed": [
+        {
+          "node": "node_modules/prisma",
+          "version": "7.10.0",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@prisma/config"
+        },
+        {
+          "package": "mysql2"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "prisma",
+        "version": "6.19.3",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "web",
+      "package": "react-router",
+      "severity": "moderate",
+      "direct": false,
+      "range": "6.0.0 - 7.17.0",
+      "installed": [
+        {
+          "node": "node_modules/react-router",
+          "version": "6.30.6",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1124268,
+          "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+          "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+          "severity": "moderate",
+          "range": ">=6.0.0 <7.18.0"
+        },
+        {
+          "id": 1124272,
+          "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+          "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+          "severity": "moderate",
+          "range": ">=6.4.0 <7.18.0"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-router-dom",
+        "version": "7.18.4",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "web",
+      "package": "react-router-dom",
+      "severity": "moderate",
+      "direct": true,
+      "range": "6.0.0-alpha.0 - 7.17.0",
+      "installed": [
+        {
+          "node": "node_modules/react-router-dom",
+          "version": "6.30.6",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "react-router"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-router-dom",
+        "version": "7.18.4",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/cli",
+      "severity": "high",
+      "direct": false,
+      "range": "<=0.0.0-canary-20231123-1b19f96-4 || >=0.0.1-canary-20231125-d600e44",
+      "installed": [
+        {
+          "node": "node_modules/expo/node_modules/@expo/cli",
+          "version": "57.0.30",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/code-signing-certificates"
+        },
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        },
+        {
+          "package": "@expo/inline-modules"
+        },
+        {
+          "package": "@expo/metro"
+        },
+        {
+          "package": "@expo/metro-config"
+        },
+        {
+          "package": "@expo/prebuild-config"
+        },
+        {
+          "package": "node-forge"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/code-signing-certificates",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/code-signing-certificates",
+          "version": "0.0.6",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "node-forge"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/config",
+      "severity": "moderate",
+      "direct": false,
+      "range": "<=0.0.1-canary-20240418-8d74597 || >=3.3.23-alpha.0",
+      "installed": [
+        {
+          "node": "node_modules/@expo/config",
+          "version": "57.0.10",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/config-plugins",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/config-plugins",
+          "version": "57.0.10",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "xcode"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/inline-modules",
+      "severity": "moderate",
+      "direct": false,
+      "range": ">=0.0.2-canary-20260409-6fc2991",
+      "installed": [
+        {
+          "node": "node_modules/@expo/inline-modules",
+          "version": "0.1.8",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/local-build-cache-provider",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/local-build-cache-provider",
+          "version": "57.0.9",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/metro",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/metro",
+          "version": "56.0.2",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        },
+        {
+          "package": "metro-config"
+        },
+        {
+          "package": "metro-file-map"
+        },
+        {
+          "package": "metro-transform-worker"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/metro-config",
+      "severity": "high",
+      "direct": false,
+      "range": "<=0.0.1-canary-20240418-8d74597 || >=0.1.49-alpha.0",
+      "installed": [
+        {
+          "node": "node_modules/expo/node_modules/@expo/metro-config",
+          "version": "57.0.13",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/metro"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@expo/prebuild-config",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/prebuild-config",
+          "version": "57.0.19",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "staff",
+      "package": "@react-native/community-cli-plugin",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@react-native/community-cli-plugin",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        },
+        {
+          "package": "metro-config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "@react-native/virtualized-lists",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.85.0-nightly-20260108-1236b6be4",
+      "installed": [
+        {
+          "node": "node_modules/@react-native/virtualized-lists",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "react-native"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "braces",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/braces",
+          "version": "3.0.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1240992,
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "severity": "high",
+          "range": "<=3.0.3"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "expo",
+      "severity": "high",
+      "direct": true,
+      "range": ">=45.0.0-beta.1",
+      "installed": [
+        {
+          "node": "node_modules/expo",
+          "version": "57.0.29",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/cli"
+        },
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        },
+        {
+          "package": "@expo/local-build-cache-provider"
+        },
+        {
+          "package": "@expo/metro"
+        },
+        {
+          "package": "@expo/metro-config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "metro",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro-config"
+        },
+        {
+          "package": "metro-file-map"
+        },
+        {
+          "package": "metro-transform-worker"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "metro-config",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro-config",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "metro-file-map",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/metro-file-map",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "micromatch"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "metro-transform-worker",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro-transform-worker",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "staff",
+      "package": "micromatch",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.2.0",
+      "installed": [
+        {
+          "node": "node_modules/micromatch",
+          "version": "4.0.8",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "braces"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "node-forge",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/node-forge",
+          "version": "1.4.0",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1240912,
+          "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+          "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+          "severity": "high",
+          "range": "<=1.4.0"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "react-native",
+      "severity": "high",
+      "direct": true,
+      "range": ">=0.73.0-nightly-20230506-1af868c52",
+      "installed": [
+        {
+          "node": "node_modules/react-native",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@react-native/community-cli-plugin"
+        },
+        {
+          "package": "@react-native/virtualized-lists"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "uuid",
+      "severity": "moderate",
+      "direct": false,
+      "range": "<11.1.1",
+      "installed": [
+        {
+          "node": "node_modules/uuid",
+          "version": "7.0.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1119441,
+          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+          "severity": "moderate",
+          "range": "<11.1.1"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "staff",
+      "package": "xcode",
+      "severity": "moderate",
+      "direct": false,
+      "range": ">=0.9.2",
+      "installed": [
+        {
+          "node": "node_modules/xcode",
+          "version": "3.0.1",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "uuid"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/cli",
+      "severity": "high",
+      "direct": false,
+      "range": "<=0.0.0-canary-20231123-1b19f96-4 || >=0.0.1-canary-20231125-d600e44",
+      "installed": [
+        {
+          "node": "node_modules/expo/node_modules/@expo/cli",
+          "version": "57.0.30",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/code-signing-certificates"
+        },
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        },
+        {
+          "package": "@expo/inline-modules"
+        },
+        {
+          "package": "@expo/metro"
+        },
+        {
+          "package": "@expo/metro-config"
+        },
+        {
+          "package": "@expo/prebuild-config"
+        },
+        {
+          "package": "node-forge"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/code-signing-certificates",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/code-signing-certificates",
+          "version": "0.0.6",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "node-forge"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/config",
+      "severity": "moderate",
+      "direct": false,
+      "range": "<=0.0.1-canary-20240418-8d74597 || >=3.3.23-alpha.0",
+      "installed": [
+        {
+          "node": "node_modules/@expo/config",
+          "version": "57.0.10",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/config-plugins",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/config-plugins",
+          "version": "57.0.10",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "xcode"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/inline-modules",
+      "severity": "moderate",
+      "direct": false,
+      "range": ">=0.0.2-canary-20260409-6fc2991",
+      "installed": [
+        {
+          "node": "node_modules/@expo/inline-modules",
+          "version": "0.1.8",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/local-build-cache-provider",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/local-build-cache-provider",
+          "version": "57.0.9",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/metro",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/metro",
+          "version": "56.0.2",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        },
+        {
+          "package": "metro-config"
+        },
+        {
+          "package": "metro-file-map"
+        },
+        {
+          "package": "metro-transform-worker"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/metro-config",
+      "severity": "high",
+      "direct": false,
+      "range": "<=0.0.1-canary-20240418-8d74597 || >=0.1.49-alpha.0",
+      "installed": [
+        {
+          "node": "node_modules/expo/node_modules/@expo/metro-config",
+          "version": "57.0.13",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/metro"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@expo/prebuild-config",
+      "severity": "moderate",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@expo/prebuild-config",
+          "version": "57.0.19",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "customer",
+      "package": "@react-native-community/datetimepicker",
+      "severity": "high",
+      "direct": true,
+      "range": ">=8.2.0",
+      "installed": [
+        {
+          "node": "node_modules/@react-native-community/datetimepicker",
+          "version": "9.1.0",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "expo"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "@react-native-community/datetimepicker",
+        "version": "8.1.1",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@react-native/community-cli-plugin",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/@react-native/community-cli-plugin",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        },
+        {
+          "package": "metro-config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "@react-native/virtualized-lists",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.85.0-nightly-20260108-1236b6be4",
+      "installed": [
+        {
+          "node": "node_modules/@react-native/virtualized-lists",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "react-native"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "braces",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/braces",
+          "version": "3.0.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1240992,
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "severity": "high",
+          "range": "<=3.0.3"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "expo",
+      "severity": "high",
+      "direct": true,
+      "range": ">=45.0.0-beta.1",
+      "installed": [
+        {
+          "node": "node_modules/expo",
+          "version": "57.0.29",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@expo/cli"
+        },
+        {
+          "package": "@expo/config"
+        },
+        {
+          "package": "@expo/config-plugins"
+        },
+        {
+          "package": "@expo/local-build-cache-provider"
+        },
+        {
+          "package": "@expo/metro"
+        },
+        {
+          "package": "@expo/metro-config"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "metro",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro-config"
+        },
+        {
+          "package": "metro-file-map"
+        },
+        {
+          "package": "metro-transform-worker"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "metro-config",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro-config",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "metro-file-map",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/metro-file-map",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "micromatch"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "metro-transform-worker",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.71.0",
+      "installed": [
+        {
+          "node": "node_modules/metro-transform-worker",
+          "version": "0.84.5",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "metro"
+        }
+      ],
+      "npmProposedFix": true
+    },
+    {
+      "workspace": "customer",
+      "package": "micromatch",
+      "severity": "high",
+      "direct": false,
+      "range": ">=0.2.0",
+      "installed": [
+        {
+          "node": "node_modules/micromatch",
+          "version": "4.0.8",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "braces"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "node-forge",
+      "severity": "high",
+      "direct": false,
+      "range": "*",
+      "installed": [
+        {
+          "node": "node_modules/node-forge",
+          "version": "1.4.0",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1240912,
+          "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+          "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+          "severity": "high",
+          "range": "<=1.4.0"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "react-native",
+      "severity": "high",
+      "direct": true,
+      "range": ">=0.73.0-nightly-20230506-1af868c52",
+      "installed": [
+        {
+          "node": "node_modules/react-native",
+          "version": "0.86.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "@react-native/community-cli-plugin"
+        },
+        {
+          "package": "@react-native/virtualized-lists"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "react-native",
+        "version": "0.72.17",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "uuid",
+      "severity": "moderate",
+      "direct": false,
+      "range": "<11.1.1",
+      "installed": [
+        {
+          "node": "node_modules/uuid",
+          "version": "7.0.3",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "id": 1119441,
+          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+          "severity": "moderate",
+          "range": "<11.1.1"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "workspace": "customer",
+      "package": "xcode",
+      "severity": "moderate",
+      "direct": false,
+      "range": ">=0.9.2",
+      "installed": [
+        {
+          "node": "node_modules/xcode",
+          "version": "3.0.1",
+          "dev": false
+        }
+      ],
+      "via": [
+        {
+          "package": "uuid"
+        }
+      ],
+      "npmProposedFix": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    }
+  ]
+}

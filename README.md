@@ -4,6 +4,13 @@ Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMI
 
 **Status: siap ditinjau dengan syarat; belum siap Production.** Acceptance Android, checkout Sandbox langsung dari Customer App, refund historis Rp2.000, pengiriman recovery email, advisory dependency, dan sejumlah keputusan bisnis masih terbuka. Lihat [audit workspace](docs/WORKSPACE-CLEANUP-AUDIT.md) dan [release checklist](docs/RELEASE-CHECKLIST.md).
 
+Hasil terbaru ada di [penutupan acceptance](docs/FINAL-ACCEPTANCE-CLOSURE.md):
+29 suite teknis lulus, perubahan identitas/password dengan autentikasi ulang,
+edit layanan/jumlah pada jadwal ulang, template/transport email mock, serta
+perbaikan race edit Web. Delivery email nyata belum aktif; memilih provider dan
+mengisi sample environment saja tidak otomatis mengirim email. Detail setup
+ada di [panduan reset](server/scripts/RESET-PASSWORD-CUSTOMER.md).
+
 ## Teknologi dan fitur
 
 - Web: React, TypeScript, Vite, Tailwind CSS, React Query, Socket.IO.

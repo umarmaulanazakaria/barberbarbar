@@ -73,7 +73,8 @@ try {
     const tidakTerdaftar = await post("/auth/customer/forgot-password", { email: `${penanda}-tidak-ada@example.invalid` });
     assert.equal(terdaftar.status, 200);
     assert.deepEqual(terdaftar, tidakTerdaftar);
-    assert.deepEqual(Object.keys(terdaftar.body), ["pesan"]);
+    assert.deepEqual(Object.keys(terdaftar.body).sort(), ["pengirimanTersedia", "pesan"]);
+    assert.equal(terdaftar.body.pengirimanTersedia, false);
     lulus("Respons email terdaftar/tidak terdaftar identik, tanpa token");
 
     const tokenSebelumnya = await tokenBaru();

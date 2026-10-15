@@ -1,0 +1,13 @@
+{
+  "exit": 1,
+  "evidence": [
+    "PASS WEB-LOGIN: ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing",
+    "PASS WEB-MEMBER: Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN",
+    "PASS WEB-DIALOG: Role/nama dialog, fokus awal, trap Tab, Escape dan pengembalian fokus; cancel tanpa mutasi booking",
+    "PASS WEB-BOOKING: Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED",
+    "PASS WEB-LIFECYCLE: DP MOCK sah → check-in Web lebih awal → barber final any → Pesanan/IN_SERVICE terpantau Customer/Staff SDK",
+    "DIAG local-edit-during-refetch kontrolAktif=false",
+    "PASS cleanup browser:22 model identik.",
+    "FAIL browser setelah 5 grup: Error; local-edit-during-refetch; raw DOM/credential tidak disimpan"
+  ]
+}

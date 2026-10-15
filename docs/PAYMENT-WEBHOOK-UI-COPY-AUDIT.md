@@ -230,7 +230,20 @@ orphan/duplikasi invoice/hash permohonan final nol. Transaksi target tetap utuh.
 Perubahan hanya pada file relevan yang tercantum di daftar bukti. Tidak ada
 `.env`, dump, snapshot data pribadi, token Snap, key atau signature asli yang
 ditambahkan. Root Stage 2 tetap tiga repository. Tidak ada force push/merge main.
-Commit source dan hasil push dicatat setelah verifikasi akhir.
+Commit source berikut sudah di-push ke `origin/feature/project5-integration`;
+fetch/push dan upstream diverifikasi **0 ahead / 0 behind** pada ketiganya:
+
+| Repository | Commit source | File |
+|---|---|---|
+| Project 3 | c2dee649822bb1d86b2e7e12a0faa92736108d44 | 56 |
+| Project 4 | 283aedacbee6d69d02090f6fedc336f721ad4c78 | 16 |
+| Project 5 | 1fce760a6a2a6afaba061ad1f3a0a2817f53aae5 | 8 |
+
+Dokumentasi penutupan diperbarui sesudah commit source tersebut. Pemeriksaan
+post-commit mengonfirmasi Project 3 hanya menyisakan perubahan Prisma historis
+yang staged; Project 4 hanya perubahan historis `src/layanan/booking.ts` yang
+unstaged; Project 5 bersih. `LayarTambahPelanggan.tsx` tidak berubah. Tidak ada
+perubahan buatan tugas ini yang sengaja dibiarkan di working tree.
 
 Pemindaian sebelum commit sempat menemukan dua placeholder email yang cocok
 dengan akun operator lokal. Keduanya diganti contoh generik di pengaturan Web

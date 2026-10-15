@@ -5,6 +5,51 @@ server/e2e/MATRIKS-E2E.md dan JSON. Jenis bukti dipisah: unit/source, integratio
 adapter, HTTP/API, browser sungguhan, Android device, Sandbox provider, security.
 Provider MOCK bukan Sandbox nyata dan export Hermes bukan device UI.
 
+## Revalidasi finalisasi
+
+Bukti F13 pada `server/e2e` dipertahankan sebagai riwayat. Untuk pengujian baru,
+atur `$env:BB_AUDIT_OUTPUT_DIR='finalization'` pada terminal server sebelum
+menjalankan runner/audit. Folder ini menyimpan hasil terbaru, tanpa menimpa F13.
+Runner sekarang memuat27 tugas, termasuk draf Customer dan log fatal entrypoint.
+
+```powershell
+cd server
+$env:BB_AUDIT_OUTPUT_DIR='finalization'
+npm.cmd run build
+node scripts/jalankan-regresi-e2e.mjs
+node scripts/backup-e2e.mjs <folder-backup-awal>
+node scripts/verifikasi-integritas-e2e.mjs <folder-backup-awal>
+node scripts/audit-dependency-e2e.mjs
+node scripts/audit-provider-e2e.mjs
+node scripts/buat-matriks-final.mjs
+```
+
+Soak browser, dari client: `node scripts/test-stabilitas-browser.mjs 8 stabil`.
+Gunakan label baru bila hendak mempertahankan hasil run sebelumnya. Jangan
+menjalankan suite DB/browser lain bersamaan. Hasil gagal tetap disimpan;
+ulang tes setelah fix tidak menghapus sejarah kegagalan. Helper bukaDialog dan
+ubahQty mengulang hanya perubahan UI lokal jika refetch menonaktifkan kontrol
+di antara pemeriksaan actionability dan pointerdown. Submit HTTP/pembayaran/
+refund tidak diulang. Confirm menunggu respons `/api/...`, dialog tertutup dan
+aria-busy selesai. Timeout tidak diperbesar untuk menyamarkan kegagalan.
+
+Regresi baru: `server/scripts/test-log-proses.mjs` meluncurkan tiga child server
+scheduler-off dan menginjeksi error sintetis; tidak memodifikasi data/provider.
+`barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs` menguji komponen aktual
+dengan hook/native host adapter; bukan navigasi Android. Panduan perangkat
+terkonsolidasi di README-PENGUJIAN-ANDROID.md; panduan di bawah adalah konteks
+F13 yang masih berguna, bukan hasil device terbaru.
+
+Cadangan finalisasi memakai `server/scripts/buat-cadangan-final.ps1`, dengan
+mode -SiapkanManifest sebelum commit lalu mode biasa setelah push. Keduanya
+dapat dipanggil melalui PowerShell -NoProfile -ExecutionPolicy Bypass (hanya
+proses pemanggilan; tidak mengubah kebijakan sistem). Daftar eksplisit pada
+server/finalization/BERKAS-ZIP.json. `node scripts/verifikasi-rilis.mjs` memeriksa
+exact-match credential/data snapshot di memori tanpa mencetaknya; gunakan
+`--tanpa-tulis` bila hanya memeriksa setelah manifest/commit agar tidak mengubah
+artefak yang sudah dibekukan. Pemeriksaan ini memiliki batas yang dicatat pada
+HASIL-KEAMANAN.json dan tidak mengklaim semua history repo bebas rahasia.
+
 ## Persiapan aman
 
 Gunakan branch feature/project5-integration. Periksa status tiga repo sebelum
@@ -98,9 +143,9 @@ ADB/AVD kosong pada audit; bagian berikut panduan, bukan hasil PASS.
    Staff/Web, final barber, IN_SERVICE, perubahan layanan, complete. Customer
    tidak boleh menjalankan tindakan operator. Catat tampilan realtime semua app.
 10. Uji specific barber replacement dan consent A/B, reschedule setelah reject
-    dengan jeda>=1jam sebelum jadwal lama, kembali pending/confirm baru. Customer
+    dengan jeda>=1 jam sebelum jadwal lama, kembali pending/confirm baru. Customer
     UI saat ini hanya jadwal/barber, tidak menyediakan edit service/qty reschedule.
-11. Uji cancel tepat/kurang1jam, refund pending ADMIN, invoice sementara/final,
+11. Uji cancel tepat/kurang1 jam, refund pending ADMIN, invoice sementara/final,
     bayar kasir/Staff/online sesuai fixture berbeda. Foreground/background,
     putus Wi-Fi/reconnect dan logout harus refetch tanpa kredit/event ganda.
 12. Catat ID skenario, timestamp, status yang terlihat, expected/actual dan jenis
@@ -144,7 +189,7 @@ Referensi [Get Status resmi](https://docs.midtrans.com/reference/get-transaction
 ## Scheduler dan reproduksi bug
 
 Suite test-scheduler-booking menguji scanner runtime, startup/restart catch-up,
-dua runner yang dikontrol fixture,30menit/1jam/15menit, race/idempotency, refund
+dua runner yang dikontrol fixture,30 menit/1 jam/15 menit, race/idempotency, refund
 request timeout, CHECKED_IN exclusion dan OVERDUE. Bukan helper preview F12
 scheduler-off. Tidak mengubah jam OS. Test batas reschedule menggunakan clock
 transaksi test-only dalam proses, bukan request/environment produksi.

@@ -1,0 +1,45 @@
+{
+  "jenis": "Edge headless, browser UI aktual; SDK native adapter, provider MOCK",
+  "hasil": [
+    {
+      "urutan": 1,
+      "exit": 0,
+      "detik": 18,
+      "status": "PASS",
+      "cleanup": true,
+      "bukti": "finalization/browser-pointer-1/HASIL-BROWSER.json"
+    },
+    {
+      "urutan": 2,
+      "exit": 0,
+      "detik": 17,
+      "status": "PASS",
+      "cleanup": true,
+      "bukti": "finalization/browser-pointer-2/HASIL-BROWSER.json"
+    },
+    {
+      "urutan": 3,
+      "exit": 0,
+      "detik": 16,
+      "status": "PASS",
+      "cleanup": true,
+      "bukti": "finalization/browser-pointer-3/HASIL-BROWSER.json"
+    },
+    {
+      "urutan": 4,
+      "exit": 0,
+      "detik": 17,
+      "status": "PASS",
+      "cleanup": true,
+      "bukti": "finalization/browser-pointer-4/HASIL-BROWSER.json"
+    },
+    {
+      "urutan": 5,
+      "exit": 1,
+      "detik": 43,
+      "status": "FAIL",
+      "cleanup": true,
+      "bukti": "finalization/browser-pointer-5/HASIL-BROWSER.json"
+    }
+  ]
+}

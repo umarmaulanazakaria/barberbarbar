@@ -1,0 +1,568 @@
+[
+  {
+    "id": "REQ-7-012",
+    "fitur": "Restart aplikasi dan pemulihan sesi.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-7-015",
+    "fitur": "Ubah password.",
+    "kategori": [
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Gap produk/API: current-password change dan perubahan identitas tidak tersedia; PATCH me strict nama/alamat. Reset token terpisah sudah diuji. Perlu PRD/keputusan F14.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-7-016",
+    "fitur": "Perubahan email/nomor telepon dengan verifikasi password sesuai PRD.",
+    "kategori": [
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Gap produk/API: current-password change dan perubahan identitas tidak tersedia; PATCH me strict nama/alamat. Reset token terpisah sudah diuji. Perlu PRD/keputusan F14.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-7-021",
+    "fitur": "Pengiriman email aktual jika sudah tersedia.",
+    "kategori": [
+      "D"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Delivery email belum diimplementasikan; tidak ada SMTP/provider baru. Fondasi reset bukan forgot-password E2E.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-033",
+    "fitur": "Customer membuka Project 5.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-036",
+    "fitur": "Login jika belum login.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-037",
+    "fitur": "Pilihan layanan tetap tersimpan.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-056",
+    "fitur": "Pindah langkah dan kembali.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-057",
+    "fitur": "Keyboard Android.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-9-058",
+    "fitur": "Scroll daftar barber panjang.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-10-074",
+    "fitur": "Snap/redirect checkout React Native.",
+    "kategori": [
+      "B",
+      "C"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Checkout native Customer App belum dapat dijalankan tanpa Android; Sandbox config/GetStatus valid bukan bukti checkout.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-10-075",
+    "fitur": "Alur kembali dari WebBrowser.",
+    "kategori": [
+      "B",
+      "C"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Checkout native Customer App belum dapat dijalankan tanpa Android; Sandbox config/GetStatus valid bukan bukti checkout.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-10-076",
+    "fitur": "App foreground/refetch setelah checkout.",
+    "kategori": [
+      "B",
+      "C"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Checkout native Customer App belum dapat dijalankan tanpa Android; Sandbox config/GetStatus valid bukan bukti checkout.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-11-111",
+    "fitur": "Consent pending tidak memiliki timeout otomatis.",
+    "kategori": [
+      "A"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Tidak ada deadline proposal pada source; uji dedicated timeout proposal belum dijalankan, tidak ditandai PASS.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-12-116",
+    "fitur": "Pelunasan online Midtrans dari Customer Project 5.",
+    "kategori": [
+      "B",
+      "C"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Sandbox E2E dari Customer App DEFERRED tanpa Android; kontrak online/provider MOCK PASS terpisah.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-158",
+    "fitur": "Ubah service/qty.",
+    "kategori": [
+      "A"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perubahan layanan reschedule dapat diterima backend, UI Customer tidak menyediakan edit item reschedule. Dedicated kenaikan reschedule belum dibuktikan; F14.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-14-164",
+    "fitur": "Total naik.",
+    "kategori": [
+      "A"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perubahan layanan reschedule dapat diterima backend, UI Customer tidak menyediakan edit item reschedule. Dedicated kenaikan reschedule belum dibuktikan; F14.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-14-177",
+    "fitur": "Status lokal.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-178",
+    "fitur": "Status provider.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-179",
+    "fitur": "Bukti transaksi/refund.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-180",
+    "fitur": "Apakah menunggu callback.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-181",
+    "fitur": "Apakah refund tidak didukung oleh metode.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-182",
+    "fitur": "Apakah perlu retry.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-14-183",
+    "fitur": "Apakah memerlukan tindakan merchant.",
+    "kategori": [
+      "C",
+      "E",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Get Status resmi read-only: settlement, refunds kosong; lokal sumber hilang. Tidak retry/refund/rekonstruksi.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-215",
+    "fitur": "Login.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-216",
+    "fitur": "Booking list.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-217",
+    "fitur": "Detail booking.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-218",
+    "fitur": "Confirm/reject.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-219",
+    "fitur": "Check-in.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-220",
+    "fitur": "Barber assignment.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-221",
+    "fitur": "IN_SERVICE.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-222",
+    "fitur": "Payment.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-223",
+    "fitur": "Realtime.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-224",
+    "fitur": "Session cleanup.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-225",
+    "fitur": "Splash/login/register.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-226",
+    "fitur": "Beranda.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-227",
+    "fitur": "Booking.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-228",
+    "fitur": "Searchable dropdown barber.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-229",
+    "fitur": "Keyboard Android.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-230",
+    "fitur": "Scroll.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-231",
+    "fitur": "Modal Back Android.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-232",
+    "fitur": "Safe area.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-233",
+    "fitur": "Riwayat.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-234",
+    "fitur": "Akun.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-235",
+    "fitur": "Membership.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-236",
+    "fitur": "Payment WebBrowser.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-237",
+    "fitur": "Realtime/foreground.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "DEFERRED"
+  },
+  {
+    "id": "REQ-16-243",
+    "fitur": "Tandai device test sebagai DEFERRED.",
+    "kategori": [
+      "B"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Perangkat Android/AVD belum tersedia; lihat README-PENGUJIAN.md. Bukan PASS dari build/export.",
+    "hasilAkhir": "NOT APPLICABLE"
+  },
+  {
+    "id": "REQ-17-258",
+    "fitur": "Dependency runtime.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-17-259",
+    "fitur": "Dependency development.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-17-260",
+    "fitur": "Advisory transitive.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-17-262",
+    "fitur": "Patch compatible.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-17-263",
+    "fitur": "Breaking-change risk.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "PASS"
+  },
+  {
+    "id": "REQ-17-265",
+    "fitur": "Temuan yang perlu keputusan F14.",
+    "kategori": [
+      "F",
+      "G"
+    ],
+    "statusAwal": "DEFERRED",
+    "kebutuhan": "Audit npm full/omitDev dilaporkan terpisah. Advisory tersisa perlu triage F14; tidak berarti bebas risiko.",
+    "hasilAkhir": "DEFERRED"
+  }
+]

@@ -16,7 +16,7 @@ const digest=x=>createHash('sha256').update(x).digest('hex');
 const protectedPaths=[path.join(server,'src/lib/prisma.ts'),path.join(stage,'barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx'),path.join(stage,'barberbarbar-mobile/src/layanan/booking.ts')];
 const protectedBefore=await Promise.all(protectedPaths.map(async p=>digest(await readFile(p))));
 const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7).split(',');
-const output=path.join(server,'e2e/HASIL-REGRESI.json');
+const output=path.join(server,(process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-REGRESI.json');
 const baseline=await snapshot(), results=only?JSON.parse(await readFile(output,'utf8')).results:[];
 const npm=path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js');
 const tasks=[
@@ -36,6 +36,8 @@ const tasks=[
  ['reschedule-boundary',server,['scripts/test-batas-reschedule-e2e.mjs']],
  ['browser-e2e',web,['scripts/test-e2e-browser.mjs']],
  ['log-safety',server,['scripts/test-log-aman-e2e.mjs']],
+ ['customer-draft',path.join(stage,'barberbarbar-customer'),['scripts/test-draf-jadwal-ulang.mjs']],
+ ['process-log',server,['scripts/test-log-proses.mjs']],
 ];
 await mkdir(path.dirname(output),{recursive:true});
 try {

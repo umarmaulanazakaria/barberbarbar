@@ -4,6 +4,7 @@ import path from 'node:path';
 const npm=path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js'),results=[];
 for(const [project,cwd]of[['backend',process.cwd()],['web',path.resolve('../client')],['staff',path.resolve('../../barberbarbar-mobile')],['customer',path.resolve('../../barberbarbar-customer')]]){
  const pkg=JSON.parse(await readFile(path.join(cwd,'package.json'),'utf8')),row={project,paketLangsung:pkg.dependencies,paketDevelopment:pkg.devDependencies};
+ row.terpasang={};for(const nama of Object.keys({...pkg.dependencies,...pkg.devDependencies})){try{row.terpasang[nama]=JSON.parse(await readFile(path.join(cwd,'node_modules',nama,'package.json'),'utf8')).version;}catch{row.terpasang[nama]='NOT_FOUND';}}
  for(const omit of [false,true]){
   let out='';const p=spawn(process.execPath,[npm,'audit','--json',...(omit?['--omit=dev']:[])],{cwd,windowsHide:true,stdio:['ignore','pipe','pipe']});p.stdout.on('data',b=>out+=b);p.stderr.on('data',()=>{});await new Promise(r=>p.on('close',r));
   try{const data=JSON.parse(out);row[omit?'omitDev':'lengkap']={jumlah:data.metadata?.vulnerabilities,akar:Object.entries(data.vulnerabilities??{}).filter(([,v])=>v.via.some(x=>typeof x==='object')).map(([name,v])=>({name,severity:v.severity,direct:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via:v.via.filter(x=>typeof x==='object').map(x=>({title:x.title,url:x.url,range:x.range})),effects:v.effects}))};}
@@ -11,4 +12,4 @@ for(const [project,cwd]of[['backend',process.cwd()],['web',path.resolve('../clie
  }
  results.push(row);console.log(JSON.stringify({project,full:row.lengkap.jumlah,omitDev:row.omitDev.jumlah}));
 }
-await mkdir('e2e',{recursive:true});await writeFile('e2e/HASIL-DEPENDENCY.json',JSON.stringify({tanggal:new Date().toISOString(),catatan:'omitDev adalah klasifikasi npm; tooling Expo dapat tercantum sebagai dependencies produksi, bukan bukti seluruh advisory dapat dicapai bundle mobile',results},null,2));
+await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'e2e'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-DEPENDENCY.json',JSON.stringify({tanggal:new Date().toISOString(),catatan:'omitDev adalah klasifikasi npm; tooling Expo dapat tercantum sebagai dependencies produksi, bukan bukti seluruh advisory dapat dicapai bundle mobile',results},null,2));

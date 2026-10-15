@@ -120,6 +120,12 @@ try {
   const nr=await ringkasanPembayaranBooking(n.id);assert.equal(nr.jumlahDibayar,5000);assert.equal(nr.jumlahRefund,0);assert.equal(nr.balance,0);assert.equal(nr.statusPembayaran,"DP_FORFEITED");
   assert.equal(await db.permohonanRefundBooking.count({where:{bookingId:n.id}}),0);assert.equal(await db.invoiceBooking.count({where:{bookingId:n.id}}),0);
   pass("No-show tepat15menit: slot dilepas, DP utuh/hangus, nol refund/sisa tagihan, tidak membuat invoice palsu");
+  const consent=await buat("CONFIRMED");await bayarDp(consent);
+  const usulanTanpaTimeout=await utc(tx=>tx.usulanBarberBooking.create({data:{bookingId:consent.id,barberId:barber.id,alasan:"Fixture consent pending"}}));
+  assert.equal(await proses(consent,tambah(dasar,2*3_600_000)),null);
+  assert.equal((await status(consent.id)).status,"CONFIRMED");
+  assert.equal((await db.usulanBarberBooking.findUniqueOrThrow({where:{id:usulanTanpaTimeout.id}})).status,"PENDING");
+  pass("Consent pending tidak memiliki timeout proposal; setelah2jam dan DP sah sebelum jadwal tetap PENDING/CONFIRMED");
   const ci=await buat("CONFIRMED");await bayarDp(ci);await checkInBooking(ci.id,operator.id,tambah(ci.mulaiPada,-60_000));
   assert.equal(await proses(ci,tambah(ci.mulaiPada,20*60_000)),null);assert.equal((await status(ci.id)).status,"CHECKED_IN");
   await mulaiLayananBooking(ci.id,barber.id,operator.id);assert.equal(await proses(ci,tambah(ci.mulaiPada,20*60_000)),null);

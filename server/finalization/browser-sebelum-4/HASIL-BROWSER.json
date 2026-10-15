@@ -1,0 +1,60 @@
+{
+  "tanggal": "2026-10-15",
+  "browser": "Edge headless existing",
+  "provider": "MOCK",
+  "nativeUI": "DEFERRED",
+  "diagnostik": [
+    {
+      "etape": "confirm /bookings/2931",
+      "sebelum": 1,
+      "hasil": "CLICK"
+    },
+    {
+      "etape": "confirm /bookings/2931",
+      "sebelum": 1,
+      "hasil": "CLICK"
+    },
+    {
+      "etape": "confirm /bookings/2931",
+      "sebelum": 1,
+      "hasil": "CLICK"
+    }
+  ],
+  "results": [
+    {
+      "id": "WEB-LOGIN",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing"
+    },
+    {
+      "id": "WEB-MEMBER",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN"
+    },
+    {
+      "id": "WEB-BOOKING",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED"
+    },
+    {
+      "id": "WEB-LIFECYCLE",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "DP MOCK sah → check-in Web lebih awal → barber final any → Pesanan/IN_SERVICE terpantau Customer/Staff SDK"
+    },
+    {
+      "id": "BROWSER-FAIL",
+      "status": "FAIL",
+      "jenis": "Browser UI E2E + SDK/API dengan provider MOCK",
+      "actual": "TimeoutError; confirm /bookings/2931; lokasi     at save (client\\scripts\\test-e2e-browser.mjs:63:97)"
+    },
+    {
+      "id": "CLEANUP",
+      "status": "PASS",
+      "actual": "22 model domain existing identik; hanya fixture suite dibersihkan"
+    }
+  ]
+}

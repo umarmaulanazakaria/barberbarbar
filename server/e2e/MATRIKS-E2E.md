@@ -1,5 +1,7 @@
 # Matriks pengujian end-to-end
 
+Revalidasi terbaru tersedia pada [matriks F14](../finalization/MATRIKS-E2E.md); hasil dan hitungan F13 di bawah dipertahankan sebagai riwayat.
+
 Jenis: A unit/source audit; B integration/controller adapter; C HTTP/API E2E; D browser UI; E Android device UI; F provider Sandbox E2E; G security/concurrency. PASS berlaku hanya pada jenis bukti di baris tersebut. MOCK bukan Sandbox nyata; adapter bukan native UI.
 
 |ID|Fitur|Project|Prasyarat|Langkah|Expected|Actual|Jenis|Status|Bukti/catatan|

@@ -20,8 +20,8 @@ server.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
 
-server.on("error", (error) => {
-  console.error(`Server gagal listen pada port ${PORT}:`, error);
+server.on("error", () => {
+  console.error(`Server gagal listen pada port ${PORT}: LISTEN_ERROR`);
   hentikanServer("LISTEN_ERROR", 1);
 });
 
@@ -45,8 +45,8 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
       // sebelum menutup koneksi WebSocket yang berumur panjang.
       await realtime.hentikan();
       await basisData.$disconnect();
-    } catch (errorDatabase) {
-      console.error("Gagal memutus koneksi database:", errorDatabase);
+    } catch {
+      console.error("Gagal memutus koneksi database: DATABASE_DISCONNECT_FAILED");
       kodeKeluar = 1;
     } finally {
       clearTimeout(paksaBerhenti);
@@ -57,11 +57,11 @@ const hentikanServer = (alasan: string, kodeKeluar = 0) => {
 
 process.on("SIGINT", () => hentikanServer("SIGINT"));
 process.on("SIGTERM", () => hentikanServer("SIGTERM"));
-process.on("unhandledRejection", (error) => {
-  console.error("Unhandled rejection:", error);
+process.on("unhandledRejection", () => {
+  console.error("Unhandled rejection: ASYNC_FAILURE");
   hentikanServer("unhandledRejection", 1);
 });
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught exception:", error);
+process.on("uncaughtException", () => {
+  console.error("Uncaught exception: PROCESS_FAILURE");
   hentikanServer("uncaughtException", 1);
 });

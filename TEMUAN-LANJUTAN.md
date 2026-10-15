@@ -1,5 +1,9 @@
 # Temuan untuk finalisasi berikutnya
 
+Dokumen ini snapshot temuan akhir F13. Status revalidasi, penutupan timeout
+browser dan blocker release terbaru ada di [F14-AUDIT.md](F14-AUDIT.md) serta
+[RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md); row historis di bawah dipertahankan.
+
 | ID | Temuan | Bukti / tindakan berikutnya |
 |---|---|---|
 | OPEN-01 | Android Staff/Customer belum diuji | ADB/AVD kosong; jalankan panduan fisik, native SecureStore/restart/keyboard/tab/back/scroll/realtime |

@@ -1,0 +1,75 @@
+{
+  "jenis": "HTTP regression dengan clock transaksi test-only",
+  "results": [
+    {
+      "id": "RESCHEDULE-0",
+      "jedaMs": 3599999,
+      "expected": 409,
+      "actual": 409,
+      "status": "PASS"
+    },
+    {
+      "id": "RESCHEDULE-1",
+      "jedaMs": 3600000,
+      "expected": 200,
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "id": "RESCHEDULE-2",
+      "jedaMs": -60000,
+      "expected": 409,
+      "actual": 409,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-1",
+      "hari": "Jumat",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-2",
+      "hari": "Sabtu",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-3",
+      "hari": "Minggu",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-4",
+      "hari": "Senin",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-5",
+      "hari": "Selasa",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-6",
+      "hari": "Rabu",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    },
+    {
+      "id": "HARI-7",
+      "hari": "Kamis",
+      "expected": 201,
+      "actual": 201,
+      "status": "PASS"
+    }
+  ]
+}

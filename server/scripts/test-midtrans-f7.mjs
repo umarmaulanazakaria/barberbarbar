@@ -163,7 +163,30 @@ try{
  assert.equal((await http(`/refund-requests/${rr.id}/approve`,"POST",{catatan:"Refund selisih"},admin.token)).body.refund.status,"SUCCEEDED");
  assert.equal((await ringkas(br,b)).body.ringkasan.jumlahDibayar,30000);
  assert.equal((await http(`/bookings/${br.id}/check-in`,"POST",{},staff.token)).status,200);
- pass("Paid reschedule setelah reject consent: pending/confirm ulang, snapshot10% tetap, refund selisih, DP carried-net membuka check-in");
+ const naik=await buat(b,13);await lunasiDp(naik,b);
+ const pnaik=await http(`/bookings/${naik.id}/barber-proposals`,"POST",{barberId:barberCadangan.id,alasan:"Uji total naik"},admin.token);
+ assert.equal(pnaik.status,200);const un=pnaik.body.booking.usulanBarber[0].id;
+ assert.equal((await http(`/customer/bookings/${naik.id}/barber-proposals/${un}/reject`,"POST",{},b.token)).status,200);
+ const sebelumNaik=await db.booking.findUniqueOrThrow({where:{id:naik.id},include:{items:true}});
+ const cukup=await http(`/customer/bookings/${naik.id}/reschedule`,"POST",{mulaiPada:hari(12),items:[{layananId:murah.id,qty:2}]},b.token);
+ assert.equal(cukup.status,200);assert.equal(cukup.body.booking.total,60000);assert.equal(cukup.body.booking.nominalDp,30000);
+ // Total semula100000 ->60000 menguji qty; setelah confirm+reject baru, naik90000 masih ditutup DP50000.
+ assert.equal((await http(`/bookings/${naik.id}/confirm`,"POST",{},admin.token)).status,200);
+ const pn2=await http(`/bookings/${naik.id}/barber-proposals`,"POST",{barberId:barberCadangan.id,alasan:"Uji total naik lanjutan"},admin.token);
+ assert.equal((await http(`/customer/bookings/${naik.id}/barber-proposals/${pn2.body.booking.usulanBarber[0].id}/reject`,"POST",{},b.token)).status,200);
+ assert.equal((await http(`/customer/bookings/${naik.id}/reschedule`,"POST",{mulaiPada:hari(13),items:[{layananId:murah.id,qty:3}]},b.token)).status,200);
+ assert.equal((await db.booking.findUniqueOrThrow({where:{id:naik.id}})).total,90000);
+ const mahal=await buat(c,12);await lunasiDp(mahal,c);
+ const pm=await http(`/bookings/${mahal.id}/barber-proposals`,"POST",{barberId:barberCadangan.id,alasan:"DP kurang"},admin.token);
+ assert.equal((await http(`/customer/bookings/${mahal.id}/barber-proposals/${pm.body.booking.usulanBarber[0].id}/reject`,"POST",{},c.token)).status,200);
+ const sebelumKurang=await db.booking.findUniqueOrThrow({where:{id:mahal.id},include:{items:true}});
+ const kurang=await http(`/customer/bookings/${mahal.id}/reschedule`,"POST",{mulaiPada:hari(12),items:[{layananId:layanan.id,qty:2}]},c.token);
+ assert.equal(kurang.status,409);assert.match(kurang.body.pesan,/DP existing tidak cukup/);
+ assert.deepEqual(await db.booking.findUniqueOrThrow({where:{id:mahal.id},include:{items:true}}),sebelumKurang);
+ assert.equal(sebelumNaik.total,100000);
+ assert.equal((await http(`/customer/bookings/${naik.id}/cancel`,"POST",{},b.token)).status,200);
+ assert.equal((await http(`/customer/bookings/${mahal.id}/cancel`,"POST",{},c.token)).status,200);
+ pass("Paid reschedule: qty/total naik saat DP cukup; DP kurang409 rollback; total turun/refund selisih tetap sah");
  const bh=await buat(c,10);const sh=await snap(bh,c);assert.equal(sh.status,200);
  const th=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:sh.body.transaksiId}}),ph=provider.get(th.referensiProvider);
  ph.transaction_status="expire";ph.status_code="407";assert.equal((await notifikasi(ph)).status,200);
@@ -202,7 +225,7 @@ try{
  assert.equal((await http(`/customer/payments/${ta.id}/sync`,"POST",{},b.token)).status,404);
  pass("Snap timeout reserved/UNCERTAIN, retry tanpa tagihan baru; deadline/Production gagal tertutup, sync own-scope");
  console.log(`Total: ${total} kelompok MOCK F7 PASS; bukan Sandbox provider nyata.`);
-}catch(err){console.error(`FAIL MOCK F7 (${err.name}); detail credential/token tidak dicetak.`);process.exitCode=1;}
+}catch(err){console.error(`FAIL MOCK F7 (${err.name}); detail credential/token tidak dicetak.`);console.error(err.stack?.split("\n").find(l=>l.includes("test-midtrans-f7.mjs"))?.split("test-midtrans-f7.mjs").pop());process.exitCode=1;}
 finally{
  Object.assign(gerbangMidtrans,asli);
  try{

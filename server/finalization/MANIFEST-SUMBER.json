@@ -1,0 +1,536 @@
+{
+    "jenis":  "Checksum sumber audit, bukan backup seluruh repository",
+    "pengecualian":  "Manifest ini tidak memuat hash dirinya; manifest luar ZIP memverifikasi seluruh entry termasuk file ini",
+    "sumber":  [
+                   {
+                       "path":  "barberbarbar/client/scripts/test-e2e-browser.mjs",
+                       "bytes":  22406,
+                       "sha256":  "0161148d8aadac4173e17b30b80fa5cd7a30528dfe3b989edc0b840c516fb831"
+                   },
+                   {
+                       "path":  "barberbarbar/client/scripts/test-stabilitas-browser.mjs",
+                       "bytes":  1658,
+                       "sha256":  "7f5b6c38f2281797c0aa5eedc560bf04dcb8b1dc0366e87f59df686505ac2277"
+                   },
+                   {
+                       "path":  "barberbarbar/client/src/components/ConfirmDialog.tsx",
+                       "bytes":  3435,
+                       "sha256":  "d724279e7716923111040d3621f4053b299574a27bf68e60761f39814cacda2e"
+                   },
+                   {
+                       "path":  "barberbarbar/client/src/components/PembayaranBooking.tsx",
+                       "bytes":  6270,
+                       "sha256":  "69e9ef3bab0c77f762216283f5224be175214135740453532f2e0295c523b6cb"
+                   },
+                   {
+                       "path":  "barberbarbar/client/src/pages/DetailBookingPage.tsx",
+                       "bytes":  11258,
+                       "sha256":  "b29dd1654fb1392a8393fdbcab3f21688cf2b8763b470942cc4c7c7c77c2316a"
+                   },
+                   {
+                       "path":  "barberbarbar/F13-AUDIT.md",
+                       "bytes":  18211,
+                       "sha256":  "d1cc90264a32fa00d5883f38edafa2080e249c8bee6bc488a108fd435c7400a7"
+                   },
+                   {
+                       "path":  "barberbarbar/F14-AUDIT.md",
+                       "bytes":  21250,
+                       "sha256":  "58e01171bf43615e59e8b26e1ad1d8712e1f5b844a05e05ae30762b6a99414ca"
+                   },
+                   {
+                       "path":  "barberbarbar/PANDUAN-DEMO.md",
+                       "bytes":  2422,
+                       "sha256":  "52501a635d6bc3c46dce4170db835f71e7c6f48cdbc8e74fe1cad2179caa15bf"
+                   },
+                   {
+                       "path":  "barberbarbar/PULL-REQUEST.md",
+                       "bytes":  2028,
+                       "sha256":  "c21c0b889e63e0338ec05a1023b881cd9aaebbb897a33f452acba386b7cd3fea"
+                   },
+                   {
+                       "path":  "barberbarbar/README-FINAL.md",
+                       "bytes":  6276,
+                       "sha256":  "72cf907c2eaae0e07a266b2efdf8f571ea6bc4f5b2466e97020c3b98f57c975a"
+                   },
+                   {
+                       "path":  "barberbarbar/README-PENGUJIAN.md",
+                       "bytes":  12905,
+                       "sha256":  "075f8744ed7875fc297bc642e6083e15505c6f6d7dc023c384d0be72e53afa2b"
+                   },
+                   {
+                       "path":  "barberbarbar/README-PENGUJIAN-ANDROID.md",
+                       "bytes":  5681,
+                       "sha256":  "a2ad72f2c51b1b2d3f5ee8753cff383aad77d9f67132e6c5e09c44e1991bc2cc"
+                   },
+                   {
+                       "path":  "barberbarbar/RELEASE-CHECKLIST.md",
+                       "bytes":  4003,
+                       "sha256":  "673afac284366e9278f2d36e44529fc0bdb50eadb2513b3a30586c5e2ff4b97d"
+                   },
+                   {
+                       "path":  "barberbarbar/server/e2e/MATRIKS-E2E.md",
+                       "bytes":  102182,
+                       "sha256":  "12af3bf1d785e14b1f5439f5a375f2553b50d6ef4dd8158835d5fd306b5b58eb"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/BASELINE.json",
+                       "bytes":  757,
+                       "sha256":  "1fdd29e1b19e3e9b4ec16261cc2551b75fe6fb49f949ce76af116db0277bbcb7"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/BERKAS-ZIP.json",
+                       "bytes":  7208,
+                       "sha256":  "6ec4c8b0331ca4297e6acb0371812ec640078f63dafdd5ab4eebcb6ac4c16715"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-1/HASIL-BROWSER.json",
+                       "bytes":  475,
+                       "sha256":  "76f276bdccca68a9a9c5f1e0c6cbd721eb7dd41c9001e6c04a396b5cf159c6f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-2/HASIL-BROWSER.json",
+                       "bytes":  475,
+                       "sha256":  "76f276bdccca68a9a9c5f1e0c6cbd721eb7dd41c9001e6c04a396b5cf159c6f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-3/HASIL-BROWSER.json",
+                       "bytes":  475,
+                       "sha256":  "76f276bdccca68a9a9c5f1e0c6cbd721eb7dd41c9001e6c04a396b5cf159c6f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-4/HASIL-BROWSER.json",
+                       "bytes":  475,
+                       "sha256":  "76f276bdccca68a9a9c5f1e0c6cbd721eb7dd41c9001e6c04a396b5cf159c6f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-5/HASIL-BROWSER.json",
+                       "bytes":  475,
+                       "sha256":  "76f276bdccca68a9a9c5f1e0c6cbd721eb7dd41c9001e6c04a396b5cf159c6f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-lanjut-1/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "eeb76db0113724e1f5addcefb481af2e968fae199f68690a6b069ac5bf9968da"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-lanjut-2/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "fcc580e3dc4d4eea5f0c6f37bfd4b3211de7bbdcffe69f137f0a810609cfe3f5"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-lanjut-3/HASIL-BROWSER.json",
+                       "bytes":  4181,
+                       "sha256":  "c1596e818e0564106a92873ac25113e99e5c7fe7f45c644e486b53aa14465676"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-lanjut-4/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "862ef80872523ee6c7795ae4d08c1b95002c0c81b6e0ca3441447d811ef322af"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-lanjut-5/HASIL-BROWSER.json",
+                       "bytes":  4179,
+                       "sha256":  "14bdfc5d0f663d56a3d6cad9930535c30b096eaac809a4d693b522ed8191eb0e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-1/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "274c38980df5e1f76e82d018d61c96fb8b329a0c4210ade356d77968b448eaed"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-2/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "5942b62e1edba9eaddccef2abfa73a84e7de5440219c153d9b6d6839196fba61"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-3/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "5e12e40d6b2107e5ee4b782b07892f7b25994ab4b9c4b0a27bfc4b61a3cb2c9b"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-4/HASIL-BROWSER.json",
+                       "bytes":  4181,
+                       "sha256":  "a8103b25e08feb52cbfc27b490f3779753b528a39c697f23457d15df1fe580c8"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-5/HASIL-BROWSER.json",
+                       "bytes":  1859,
+                       "sha256":  "9c113126b14aa9813e64304345009c361fd3a3038a30f82d94f010ff40883619"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-6/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "b37e19958160e903c826235c614fba91e05851eaa8c5f65d53ade18ef6ae862e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-7/HASIL-BROWSER.json",
+                       "bytes":  4179,
+                       "sha256":  "aeb7b9177f9d5ecd4fffc4a5a862a6b4178502b69761803ab4f7d0c42a07e62f"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-diagnostik-tambahan-8/HASIL-BROWSER.json",
+                       "bytes":  4180,
+                       "sha256":  "97d98a74280bcbc5e67191db67150156a56c122c71771c9058709d4134e029f0"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-pointer-1/HASIL-BROWSER.json",
+                       "bytes":  38054,
+                       "sha256":  "6ab896794f9677b7b9a5e7fa1b9f96abe107ea11a754ce70baa825d06885b523"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-pointer-2/HASIL-BROWSER.json",
+                       "bytes":  37940,
+                       "sha256":  "e1c1bb094b6270c754d98dda22fdf5054ef01ddf49cb43e484f5fd5d1730492a"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-pointer-3/HASIL-BROWSER.json",
+                       "bytes":  37934,
+                       "sha256":  "aefe7b908b2159c625a5c2774460b3f1123eb51d01c2da1d43e1aa9f98061ea6"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-pointer-4/HASIL-BROWSER.json",
+                       "bytes":  37937,
+                       "sha256":  "aa379a58d99c4adfed843b071b2fce8c417ef56a73bd8c23057f6b46619635bd"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-pointer-5/HASIL-BROWSER.json",
+                       "bytes":  11614,
+                       "sha256":  "e9a6667452f7804d72adc1e7cfbc7de7eae06b0f0be5fe83f838927ece193462"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sebelum-1/HASIL-BROWSER.json",
+                       "bytes":  3851,
+                       "sha256":  "76c155e8312653f30b3810dbae35e3bca74ea96b9a30a517b49c7288e6eeb12a"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sebelum-2/HASIL-BROWSER.json",
+                       "bytes":  3851,
+                       "sha256":  "ef5110f41cf3cc17f4de1e89ed75f407a5c92631db22f2dce94e2d5644480393"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sebelum-3/HASIL-BROWSER.json",
+                       "bytes":  3851,
+                       "sha256":  "fe7445b88be93079ff18cc2b8a4be59252af252e07f8a98e9ce30aa6249af816"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sebelum-4/HASIL-BROWSER.json",
+                       "bytes":  1911,
+                       "sha256":  "c4a946ee1e1846daf7bc2990c1d2f5bd7cea02c5d960149c825330b5435e0ab8"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sebelum-5/HASIL-BROWSER.json",
+                       "bytes":  3851,
+                       "sha256":  "33751f5697723c33bac8ecf22c6d93de279a139802f0807ecdddaf29ee79547e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-1/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "c02684762eadd296cc0cc35fab9f5de8dd2679d67b45f6a7282d4581b281fafa"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-2/HASIL-BROWSER.json",
+                       "bytes":  39420,
+                       "sha256":  "c2a094cf2b13be76c587199baf2c826aeba03d0007db2ed7efe005084b8ce92c"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-3/HASIL-BROWSER.json",
+                       "bytes":  39415,
+                       "sha256":  "db51da1d58ee9ca0a214f5df6d9606ac7974fec6ea8f6e1082b43967a7b44679"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-4/HASIL-BROWSER.json",
+                       "bytes":  9231,
+                       "sha256":  "e2f5407dc8640b3fcb11f31e90736e5ef19b8cd6995bd75c08a22b204df29179"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-5/HASIL-BROWSER.json",
+                       "bytes":  37489,
+                       "sha256":  "d85fd1d934b1d7ba499d1879e461e183f89f82b87c485cc4a52eaae531db15ae"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-6/HASIL-BROWSER.json",
+                       "bytes":  39375,
+                       "sha256":  "6f27d738743ae612b1a3298d1fe385dc411b2386c731dcdbb30ff25e29babec5"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-7/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "085013d8ea6ad79d7fb2755297beb242f95e8db761f8b20d55844554238e5481"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-sesudah-8/HASIL-BROWSER.json",
+                       "bytes":  39420,
+                       "sha256":  "5ed34892f1eaf74132db36ff31b82409fe845d49ab48d20c8039def12a42dee3"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-1/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "13d685a4dd073fc2f833d73343a7723b9ce8118dd6906c207c57c4b78565a913"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-2/HASIL-BROWSER.json",
+                       "bytes":  39364,
+                       "sha256":  "4e85b281247b9cc492b214324bcf736b83309f6032435a75e09e30ed32684909"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-3/HASIL-BROWSER.json",
+                       "bytes":  39417,
+                       "sha256":  "b11d62eb90d173c3f04c55e60e39237c9090fda0b745391bc8defea984ea738e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-4/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "0f7dc5e0add902fd62bf444188c62090baa03b8a337057b5b89ccd70fdd81df7"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-5/HASIL-BROWSER.json",
+                       "bytes":  39420,
+                       "sha256":  "d363017b5fc7ed9a71b58d30853e961e2f34a5a4a327b5d73bd6c6c807db3750"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-6/HASIL-BROWSER.json",
+                       "bytes":  39420,
+                       "sha256":  "32348d45c451a7b097bde152d1fbb4930299cd4d2d98c4e317e23977d081f658"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-7/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "6e390296b4e31baf02328eb3d55633fbe6eea6285c85cdb79ee95153b15b4ab7"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-stabil-8/HASIL-BROWSER.json",
+                       "bytes":  39423,
+                       "sha256":  "e2225c980903baf7f0d897c003826a8fc65e59939c164226c0b5749a58eed220"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/browser-terarah/HASIL-BROWSER.json",
+                       "bytes":  39419,
+                       "sha256":  "fb37f0f822bc31e7f6316136c80889d623c65eece1b76206e27ee30afa93febc"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/DEFERRED-54.json",
+                       "bytes":  15987,
+                       "sha256":  "fa972ef2d6694912dc97c52f26c2b7362344759fb431f7bd7145c731fc4c4b26"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/diagnostik-awal/HASIL-BROWSER.json",
+                       "bytes":  3851,
+                       "sha256":  "0f3947ce3b43f38f54352273ab802cea490dbfcbdd1fadda36da208363717ced"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/dialog-sebelum/HASIL-BROWSER.json",
+                       "bytes":  1434,
+                       "sha256":  "efe197ae398f3c2f1a93c46184dff53b4d4051feedd8e78d05d373b8dc28d87a"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/dialog-sesudah/HASIL-BROWSER.json",
+                       "bytes":  3127,
+                       "sha256":  "cae245848eebbd442c249a09f5f1fe7868b0c38c659d4e81352c2c5a24356a7c"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-BROWSER.json",
+                       "bytes":  39423,
+                       "sha256":  "d2d31e17a94257af0a17ae09245559aa2c38c8a5b3324024fb041b2beecfbc80"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-DEPENDENCY.json",
+                       "bytes":  20839,
+                       "sha256":  "2754ff8a7abfef425e7fee821b4ee74976bd3358a0dc7e5d42b37a0fee4221ad"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-INTEGRITAS.json",
+                       "bytes":  1696,
+                       "sha256":  "ebc6f0bb3a65fdbde23d1d6c813e091a4bcf625978ba583fdd77c89645e751d5"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-KEAMANAN.json",
+                       "bytes":  358,
+                       "sha256":  "9992f4476b95fcfb1649e2bbdeb41f6b64b5f88ece9440bd2b8acc5ad63da15e"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-LOG.json",
+                       "bytes":  355,
+                       "sha256":  "1accd4e72d008f67502422889bebf90fcd13712da2dae678dcd13ade22998dc9"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-LOG-PROSES.json",
+                       "bytes":  504,
+                       "sha256":  "bfe21bfe1e86dbc6283e62379289d06ef56fb616ef0793f326b1864f90556d8f"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-PROVIDER.json",
+                       "bytes":  966,
+                       "sha256":  "98dc33b63685bc73692d530bf8deb1044d30740f4b81761e5c46471a13f4c928"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-REGRESI.json",
+                       "bytes":  33024,
+                       "sha256":  "34465aa9713e0287b5668c11497a14352f80453388bccc46e920022c7e6f8651"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/HASIL-RESCHEDULE.json",
+                       "bytes":  1358,
+                       "sha256":  "6fc70c7d47bcad415c33c69617ae89b7d70bc9d5a750fd9c6b62f966ef76f4ab"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/log-sebelum/HASIL-LOG-PROSES.json",
+                       "bytes":  507,
+                       "sha256":  "3a62d7b57b6d28fcbfa3760ee8f0045b30a250fed9cbb21534f0d76fff765cfe"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/MATRIKS-E2E.json",
+                       "bytes":  274397,
+                       "sha256":  "2e3152912130dcdafc049c0900702535c6d4894ee19c13a3c9b5c8e88a19d198"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/MATRIKS-E2E.md",
+                       "bytes":  58048,
+                       "sha256":  "bcb1428afef81d6eac827d6d8d502298d4df30cfce8c6886506890aab909b39b"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-diagnostik.json",
+                       "bytes":  1021,
+                       "sha256":  "16da3cad461a339054ef460e067d38f1c6befa5c7bc72bfbd6e12b1a1cb2c05f"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-diagnostik-lanjut.json",
+                       "bytes":  1061,
+                       "sha256":  "d79a272a613ea397e27e1dd58c03f105c25b6f5ff8f56733b1348ea8ce7363e1"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-diagnostik-tambahan.json",
+                       "bytes":  1653,
+                       "sha256":  "ebb1547d9239e54f2b54640980a40247ea8bc50527920b34d000243ce9899e49"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-pointer.json",
+                       "bytes":  1011,
+                       "sha256":  "34a94f57beee0fc6f33eae85932738bb05a76895f4c85cfbc7fe738766503a36"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-sebelum.json",
+                       "bytes":  1011,
+                       "sha256":  "8d56e29701de92f3352936d3e8eb8110a5f0d80639b15a256e385a8ec404e207"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-sesudah.json",
+                       "bytes":  1557,
+                       "sha256":  "fdf0231846c9d80d4f8325bb19b6662bc20165e9ed84e67d0df7d785f18e0f40"
+                   },
+                   {
+                       "path":  "barberbarbar/server/finalization/STABILITAS-stabil.json",
+                       "bytes":  1549,
+                       "sha256":  "50d3afede1f9134a179ff8ab3988249a68974beef39036f1be3191e0cecfef8f"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/audit-dependency-e2e.mjs",
+                       "bytes":  2143,
+                       "sha256":  "b0f58f43185352214fc2ffde407a874e7b69b2239d21f4f89aab66a6b53f8614"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/audit-provider-e2e.mjs",
+                       "bytes":  2930,
+                       "sha256":  "6129af36cdd701680d723096497894fcfe5d1a343a1314ecaf9e11f82f73e312"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/buat-cadangan-final.ps1",
+                       "bytes":  5722,
+                       "sha256":  "1b53960a7f4deda337a6844b40bb27321dad3fc185e3411008cac2b4d661a98b"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/buat-matriks-final.mjs",
+                       "bytes":  5540,
+                       "sha256":  "e6869cf85ce3b9ce03a427cfdb6b6da3c4bc3903d02c33ec1d447693d06007ae"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/jalankan-regresi-e2e.mjs",
+                       "bytes":  6048,
+                       "sha256":  "7fe95559ef9f295ff5c9dbaae4656e369c61427382ede3700aa7636928e9bb2b"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/jalankan-server-uji-log.mjs",
+                       "bytes":  819,
+                       "sha256":  "a9eb7c7d3bfb2b361d3698b014ae60f4a5c62e64f57782a3ec2276747e8be65c"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-batas-reschedule-e2e.mjs",
+                       "bytes":  5424,
+                       "sha256":  "66a41f17c85de67b9aa41c346c8aff526d18426d96f3ec687cb4321b72aa8190"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-log-aman-e2e.mjs",
+                       "bytes":  1406,
+                       "sha256":  "d0c5cf65aa1a35f2fb6817c38aaf78c79e2f2c3714379422d449641a135b7c2a"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-log-proses.mjs",
+                       "bytes":  2006,
+                       "sha256":  "1cc3621cd6504429469384223c20342cb0d390329b72175ebca1ef9759060f32"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-midtrans-f7.mjs",
+                       "bytes":  25221,
+                       "sha256":  "a013dbd2e3df7ce5ab33b1d9ef3014f4ffb7f734ab4a6a6a46afcb6547da9eb7"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/test-scheduler-booking.mjs",
+                       "bytes":  28688,
+                       "sha256":  "201bbd6c866bbfcdb0fbfdffe75fce663a95395e3e2f49e76c0ca6316f97e243"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/verifikasi-integritas-e2e.mjs",
+                       "bytes":  3741,
+                       "sha256":  "ebf29634bcccbf51c863e0f7a2d7774e86b228a91bc9f86a33af2e29c75a46c3"
+                   },
+                   {
+                       "path":  "barberbarbar/server/scripts/verifikasi-rilis.mjs",
+                       "bytes":  3521,
+                       "sha256":  "2e0c0407bbf0a5a0fb489e577c7422a346a7fede1f1c49c7050a1d34512c8ae1"
+                   },
+                   {
+                       "path":  "barberbarbar/server/src/server.ts",
+                       "bytes":  2224,
+                       "sha256":  "597b1390257ed94aa0f03fcc0c80bcbc43a98168209c278546bab0942aa4cd1b"
+                   },
+                   {
+                       "path":  "barberbarbar/TEMUAN-LANJUTAN.md",
+                       "bytes":  2976,
+                       "sha256":  "8a5175157f8173ba316854ea0e7929239c81bd318b01c54367cb98c7047e122a"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/F14-AUDIT.md",
+                       "bytes":  1214,
+                       "sha256":  "0166af2695aa5c6c143fd1409b4ec525c22f0ad10e14193ec75b1253b44094ae"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/package.json",
+                       "bytes":  1221,
+                       "sha256":  "8ff41b40815e85cec02b31bcfcd757da6b0f264736adbb8367a8ce22c20a3a61"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/PULL-REQUEST.md",
+                       "bytes":  1271,
+                       "sha256":  "16da39dc0faddc6369aa95ef714607d0850f6fc001e1786aac0529f82bab0120"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/scripts/test-draf-jadwal-ulang.mjs",
+                       "bytes":  4730,
+                       "sha256":  "0ac4834c13894c2672de4b9cda9dd0086d86f2ba49396f6b8b956f18593809ac"
+                   },
+                   {
+                       "path":  "barberbarbar-customer/src/layar/Booking.tsx",
+                       "bytes":  11497,
+                       "sha256":  "2da5d97ff878afec5db3126878549f68dac22e4215ee9f2ba25f85973cd847ba"
+                   },
+                   {
+                       "path":  "barberbarbar-mobile/F14-AUDIT.md",
+                       "bytes":  886,
+                       "sha256":  "c15ff36deed28b80151ba0f8249aac412b5ac34c4337e98fda9d38de1772d427"
+                   },
+                   {
+                       "path":  "barberbarbar-mobile/PULL-REQUEST.md",
+                       "bytes":  1049,
+                       "sha256":  "496b5d0d34edcb9f9fdf52e12bdb88ec3e84f9fd0a97ecae2550c02d085a4849"
+                   }
+               ]
+}

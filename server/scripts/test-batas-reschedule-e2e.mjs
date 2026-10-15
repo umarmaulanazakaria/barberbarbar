@@ -39,5 +39,5 @@ try{
 }finally{
  db.$transaction=original;
  try{if(customer){await db.booking.deleteMany({where:{pelangganId:customer.id}});await db.pelanggan.delete({where:{id:customer.id}});}if(operator)await db.pengguna.delete({where:{id:operator.id}});if(service)await db.layanan.delete({where:{id:service.id}});await db.barber.deleteMany({where:{id:{in:[barber?.id,backup?.id].filter(Boolean)}}});assert.ok(await snapshot()===before);console.log('PASS cleanup reschedule:22 model existing identik.');}
- finally{if(server)await new Promise(r=>server.close(r));await db.$disconnect();await mkdir('e2e',{recursive:true});await writeFile('e2e/HASIL-RESCHEDULE.json',JSON.stringify({jenis:'HTTP regression dengan clock transaksi test-only',results},null,2));}
+ finally{if(server)await new Promise(r=>server.close(r));await db.$disconnect();await mkdir((process.env.BB_AUDIT_OUTPUT_DIR??'e2e'),{recursive:true});await writeFile((process.env.BB_AUDIT_OUTPUT_DIR??'e2e')+'/HASIL-RESCHEDULE.json',JSON.stringify({jenis:'HTTP regression dengan clock transaksi test-only',results},null,2));}
 }

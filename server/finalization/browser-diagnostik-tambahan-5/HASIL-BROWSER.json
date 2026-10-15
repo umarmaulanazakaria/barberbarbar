@@ -1,0 +1,60 @@
+{
+  "tanggal": "2026-10-15",
+  "browser": "Edge headless existing",
+  "provider": "MOCK",
+  "nativeUI": "DEFERRED",
+  "diagnostik": [
+    {
+      "etape": "confirm /bookings/2962",
+      "sebelum": 1,
+      "hasil": "CLICK"
+    },
+    {
+      "etape": "confirm /bookings/2962",
+      "sebelum": 1,
+      "hasil": "CLICK"
+    },
+    {
+      "etape": "confirm /bookings/2962",
+      "sebelum": 0,
+      "hasil": "FAIL",
+      "sesudah": 0,
+      "memproses": 0
+    }
+  ],
+  "results": [
+    {
+      "id": "WEB-LOGIN",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "ADMIN dan STAFF login melalui form Web asli; dashboard tampil di Edge headless existing"
+    },
+    {
+      "id": "WEB-MEMBER",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer SDK request → Web ADMIN approve → Socket/refetch customer ACTIVE; STAFF tidak melihat keputusan ADMIN"
+    },
+    {
+      "id": "WEB-BOOKING",
+      "status": "PASS",
+      "jenis": "Browser UI E2E + SDK/API mobile dengan adapter; provider MOCK",
+      "actual": "Customer multiservice/null → Web dan Staff SDK list realtime → confirm Web → Customer SDK CONFIRMED"
+    },
+    {
+      "id": "BROWSER-FAIL",
+      "status": "FAIL",
+      "jenis": "Browser UI E2E + SDK/API dengan provider MOCK",
+      "details": [
+        "locator.click: Timeout 30000ms exceeded.",
+        "\u001b[2m  - waiting for getByRole('button', { name: 'Confirm', exact: true })\u001b[22m"
+      ],
+      "actual": "TimeoutError; confirm /bookings/2962; lokasi     at confirmUi (client\\scripts\\test-e2e-browser.mjs:42:65)"
+    },
+    {
+      "id": "CLEANUP",
+      "status": "PASS",
+      "actual": "22 model domain existing identik; hanya fixture suite dibersihkan"
+    }
+  ]
+}

@@ -287,3 +287,7 @@ instalasi tambahan atau perubahan credential/database secara diam-diam.
 **Acceptance tetap F13 PARSIAL.** Nol FAIL pada regresi akhir tidak menghapus
 54 DEFERRED, gap produk, high advisory, atau timeout intermittent. Persiapan
 F14 dapat memakai laporan ini, tetapi rilis/Production belum direkomendasikan.
+
+## Revalidasi berikutnya
+
+Lihat [F14-AUDIT.md](F14-AUDIT.md) dan [matriks revalidasi](server/finalization/MATRIKS-E2E.md). Angka dan bukti F13 di atas adalah snapshot historis, bukan hasil akhir finalisasi.

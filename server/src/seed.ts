@@ -5,33 +5,37 @@ import bcrypt from "bcrypt";
 import basisData from "./lib/prisma.js";
 
 const jalankan = async () => {
-  const adminHash = await bcrypt.hash("admin123", 10);
+  const koneksi = new URL(process.env.DATABASE_URL ?? "");
+  const kataSandiAdmin = process.env.DEMO_ADMIN_PASSWORD ?? "";
+  const kataSandiStaff = process.env.DEMO_STAFF_PASSWORD ?? "";
+  if (process.env.IZINKAN_SEED_DEMO !== "true" ||
+      !["localhost", "127.0.0.1", "[::1]"].includes(koneksi.hostname) ||
+      !/^bb_demo_[a-z0-9_]+$/.test(koneksi.pathname.slice(1)) ||
+      [kataSandiAdmin, kataSandiStaff].some(s => Buffer.byteLength(s) < 12 || Buffer.byteLength(s) > 72)) {
+    throw new Error("Seed hanya untuk database lokal bb_demo_* dengan izin dan dua password privat 12–72 byte.");
+  }
+  const adminHash = await bcrypt.hash(kataSandiAdmin, 12);
 
   await basisData.pengguna.upsert({
     where: {
-      email: "admin@barber.com",
+      email: "admin@demo.example.invalid",
     },
 
-    update: {
-      role: "ADMIN",
-      name: "Admin Barber",
-      passwordHash: adminHash,
-      barberId: null,
-    },
+    update: {},
 
     create: {
-      name: "Admin Barber",
-      email: "admin@barber.com",
+      name: "Operator Demo",
+      email: "admin@demo.example.invalid",
       passwordHash: adminHash,
       role: "ADMIN",
     },
   });
 
   const barberData = [
-    ["Doni", "081210000001"],
-    ["Ricky", "081210000002"],
-    ["Arman", "081210000003"],
-    ["Rizky", "081210000004"],
+    ["Barber Demo 01", "080000001201"],
+    ["Barber Demo 02", "080000001202"],
+    ["Barber Demo 03", "080000001203"],
+    ["Barber Demo 04", "080000001204"],
   ] as const;
 
   for (const [nama, nomorTelepon] of barberData) {
@@ -55,28 +59,23 @@ const jalankan = async () => {
 
   const doniStaff = await basisData.barber.findUnique({
     where: {
-      nomorTelepon: "081210000001",
+      nomorTelepon: "080000001201",
     },
   });
 
   if (doniStaff) {
-    const staffHash = await bcrypt.hash("staff123", 10);
+    const staffHash = await bcrypt.hash(kataSandiStaff, 12);
 
     await basisData.pengguna.upsert({
       where: {
-        email: "staff@barber.com",
+        email: "staff@demo.example.invalid",
       },
 
-      update: {
-        role: "STAFF",
-        name: doniStaff.nama,
-        passwordHash: staffHash,
-        barberId: doniStaff.id,
-      },
+      update: {},
 
       create: {
         name: doniStaff.nama,
-        email: "staff@barber.com",
+        email: "staff@demo.example.invalid",
         passwordHash: staffHash,
         role: "STAFF",
         barberId: doniStaff.id,
@@ -123,17 +122,17 @@ const jalankan = async () => {
   }
 
   const pelangganData = [
-    ["Andi Pratama", "081234567800", "Jakarta"],
+    ["Customer Demo 01", "080000000100", "Jakarta"],
 
-    ["Dinda Putri", "081234567801", "Tangerang"],
+    ["Customer Demo 02", "080000000101", "Tangerang"],
 
-    ["Budi Santoso", "081234567802", "Jakarta"],
+    ["Customer Demo 03", "080000000102", "Jakarta"],
 
-    ["Mega Putri", "081234567803", "Depok"],
+    ["Customer Demo 04", "080000000103", "Depok"],
 
-    ["Fajar Nugroho", "081234567804", "Bekasi"],
+    ["Customer Demo 05", "080000000104", "Bekasi"],
 
-    ["Yahya", "081234567805", "Jakarta"],
+    ["Customer Demo 06", "080000000105", "Jakarta"],
   ] as const;
 
   for (const [nama, nomorTelepon, alamat] of pelangganData) {
@@ -157,7 +156,7 @@ const jalankan = async () => {
 
   const andi = await basisData.pelanggan.findUnique({
     where: {
-      nomorTelepon: "081234567800",
+      nomorTelepon: "080000000100",
     },
   });
 
@@ -183,19 +182,19 @@ const jalankan = async () => {
 
   const admin = await basisData.pengguna.findUnique({
     where: {
-      email: "admin@barber.com",
+      email: "admin@demo.example.invalid",
     },
   });
 
   const doni = await basisData.barber.findUnique({
     where: {
-      nomorTelepon: "081210000001",
+      nomorTelepon: "080000001201",
     },
   });
 
   const ricky = await basisData.barber.findUnique({
     where: {
-      nomorTelepon: "081210000002",
+      nomorTelepon: "080000001202",
     },
   });
 
@@ -213,13 +212,13 @@ const jalankan = async () => {
 
   const dinda = await basisData.pelanggan.findUnique({
     where: {
-      nomorTelepon: "081234567801",
+      nomorTelepon: "080000000101",
     },
   });
 
   const budi = await basisData.pelanggan.findUnique({
     where: {
-      nomorTelepon: "081234567802",
+      nomorTelepon: "080000000102",
     },
   });
 
@@ -406,11 +405,12 @@ const jalankan = async () => {
     }
   }
 
-  console.log("Seed selesai. Login ADMIN: admin@barber.com / admin123");
-
-  console.log("Login STAFF: staff@barber.com / staff123 (Barber: Doni)");
+  console.log("Seed demo selesai; credential tidak ditampilkan. Akun existing tidak diubah.");
 };
 
-jalankan().finally(async () => {
+jalankan().catch(() => {
+  console.error("Seed demo gagal; detail koneksi dan credential tidak ditampilkan.");
+  process.exitCode = 1;
+}).finally(async () => {
   await basisData.$disconnect();
 });

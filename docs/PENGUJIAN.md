@@ -4,7 +4,7 @@ Panduan aktif sesudah cleanup 15 Oktober 2026. Bukti historis berada di `docs/au
 
 ## Prasyarat dan perintah
 
-Jalankan dari `server` dengan dependency ketiga repository tersedia, PostgreSQL lokal, `pg_dump`/`pg_restore`, dan `MIDTRANS_IS_PRODUCTION=false`. Hentikan backend/Vite manual pada port 3000/5173 sebelum harness browser. Jangan menjalankan suite database paralel. Suite memakai fixture terisolasi dan memeriksa 22 model setelah setiap tahap; jika snapshot berubah, hentikan dan selidiki.
+Jalankan dari `server` dengan dependency ketiga repository tersedia, PostgreSQL lokal, `pg_dump`/`pg_restore`, dan `MIDTRANS_IS_PRODUCTION=false`. Harness browser memakai port loopback acak; backend/Vite manual 3000/5173 tidak perlu dihentikan. Gunakan database uji kosong terpisah dan override DATABASE_URL hanya untuk proses tes; jangan arahkan runner ke database aplikasi. Jangan menjalankan suite database paralel. Suite memakai fixture terisolasi dan memeriksa 22 model setelah setiap tahap; jika snapshot berubah, hentikan dan selidiki.
 
 ```powershell
 npm.cmd run build
@@ -17,7 +17,7 @@ node scripts/verifikasi-integritas-e2e.mjs "<folder-backup>"
 node scripts/audit-dependency-e2e.mjs
 ```
 
-Runner mencakup 27 tahap: TypeScript, akun customer, reset, katalog, membership, booking, lifecycle, ledger, scheduler, realtime, Web, Staff, Customer, ekspor Hermes Android, reschedule, browser, draft, dan keamanan log. Provider pada regresi memakai MOCK. Acceptance perangkat dan checkout Customer Sandbox memerlukan bukti nyata terpisah.
+Runner saat ini mencakup 29 tahap (hasil terbaru pada [acceptance demo](DEMO-ACCEPTANCE.md)): TypeScript, akun customer, reset, katalog, membership, booking, lifecycle, ledger, scheduler, realtime, Web, Staff, Customer, ekspor Hermes Android, reschedule, browser, draft, dan keamanan log. Provider pada regresi memakai MOCK. Acceptance perangkat dan checkout Customer Sandbox memerlukan bukti nyata terpisah.
 
 ## Backup dan recovery
 

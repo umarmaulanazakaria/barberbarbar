@@ -2,6 +2,38 @@
 
 Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer App melalui satu API dan satu database PostgreSQL.
 
+## Tampilan Aplikasi
+
+Web asli dengan data dummy dan provider **MOCK**, diambil melalui Edge headless dari source aplikasi. Nominal/status pada gambar adalah fixture pengujian, bukan transaksi pelanggan atau bukti pembayaran provider nyata. Klik gambar untuk melihat ukuran penuh.
+
+![Dashboard Web Management dengan ringkasan operasional dummy](docs/screenshots/dashboard.jpg)
+
+*Dashboard operasional: ringkasan booking, pesanan dan pembayaran.*
+
+<details>
+<summary>Lihat booking, pembayaran dan membership</summary>
+
+![Daftar booking customer dummy menunggu konfirmasi](docs/screenshots/booking-management.jpg)
+
+*Booking baru tampil pada Web Management.*
+
+![Detail booking dummy yang dikonfirmasi dengan DP belum terverifikasi](docs/screenshots/detail-booking.jpg)
+
+*Detail booking dan prasyarat uang muka, sesuai status aplikasi saat capture.*
+
+![Pembayaran booking dummy lunas dengan saldo nol dan invoice final](docs/screenshots/payment-management.jpg)
+
+*Tagihan fixture sesudah layanan selesai dan pelunasan kasir; DP provider MOCK.*
+
+![Membership customer dummy yang disetujui ADMIN](docs/screenshots/membership.jpg)
+
+*Persetujuan membership melalui ADMIN; identitas di gambar bersifat sintetis.*
+
+</details>
+
+[Lima gambar dan asal capture](docs/screenshots/README.md) | [Panduan screenshot](docs/PANDUAN-SCREENSHOT-PORTOFOLIO.md) | [Storyboard video 120 detik](docs/STORYBOARD-VIDEO-PORTOFOLIO.md)
+
+
 Project untuk **tugas kuliah, pembelajaran Fullstack, portofolio, dan demonstrasi lokal**; bukan aplikasi Production. Hosting berbayar bukan kebutuhan demo. Mobile berhasil menurut laporan pengguna (**USER-REPORTED**); bukti rinci UI native/checkout Android belum lengkap. Email nyata, refund historis dan advisory tetap dicatat jujur. Lihat [acceptance demo](docs/DEMO-ACCEPTANCE.md).
 
 Hasil terbaru ada di [penutupan acceptance](docs/FINAL-ACCEPTANCE-CLOSURE.md):
@@ -20,6 +52,23 @@ ada di [panduan reset](server/scripts/RESET-PASSWORD-CUSTOMER.md).
 - Booking multiservice, pemilihan barber, persetujuan usulan, reschedule, pembatalan, dan lifecycle layanan.
 - DP/pelunasan berdasarkan database, ledger idempotent, webhook terverifikasi, dan refund melalui ADMIN.
 - Scheduler deadline persisten; realtime menjadi sinyal refetch. REST/database tetap sumber data utama.
+
+## Arsitektur Ekosistem
+
+![Arsitektur tiga aplikasi BARBER BARBAR dengan backend terpusat](docs/architecture/barberbarbar-architecture.svg)
+
+Ketiga client memakai REST API backend Project 3. PostgreSQL melalui Prisma menjadi sumber data utama. Backend memanggil Midtrans Sandbox untuk Snap/status; notifikasi provider masuk melalui ngrok/proxy webhook lalu diverifikasi. Socket.IO memberi sinyal ke client berotorisasi untuk refetch REST, termasuk saat reconnect.
+
+[Dasar diagram dan referensi source](docs/architecture/README.md).
+
+## Tantangan Teknis
+
+| Masalah | Solusi yang diterapkan |
+|---|---|
+| Status tiga aplikasi dapat berbeda | Backend terpusat, room Socket.IO berotorisasi dan refetch REST; event tidak menggantikan data utama. |
+| Callback checkout belum membuktikan pembayaran | Signature webhook, Get Status provider, nominal dari database, ledger idempotent dan pemulihan status. Provider mock dibedakan dari Sandbox nyata. |
+| Slot booking dan durasi layanan dapat bertabrakan | Validasi jadwal/durasi/kapasitas barber di backend dengan lock transaksi serta lifecycle booking. |
+| Antarmuka operator dan customer berbeda | React Web dan dua aplikasi React Native/Expo terpisah, memakai kontrak backend dan batas peran yang sama. |
 
 ## Arsitektur dan folder
 
@@ -132,11 +181,3 @@ Branch review: `feature/project5-integration`. Build lokal dan provider MOCK tid
 | POST `/midtrans/notifications` | Webhook dengan signature dan verifikasi provider |
 
 Route -> controller -> service -> Prisma memisahkan HTTP, aturan bisnis dan penyimpanan. PostgreSQL menjadi sumber kebenaran; Socket.IO memberi sinyal refetch REST dalam room berotorisasi.
-
-### Screenshot Web aktual
-
-Web asli di Edge headless dengan fixture database kosong terpisah dan pembayaran **MOCK**. Bukan bukti Android/provider nyata. [Lima gambar dan reproduksi](docs/screenshots/README.md).
-
-![Dashboard Web fixture](docs/screenshots/dashboard.jpg)
-
-![Pembayaran booking fixture lunas](docs/screenshots/payment-management.jpg)

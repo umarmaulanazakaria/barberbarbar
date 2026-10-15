@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="700" viewBox="0 0 1000 700" role="img" aria-labelledby="title desc">
+<title id="title">Arsitektur BARBER BARBAR: tiga aplikasi, satu backend</title>
+<desc id="desc">Web Management, Mobile Staff dan Customer memakai REST API backend Project 3. Backend memakai Prisma dan PostgreSQL sebagai sumber data utama, Socket.IO untuk sinyal refetch berotorisasi, serta Midtrans Sandbox untuk checkout dan verifikasi status. Webhook masuk melalui ngrok dan proxy route tunggal sebelum diverifikasi backend.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker></defs>
+<rect width="1000" height="700" rx="20" fill="#f8fafc"/>
+<g font-family="Arial, sans-serif" fill="#0f172a">
+<text x="40" y="44" font-size="24" font-weight="700">BARBER BARBAR</text><text x="40" y="71" font-size="16" fill="#475569">Tiga antarmuka. Satu backend dan sumber data utama.</text>
+<text x="730" y="72" font-size="13" fill="#0891b2">Garis putus: sinyal refetch</text><g fill="#101a3a"><rect x="40" y="104" width="280" height="85" rx="14"/><rect x="360" y="104" width="280" height="85" rx="14"/><rect x="680" y="104" width="280" height="85" rx="14"/></g>
+<g fill="white" text-anchor="middle"><text x="180" y="138" font-size="19" font-weight="700">Web Management</text><text x="180" y="165" font-size="15">Project 3 / React / ADMIN + STAFF</text><text x="500" y="138" font-size="19" font-weight="700">Mobile Staff</text><text x="500" y="165" font-size="15">Project 4 / React Native + Expo</text><text x="820" y="138" font-size="19" font-weight="700">Mobile Customer</text><text x="820" y="165" font-size="15">Project 5 / React Native + Expo</text></g>
+<g fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"><path d="M180 189V214H420V249"/><path d="M500 189V249"/><path d="M820 189V214H580V249"/></g>
+<text x="180" y="239" text-anchor="middle" font-size="14" fill="#475569">REST API: request dan respons</text>
+<rect x="290" y="253" width="420" height="106" rx="14" fill="#4f46e5"/>
+<g fill="white" text-anchor="middle"><text x="500" y="287" font-size="21" font-weight="700">Backend Project 3 / Express</text><text x="500" y="314" font-size="16">JWT, role, booking, harga dan ledger</text><text x="500" y="339" font-size="15">Signature webhook + pemeriksaan status provider</text></g>
+<g fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"><path d="M370 359V399H180V430"/><path d="M500 359V430"/><path d="M630 359V399H820V430"/></g>
+<g fill="white" stroke="#cbd5e1" stroke-width="1.5"><rect x="40" y="435" width="280" height="100" rx="14"/><rect x="360" y="435" width="280" height="100" rx="14"/><rect x="680" y="435" width="280" height="100" rx="14"/></g>
+<g text-anchor="middle"><text x="180" y="470" font-size="20" font-weight="700">Prisma / PostgreSQL</text><text x="180" y="497" font-size="15">Data utama dan transaksi atomik</text><text x="180" y="519" font-size="14" fill="#475569">Booking, ledger dan invoice</text><text x="500" y="470" font-size="20" font-weight="700">Socket.IO</text><text x="500" y="497" font-size="15">Room sesuai identitas/peran</text><text x="500" y="519" font-size="14" fill="#475569">Event ke client memicu refetch REST</text><text x="820" y="470" font-size="20" font-weight="700">Midtrans Sandbox</text><text x="820" y="497" font-size="15">Snap, status dan refund berotorisasi</text><text x="820" y="519" font-size="14" fill="#475569">Bukan pembayaran Production</text></g>
+<path d="M820 535V568H180V608H285" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="500" y="559" text-anchor="middle" font-size="14" fill="#475569">Notifikasi provider: POST JSON melalui jalur development</text>
+<rect x="290" y="586" width="420" height="48" rx="12" fill="#e0e7ff"/>
+<text x="500" y="616" text-anchor="middle" font-size="16">HTTPS ngrok &#8594; proxy webhook 3001 &#8594; backend</text>
+<g fill="none" stroke="#0891b2" stroke-width="2" stroke-dasharray="5 4"><path d="M360 475H335V545H20V88H820"/><path d="M180 88V100" marker-end="url(#arrow)"/><path d="M500 88V100" marker-end="url(#arrow)"/><path d="M820 88V100" marker-end="url(#arrow)"/></g><path d="M710 610H968V381H735V335H714" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/><text x="40" y="675" font-size="14" fill="#475569">Socket.IO bukan sumber kebenaran pembayaran. Callback checkout tidak menetapkan lunas.</text>
+</g></svg>

@@ -33,7 +33,7 @@ export const bacaRingkasanPembayaran = async (tx: Prisma.TransactionClient, book
   const uang = hitungUangBooking(booking.pesanan?.items ?? booking.items, booking.discountPercent,
     valid.filter(t => t.tujuan !== "REFUND").map(t => t.nominal), valid.filter(t => t.tujuan === "REFUND").map(t => t.nominal));
   const dp = valid.filter(t => t.tujuan === "DP" && t.kanal === "MIDTRANS" &&
-    (t.roundKonfirmasiPada?.getTime() === booking.dikonfirmasiPada?.getTime() ||
+    (t.roundKonfirmasiPada?.getTime() === (booking.sumberBooking === "TAMU" ? booking.dibuatPada.getTime() : booking.dikonfirmasiPada?.getTime()) ||
       (booking.dpDibawaDariRound !== null && t.roundKonfirmasiPada?.getTime() === booking.dpDibawaDariRound.getTime())) &&
     t.dibayarPada && t.deadlinePada && t.dibayarPada <= t.deadlinePada);
   const dpTerverifikasi = dp.length > 0 && dp.reduce((n, t) => n + t.nominal, 0) >= booking.nominalDp;

@@ -1,3 +1,4 @@
+import routerGuest from "./routes/guest-booking.routes.js";
 import express from "express";
 import routerPelanggan from "./routes/pelanggan.routes.js";
 import routerAuth from "./routes/auth.routes.js";
@@ -31,6 +32,7 @@ aplikasi.get("/", (_req, res) =>
 aplikasi.use("/auth", routerAuth);
 aplikasi.use("/auth/customer", routerAuthPelanggan);
 aplikasi.use("/public", routerPublik);
+aplikasi.use("/guest/bookings",routerGuest);
 aplikasi.use("/customer/membership", routerMembershipPelanggan);
 aplikasi.use("/customer/bookings", routerBooking);
 aplikasi.use("/bookings", autentikasi, routerOperasionalBooking);

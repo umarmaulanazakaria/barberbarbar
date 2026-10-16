@@ -1,6 +1,7 @@
+import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
-import { kapasitasBookingCukup, validasiWaktuBooking, zonaBooking } from "../lib/jadwal-booking.js";
+import { validasiWaktuBooking, zonaBooking } from "../lib/jadwal-booking.js";
 import type { DataBuatBooking } from "../schemas/booking.schema.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
@@ -16,7 +17,7 @@ export const kolomBooking = {
   riwayat: { select: { aksi: true, statusSebelum: true, statusSetelah: true, rincian: true, dibuatPada: true }, orderBy: { id: "asc" as const } },
   items: { select: { layananId: true, namaLayanan: true, harga: true, durasiMenit: true, qty: true, subtotal: true } },
 } as const;
-export const statusMenahanBooking = ["PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE"] as const;
+export const statusMenahanBooking = ["AWAITING_DP", "PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE"] as const;
 
 export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBooking) =>
   basisData.$transaction(async transaksi => {
@@ -43,12 +44,7 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
     const aktif = await transaksi.barber.findMany({ where: { aktif: true }, select: { id: true } });
     if (data.barberPilihanId && !aktif.some(b => b.id === data.barberPilihanId)) return { status: "DATA_TIDAK_VALID" } as const;
     const rentang = { mulaiPada, selesaiPada };
-    const bentrok = await transaksi.booking.findMany({ where: { status: { in: [...statusMenahanBooking] },
-      mulaiPada: { lt: selesaiPada }, selesaiPada: { gt: mulaiPada } },
-      select: { pelangganId: true, barberPilihanId: true, barberDisetujuiId: true, barberFinalId: true, mulaiPada: true, selesaiPada: true } });
-    if (bentrok.some(b => b.pelangganId === pelangganId) ||
-        (data.barberPilihanId && bentrok.some(b => (b.barberFinalId ?? b.barberDisetujuiId ?? b.barberPilihanId) === data.barberPilihanId)) ||
-        !kapasitasBookingCukup(bentrok, rentang, aktif.length)) return { status: "JADWAL_TIDAK_TERSEDIA" } as const;
+    if (!await kapasitasLintasBooking(transaksi, rentang, { pelangganId, barberId: data.barberPilihanId })) return { status: "JADWAL_TIDAK_TERSEDIA" } as const;
     const subtotal = items.reduce((jumlah, item) => jumlah + item.subtotal, 0);
     const membershipAktif = pelanggan.membership?.isActive === true;
     // Kontrak F4: ACTIVE selalu 10%, tidak mengikuti diskon kustom operator.

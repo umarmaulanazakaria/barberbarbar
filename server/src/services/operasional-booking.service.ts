@@ -1,3 +1,4 @@
+import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
 import { pastikanDpProviderSah, mintaRefundDalamTransaksi, mintaRefundKelebihan } from "./midtrans-booking.service.js";
@@ -28,12 +29,7 @@ const transaksiBooking = <T>(aksi: (tx: Prisma.TransactionClient) => Promise<T>)
 const validasiSlot = async (tx: Prisma.TransactionClient, booking: Booking, mulai: Date, selesai: Date, barberId: number | null) => {
   const aktif = await tx.barber.findMany({ where: { aktif: true }, select: { id: true } });
   if (barberId !== null && !aktif.some(b => b.id === barberId)) return tolak("Barber tidak tersedia");
-  const bentrok = await tx.booking.findMany({ where: { id: { not: booking.id }, status: { in: [...statusMenahanBooking] },
-    mulaiPada: { lt: selesai }, selesaiPada: { gt: mulai } },
-    select: { pelangganId: true, barberPilihanId: true, barberDisetujuiId: true, barberFinalId: true, mulaiPada: true, selesaiPada: true } });
-  if (bentrok.some(b => b.pelangganId === booking.pelangganId) ||
-      (barberId !== null && bentrok.some(b => (b.barberFinalId ?? b.barberDisetujuiId ?? b.barberPilihanId) === barberId)) ||
-      !kapasitasBookingCukup(bentrok, { mulaiPada: mulai, selesaiPada: selesai }, aktif.length)) return tolak("Jadwal booking tidak tersedia");
+  if (!await kapasitasLintasBooking(tx,{mulaiPada:mulai,selesaiPada:selesai},{bookingId:booking.id,pelangganId:booking.pelangganId,barberId})) return tolak("Jadwal booking tidak tersedia");
 };
 const pastikanCustomerAktif = async (tx: Prisma.TransactionClient, booking: Booking) => {
   const pelanggan = await tx.pelanggan.findUnique({ where: { id: booking.pelangganId }, select: { status: true } });
@@ -41,10 +37,11 @@ const pastikanCustomerAktif = async (tx: Prisma.TransactionClient, booking: Book
 };
 
 export const daftarBookingOperator = () => basisData.booking.findMany({
-  select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } } }, orderBy: { mulaiPada: "asc" },
+  where: { status: { not: "AWAITING_DP" } },
+  select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } }, aksesTamu:{select:{nama:true,nomorTelepon:true}} }, orderBy: { mulaiPada: "asc" },
 });
 export const detailBookingOperator = (id: number) => basisData.booking.findUnique({
-  where: { id }, select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } } },
+  where: { id }, select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } }, aksesTamu:{select:{nama:true,nomorTelepon:true}} },
 });
 
 export const putuskanBooking = (id: number, penggunaId: number, setuju: boolean, alasan?: string, waktuUji?: Date) => transaksiBooking(async tx => {

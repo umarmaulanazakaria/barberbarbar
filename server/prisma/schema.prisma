@@ -252,6 +252,8 @@ enum StatusPermohonanMembership {
 }
 
 model Booking {
+  sumberBooking         String @default("AKUN")
+  aksesTamu             AksesBookingTamu?
   id                    Int @id @default(autoincrement())
   nomorBooking          String @unique
   pelangganId           Int
@@ -319,6 +321,7 @@ model ItemBooking {
 }
 
 enum StatusBooking {
+  AWAITING_DP
   PENDING_CONFIRMATION
   CONFIRMED
   CHECKED_IN
@@ -487,4 +490,19 @@ enum StatusPermohonanRefund {
   FAILED
   SUCCEEDED
   UNSUPPORTED
+}
+
+// Identitas guest tidak pernah ditautkan ke akun berdasarkan nomor HP saja.
+model AksesBookingTamu {
+  id Int @id @default(autoincrement())
+  bookingId Int @unique
+  tokenHash String @unique
+  kunciIdempotensi String @unique
+  sidikPermintaan String
+  nama String
+  nomorTelepon String
+  kedaluwarsaPada DateTime @db.Timestamptz(3)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  @@index([kedaluwarsaPada])
 }

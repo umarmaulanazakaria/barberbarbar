@@ -370,7 +370,7 @@ export const Modal = ({
 }) =>
   open ? (
     <div className="modal-backdrop-enter fixed inset-0 z-50 grid place-items-end bg-slate-950/45 p-2 backdrop-blur-[2px] sm:place-items-center sm:p-4">
-      <Card className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl sm:max-h-[92vh]">
+      <Card role="dialog" aria-modal="true" aria-label={title} className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl sm:max-h-[92vh]">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-4 py-4 sm:px-5">
           <h3 className="font-bold text-slate-900">{title}</h3>
           <button

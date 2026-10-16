@@ -65,9 +65,15 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
     return { status: "BERHASIL", booking } as const;
   }, { isolationLevel: "ReadCommitted" });
 
-export const daftarBookingSendiri = (pelangganId: number) => basisData.booking.findMany({
+export const daftarBookingSendiri = (pelangganId: number) => basisData.$transaction(async tx => {
+  await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+  return tx.booking.findMany({
   where: { pelangganId }, select: kolomBooking, orderBy: { mulaiPada: "asc" },
+  });
 });
-export const detailBookingSendiri = (pelangganId: number, id: number) => basisData.booking.findFirst({
+export const detailBookingSendiri = (pelangganId: number, id: number) => basisData.$transaction(async tx => {
+  await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+  return tx.booking.findFirst({
   where: { id, pelangganId }, select: kolomBooking,
+  });
 });

@@ -2,6 +2,10 @@
 
 16 Oktober 2026 (WIB). Branch lokal `feat/guest-booking-web-compatible`, worktree terisolasi di luar Stage 2; basis `origin/main` `023764fce5fc4201ac220204eee56f2c2152b843`. Tidak ada push, PR atau merge.
 
+## Pembaruan finalisasi
+
+Hasil terbaru, perbaikan UI/UTC dan pengujian booking3744: lihat WEB-FINALIZATION.md. Booking3742 sudah teramati CANCELLED oleh scheduler, tanpa kredit/invoice.
+
 ## Status aktual
 
 Implementasi telah diuji end-to-end pada PostgreSQL fixture dengan gateway Midtrans MOCK. Dua migration additive telah diterapkan pada database existing setelah persetujuan user dan verifikasi ulang backup. Runtime kompatibel aktif pada port3000 dengan database/JWT/Sandbox environment existing yang sama. Snapshot22 existing tetap identik sebelum/sesudah DDL; seluruh row existing juga tetap identik setelah penambahan fixture dummy. Snap Sandbox nyata DP Rp5.000 berhasil dibuat satu kali, tetapi user menunda pembayaran: settlement/auto confirmation provider nyata belum diuji. Perangkat Native tetap DEFERRED.

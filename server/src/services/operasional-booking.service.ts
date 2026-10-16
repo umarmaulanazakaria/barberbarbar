@@ -36,12 +36,18 @@ const pastikanCustomerAktif = async (tx: Prisma.TransactionClient, booking: Book
   if (pelanggan?.status !== "AKTIF") return tolak("Customer tidak aktif");
 };
 
-export const daftarBookingOperator = () => basisData.booking.findMany({
+export const daftarBookingOperator = () => basisData.$transaction(async tx => {
+  await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+  return tx.booking.findMany({
   where: { status: { not: "AWAITING_DP" } },
   select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } }, aksesTamu:{select:{nama:true,nomorTelepon:true}} }, orderBy: { mulaiPada: "asc" },
+  });
 });
-export const detailBookingOperator = (id: number) => basisData.booking.findUnique({
+export const detailBookingOperator = (id: number) => basisData.$transaction(async tx => {
+  await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+  return tx.booking.findUnique({
   where: { id }, select: { ...kolomBooking, pelanggan: { select: { id: true, nama: true } }, aksesTamu:{select:{nama:true,nomorTelepon:true}} },
+  });
 });
 
 export const putuskanBooking = (id: number, penggunaId: number, setuju: boolean, alasan?: string, waktuUji?: Date) => transaksiBooking(async tx => {

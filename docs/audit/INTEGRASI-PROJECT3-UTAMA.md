@@ -1,6 +1,6 @@
 # Integrasi Project 3 asli dan inventaris workspace
 
-16 Oktober 2026 WIB. Seluruh perubahan tetap lokal; tidak ada push, merge, PR, instalasi dependency, migration database, reset, atau penghapusan folder.
+16 Oktober 2026 WIB. Seluruh perubahan tetap lokal; tidak ada push, merge, PR, instalasi dependency, migration database atau reset. Dua folder sementara dilepas setelah persetujuan pengguna; hasil aktual dicatat di bagian akhir.
 
 ## Source dan metode penerapan
 
@@ -72,7 +72,7 @@ Tidak ada request pembayaran/refund provider baru. Bukti Sandbox nyata terdahulu
 
 ## Keputusan pembersihan
 
-Belum ada folder atau worktree dilepas. Sebelum eksekusi harus ada persetujuan pengguna atas path pasti berikut. Jangan menghapus langsung melalui filesystem.
+Daftar rencana awal berikut ditampilkan sebelum meminta persetujuan pengguna. Hasil eksekusi setelah persetujuan dicatat di bagian akhir, termasuk persetujuan tambahan untuk residu Windows. Parent AppData dan folder lain tidak termasuk izin penghapusan.
 
 | Path pasti | Kegunaan/status Git | Apakah isi dipertahankan | Usulan |
 | --- | --- | --- | --- |
@@ -168,3 +168,23 @@ Registry repository utama mencatat3 worktree Project3 (original, guest AppData, 
 - `server/src/services/pesanan.service.ts`
 - `server/src/services/scheduler-booking.service.ts`
 - `docs/audit/INTEGRASI-PROJECT3-UTAMA.md` (laporan integrasi ini).
+
+## Hasil pelepasan setelah persetujuan
+
+Pengguna menyetujui pelepasan tepat dua worktree pada daftar di atas. Percobaan `git worktree remove` untuk Admin mengembalikan `Invalid argument` di Windows: registry dilepas, sebagian file tertinggal termasuk junction node_modules. Tidak menggunakan force atau langsung melanjutkan penghapusan. Pengguna kemudian memberikan persetujuan tambahan khusus untuk melepas junction tanpa target, membersihkan residu Admin yang tidak terdaftar, dan melanjutkan pelepasan guest.
+
+Path absolut diperiksa ulang sama persis dengan daftar persetujuan. Tiga junction node_modules diverifikasi menunjuk hanya ke client/server node_modules Project3 utama, lalu dilepas nonrekursif. Hash file dependency target utama identik sebelum/sesudah. Residu Admin diperiksa tidak memiliki reparse point lain atau registry Git, baru dihapus sesuai persetujuan tambahan. Worktree guest dilepas dengan `git worktree remove` normal, tanpa force; berhasil tanpa residu.
+
+Hasil aktual:
+
+- `Stage 2/barberbarbar-admin-pesanan` sudah tidak ada.
+- `AppData/Local/BARBERBARBAR/guest-booking-web-20261016/barberbarbar` sudah tidak ada.
+- Branch `feat/admin-pesanan-terpadu` tetap menunjuk ba5be1e07e1e5fae1dbe244b26b3d3b1cef22b6d.
+- Branch `feat/guest-booking-web-compatible` tetap menunjuk74613f0996637875c883eb950f6c7f49205ed887.
+- Registry Project3 kini hanya berisi original. Registry Staff hanya original. Registry Customer tetap berisi Native dan Customer Web yang memang diperlukan.
+- Parent guest AppData, helper/bukti Sandbox, seluruh database-backups/workspace-backups, repository profil, clone review/Staff lama dan laporan tetap dipertahankan.
+- Stage2 sekarang memiliki4 folder project utama dan `.audit-integrasi-20261016` sebagai checkpoint, bukan project tambahan. Checkpoint juga memuat runner backend aktif dan tidak boleh dihapus sembarangan.
+
+Smoke Chrome localhost5173 dan HTTP setelah pelepasan PASS; backend asli3000, Customer Web5175 dan source Dashboard terpadu tetap benar. Verifikasi source/config/HEAD/status Native, Staff, Customer Web dan staging historis Project3 PASS. Snapshot24 tabel database utama sesudah pembersihan identik dengan sebelum integrasi. Tidak mengulang transaksi provider, migration, atau suite finansial penuh karena source kode tidak berubah setelah kelulusan regresi; perubahan terakhir hanya dokumentasi hasil pembersihan.
+
+Commit integrasi: `2f264bee205d2da32de437f41edf84ffb0c06766`, judul `Integrasikan booking tamu dan pesanan terpadu ke project utama`. Sesudah commit hanya tersisa1 staged Prisma historis dan2 unstaged file historis Dashboard/F10, identik dengan checkpoint. Hasil pembersihan disimpan dalam commit dokumentasi terpisah; tidak ada push/merge/PR/Production.

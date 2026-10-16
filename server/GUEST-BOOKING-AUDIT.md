@@ -4,7 +4,7 @@
 
 ## Status aktual
 
-Implementasi telah diuji end-to-end pada PostgreSQL fixture dengan gateway Midtrans MOCK. Database existing belum dimigrasikan dan backend existing port 3000 belum diganti. Provider Sandbox nyata dan perangkat Native belum diuji pada pekerjaan ini. Jangan menyatakan rollout existing selesai sebelum persetujuan migration/aktivasi dan verifikasi berikutnya.
+Implementasi telah diuji end-to-end pada PostgreSQL fixture dengan gateway Midtrans MOCK. Dua migration additive telah diterapkan pada database existing setelah persetujuan user dan verifikasi ulang backup. Runtime kompatibel aktif pada port3000 dengan database/JWT/Sandbox environment existing yang sama. Snapshot22 existing tetap identik sebelum/sesudah DDL; seluruh row existing juga tetap identik setelah penambahan fixture dummy. Snap Sandbox nyata DP Rp5.000 berhasil dibuat satu kali, tetapi user menunda pembayaran: settlement/auto confirmation provider nyata belum diuji. Perangkat Native tetap DEFERRED.
 
 ## Endpoint baru
 
@@ -53,7 +53,7 @@ Dua migration baru, keduanya transaksi DDL atomik; diuji dari database kosong de
 1. `20261016090000_tambahkan_booking_tamu`: enum AWAITING_DP, kolom sumberBooking defaultAKUN, tabel AksesBookingTamu dengan unique/FK/hash CHECK/index.
 2. `20261016091000_batasi_deadline_guest`: memperluas CHECK deadline secara kondisional, mempertahankan persis satu jam untuk akun dan 15 menit untuk guest, serta larangan membership/pilihan barber guest.
 
-Tidak menghapus tabel, row, histori atau migration lama. Migration existing **BELUM DISETUJUI/BELUM DITERAPKAN**. Lihat `GUEST-MIGRATION-PLAN.md` untuk rencana rollout dan backup.
+Tidak menghapus tabel, row, histori atau migration lama. Migration existing **DISETUJUI DAN DITERAPKAN**; seluruh 20 migration selesai tanpa gagal. Lihat `GUEST-MIGRATION-PLAN.md` untuk rencana rollout dan backup.
 
 ## Validasi
 
@@ -69,9 +69,9 @@ Tidak menghapus tabel, row, histori atau migration lama. Migration existing **BE
 | Browser Web -> API aktual -> DP -> Staff -> pelunasan/invoice | PASS pada fixture, provider MOCK |
 | Migration dari nol pada fixture kedua | PASS; database fixture pertama dibersihkan setelah 23 tabel terbukti kosong |
 | Snapshot fixture 23 model setelah suite | PASS, identik sebelum/sesudah |
-| Provider Sandbox nyata | DEFERRED, belum membuat transaksi |
+| Provider Sandbox nyata | Snap DP Rp5.000 berhasil dibuat; pembayaran/settlement DEFERRED atas permintaan user |
 | Android device React Native | DEFERRED, tidak diklaim dari tes API |
-| Database existing/aktivasi runtime baru | DEFERRED, menunggu persetujuan |
+| Database existing/aktivasi runtime baru | PASS, dua migration diterapkan dan backend3000 aktif |
 
 Tes mencakup create unik, harga injection, IDOR/realm JWT, token palsu/expired, rate limit429, deadline15, Snap race satu provider call, pending/forged webhook, replay kredit/audit satu kali, alur Staff dan layanan aktual, invoice sekali, late settlement/review, race Native vs guest serta alokasi barber terfragmentasi. Test server `scripts/serve-guest-browser.mjs` memiliki kontrol fixture terpisah, hanya pada nama database test; tidak dipasang pada `src/app.ts`.
 
@@ -82,3 +82,13 @@ Baru: dua migration, `lib/alokasi-barber.ts`, `lib/kapasitas-lintas-booking.ts`,
 `server/src/lib/prisma.ts` tidak diubah/di-stage. Original Project 3, Mobile Staff dan Native Customer dipertahankan dengan snapshot seluruh tracked file, environment, index, HEAD dan status. Metadata worktree/branch baru memang ditambahkan, bukan mengganti branch original. Tidak ada push, PR atau merge.
 
 Referensi resmi: https://docs.midtrans.com/reference/expire-a-snap-session , https://docs.midtrans.com/reference/snap-js , https://docs.midtrans.com/docs/https-notification-webhooks . Provider callback bukan bukti server dan expiry provider tidak menggantikan deadline database.
+
+## Penerapan yang disetujui dan penundaan pembayaran
+
+Backup terbaru e2e-2026-10-16T05-29-37-455Z: 129403 byte, SHA-256 b1744d338f5583f79491e7569242050b444153727bf7abaced38e75223bbb20f. Arsip list/dekompresi dan snapshot22 valid sebelum serta sesudah migration. Seluruh row lama pada 22 model kembali dibandingkan setelah fixture dibuat: identik, termasuk hash login dan metadata akun/operator.
+
+Smoke HTTP backend aktif: public services/barbers 200, customer bookings/orders tanpa JWT 401, guest tanpa token 404. Tunnel https://trifle-unviable-levitator.ngrok-free.dev menuju backend3000 merespons katalog200. Tidak menyunting .env original.
+
+Booking dummy3742, layanan Rp10.000, DP Rp5.000, deadline 16 Oktober 2026 12.47 WIB. Ledger1243 masih PENDING, nol kredit SUCCEEDED, nol invoice, tanpa bukti provider. Get Status resmi mengembalikan404 (Snap dibuat, metode pembayaran belum diproses). User memilih menunda pembayaran; helper checkout lokal ditutup, tidak ada checkout/refund/retry baru. Hold akan dilepas scheduler setelah deadline; status pembatalan aktual belum diklaim sebelum diamati. Fixture/audit finansial dipertahankan, tidak dihapus.
+
+Guard UTC ditambahkan pada transaksi verifikasi expiry token agar konsisten dengan waktu database lintas timezone. Tes expiry memakai clock_timestamp database, bukan Date aplikasi. Build dan 12 kelompok guest diulang PASS dengan PGOPTIONS timezone Asia/Jakarta; cleanup23 model identik. Tidak ada perubahan schema tambahan.

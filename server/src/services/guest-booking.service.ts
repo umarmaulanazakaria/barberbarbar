@@ -43,6 +43,7 @@ export const buatBookingTamu=async(data:DataGuest)=>basisData.$transaction(async
 export const verifikasiAksesTamu=async(token:string)=>{
   if(!/^[0-9a-f]{64}$/.test(token))return tolak("Tautan pribadi tidak valid atau tidak tersedia.",404);
   return basisData.$transaction(async tx=>{
+    await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
     const sekarang=await waktuDatabaseBooking(tx);
     const akses=await tx.aksesBookingTamu.findUnique({where:{tokenHash:hash(token)},select:{bookingId:true,kedaluwarsaPada:true,booking:{select:{sumberBooking:true}}}});
     if(!akses||akses.booking.sumberBooking!=="TAMU"||akses.kedaluwarsaPada<=sekarang)return tolak("Tautan pribadi tidak valid atau tidak tersedia.",404);

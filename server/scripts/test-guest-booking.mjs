@@ -73,7 +73,7 @@ try{
  pass('Race guest vs Native pada satu kapasitas: tepat satu berhasil tanpa double booking');
  const walk=await db.pesanan.create({data:{nomorPesanan:tanda+'-walk',pelangganId:akun.pelangganId,barberId:barber.id,status:'IN_SERVICE',checkInTime:new Date(hari(5)),subtotal:100000,total:100000,items:{create:{layananId:layanan.id,namaLayanan:'fixture',durasiMenit:30,harga:100000,qty:1,subtotal:100000}}}});oids.push(walk.id);assert.equal((await buat(hari(5))).status,409);
  pass('Pesanan aktif non-booking ikut menahan kapasitas; linked order tidak dihitung ganda saat start guest');
- await db.aksesBookingTamu.update({where:{bookingId:pengganti.body.booking.id},data:{kedaluwarsaPada:new Date(Date.now()-1000)}});assert.equal((await get(pengganti)).status,404);
+ await db.$executeRaw`UPDATE "AksesBookingTamu" SET "kedaluwarsaPada"=clock_timestamp()-interval '1 second' WHERE "bookingId"=${pengganti.body.booking.id}`;assert.equal((await get(pengganti)).status,404);
  assert.equal(refundCalls,0);pass('Token kedaluwarsa ditolak dan tidak ada panggilan refund provider');
  barberDua=await db.barber.create({data:{nama:tanda+'-dua',aktif:true}});
  for(const [jam,idBarber] of [['09:00',barber.id],['10:00',barberDua.id]]){const r=await http('/customer/bookings','POST',{mulaiPada:hari(6,jam),barberPilihanId:idBarber,items:[{layananId:layanan.id,qty:2}]},native);assert.equal(r.status,201);bids.push(r.body.booking.id);}

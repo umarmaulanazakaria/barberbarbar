@@ -1,4 +1,4 @@
-# Rencana migration dan aktivasi lokal — menunggu persetujuan
+# Rencana migration dan aktivasi lokal — telah disetujui dan diterapkan
 
 Target produk: database Project 3 existing yang sama untuk kedua Customer App. Database fixture adalah sarana pengujian sementara, bukan database aplikasi baru.
 
@@ -10,8 +10,8 @@ Target produk: database Project 3 existing yang sama untuk kedua Customer App. D
 
 ## Backup terverifikasi
 
-Backup read-only terbaru: `e2e-2026-10-16T05-08-16-517Z` pada `%LOCALAPPDATA%/BARBERBARBAR/database-backups/`.
-Ukuran 129403 byte; SHA-256 `8e8ae3e3fb1b4e993f39722b5b52172b026415c533ebe3cca8793e73db03ddd9`.
+Backup read-only terbaru: `e2e-2026-10-16T05-29-37-455Z` pada `%LOCALAPPDATA%/BARBERBARBAR/database-backups/`.
+Ukuran 129403 byte; SHA-256 `b1744d338f5583f79491e7569242050b444153727bf7abaced38e75223bbb20f`.
 Arsip pg_restore --list dan dekompresi berhasil; snapshot22 domain sebelum/sesudah backup identik. Credential dan isi snapshot sensitif tidak masuk repository. Validasi ulang sebelum eksekusi; buat backup baru jika database telah berubah.
 
 ## Syarat eksekusi dan pemulihan
@@ -23,4 +23,4 @@ Arsip pg_restore --list dan dekompresi berhasil; snapshot22 domain sebelum/sesud
 - Bila verifikasi data setelah DDL gagal, jangan menjalankan guest atau transaksi provider; hentikan aktivasi dan laporkan. Jangan menimpa seluruh database dari backup otomatis karena dapat menghapus perubahan sah yang terjadi bersamaan.
 - Rollback aplikasi menggunakan flag guest off dan runtime kompatibel, dengan schema additive dipertahankan. Jangan menjalankan writer backend lama sambil membiarkan guest aktif. Backup hanya untuk pemulihan terkontrol dengan persetujuan.
 
-Status saat laporan: SQL telah diuji pada PostgreSQL fixture; database existing belum dimigrasikan, runtime3000 belum dialihkan, transaksi Sandbox/provider nyata belum dibuat.
+Status aktual: user menyetujui migration, aktivasi lokal dan satu DP Sandbox dummy Rp5.000. Dua migration diterapkan; seluruh20 migration berhasil. Snapshot22 sebelum/sesudah identik dan runtime kompatibel aktif pada3000, env original tidak disunting. Satu Snap dummy dibuat, pembayaran ditunda user; helper lokal ditutup, ledger tetap PENDING tanpa kredit/invoice. Tidak ada transaksi/refund tambahan. Detail aktual di GUEST-BOOKING-AUDIT.md.

@@ -49,6 +49,12 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\jalankan-barbe
 # Tambahkan -Periksa untuk pemeriksaan read-only tanpa menjalankan proses baru.
 ```
 
+`-Periksa` mengenali backend watcher existing melalui executable, PID/waktu pembuatan,
+argumen entrypoint dan direktori kerja proses, bukan direktori terminal. Path script
+dapat dipanggil dari working directory mana pun. Proxy/tunnel opsional tidak
+dinyatakan siap bila belum aktif; gunakan `-Periksa -Ngrok` untuk pemeriksaan jalur
+pembayaran yang ketat. [Perbaikan launcher dan hasil tes](docs/cleanup/PERBAIKAN-LAUNCHER.md).
+
 Launcher memeriksa identitas backend, memakai port 3000 dan proxy webhook 3001,
 serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web Admin (5173), Customer Web (5175), dan
 Expo Staff (8081) dijalankan bila port kosong. Customer Native dipensiunkan;

@@ -22,7 +22,6 @@ import RealtimeOperator from "./RealtimeOperator";
 const menu = [
   ["Dashboard", "/", LayoutDashboard],
   ["Pesanan", "/orders", CalendarDays],
-  ["Booking Pelanggan", "/bookings", CalendarDays],
   ["Pengembalian Dana", "/refunds", ReceiptText],
   ["Pelanggan", "/customers", Users],
   ["Membership", "/membership", Tags],

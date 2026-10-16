@@ -4,9 +4,9 @@ import basisData from "../lib/prisma.js";
 import { pastikanDpProviderSah, mintaRefundDalamTransaksi, mintaRefundKelebihan } from "./midtrans-booking.service.js";
 import { hitungUangBooking } from "../lib/uang-booking.js";
 import type { Booking, Prisma } from "../generated/prisma/client.js";
-import { kapasitasBookingCukup, validasiWaktuBooking } from "../lib/jadwal-booking.js";
+import { validasiWaktuBooking } from "../lib/jadwal-booking.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
-import { kolomBooking, statusMenahanBooking } from "./booking.service.js";
+import { kolomBooking } from "./booking.service.js";
 import { batasKonfirmasiBooking, menitNoShow, waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export class KesalahanOperasionalBooking extends Error {

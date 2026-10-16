@@ -119,18 +119,6 @@ export interface Invoice extends Pembayaran {
   pesanan: Pesanan;
 }
 
-export interface DashboardData {
-  waiting: number;
-  inService: number;
-  completedUnpaid: number;
-  paidToday: number;
-  pelanggan: number;
-  barberAktif: number;
-  layananAktif: number;
-  revenueToday: number;
-  pesananTerbaru: Pesanan[];
-}
-
 export interface ReportData {
   jumlahPesanan: number;
   selesai: number;

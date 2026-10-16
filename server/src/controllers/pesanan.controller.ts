@@ -48,6 +48,7 @@ export const tambah = async (req: Request, res: Response) => {
   const hasil = await tambahPesanan(validasi.data, req.pengguna.id);
   if (!hasil.berhasil) {
     const pesan: Record<string, string> = {
+      JADWAL_TIDAK_TERSEDIA: "Kapasitas sedang direservasi booking; pilih waktu lain",
       PELANGGAN_TIDAK_DITEMUKAN: "Pelanggan tidak ditemukan",
       PELANGGAN_DIBLOKIR: "Pelanggan diblokir",
       BARBER_TIDAK_DITEMUKAN: "Barber tidak ditemukan",

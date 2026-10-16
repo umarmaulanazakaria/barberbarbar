@@ -1,3 +1,4 @@
+import {kapasitasLintasBooking} from "../lib/kapasitas-lintas-booking.js";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import basisData from "../lib/prisma.js";
@@ -32,7 +33,7 @@ export const dpProviderSah = async (tx: Prisma.TransactionClient, bookingId: num
     buktiProvider: { metodeVerifikasi: "MIDTRANS_STATUS_V1" } }, include: { refund: { where: { status: "SUCCEEDED" } }, buktiProvider: true } });
   const sah = dp.filter(t => t.buktiProvider?.referensiProvider === t.referensiProvider && t.buktiProvider.nominal === t.nominal &&
     t.dibayarPada && t.deadlinePada && t.dibayarPada <= t.deadlinePada &&
-    (t.roundKonfirmasiPada?.getTime() === booking.dikonfirmasiPada?.getTime() ||
+    (t.roundKonfirmasiPada?.getTime() === (booking.sumberBooking === "TAMU" ? booking.dibuatPada.getTime() : booking.dikonfirmasiPada?.getTime()) ||
       (booking.dpDibawaDariRound !== null && t.roundKonfirmasiPada?.getTime() === booking.dpDibawaDariRound.getTime())));
   return sah.length > 0 && sah.reduce((n,t) => n + t.nominal - t.refund.reduce((r,f) => r + f.nominal, 0), 0) >= booking.nominalDp;
 };
@@ -47,7 +48,7 @@ export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "
     const sekarang = await waktuDatabaseBooking(tx);
     const ringkas = await bacaRingkasanPembayaran(tx, booking);
     if (tujuan === "DP") {
-      if (booking.status !== "CONFIRMED" || !booking.dikonfirmasiPada || !booking.deadlineDp || sekarang >= booking.deadlineDp) return gagal("DP di luar status/deadline konfirmasi");
+      if ((booking.sumberBooking === "TAMU" ? booking.status !== "AWAITING_DP" : booking.status !== "CONFIRMED" || !booking.dikonfirmasiPada) || !booking.deadlineDp || sekarang >= booking.deadlineDp) return gagal("DP di luar status/deadline konfirmasi");
       if (ringkas.dpTerverifikasi) return gagal("DP sudah dibayar");
     } else {
       if (booking.status !== "COMPLETED" || (booking.pesanan && booking.pesanan.status !== "COMPLETED")) return gagal("Pelunasan hanya setelah COMPLETED");
@@ -60,15 +61,15 @@ export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "
     const ulang = await tx.transaksiPembayaranBooking.findUnique({ where: { kunciIdempotensi: kunci }, include: { snap: true } });
     if (ulang && (ulang.bookingId !== id || ulang.tujuan !== tujuan || ulang.nominal !== jumlah || ulang.status !== "PENDING")) return gagal("Kunci pembayaran sudah digunakan");
     const aktif = ulang ?? await tx.transaksiPembayaranBooking.findFirst({ where: { bookingId: id, tujuan, kanal: "MIDTRANS", status: "PENDING",
-      ...(tujuan === "DP" ? { roundKonfirmasiPada: booking.dikonfirmasiPada } : {}) }, include: { snap: true } });
+      ...(tujuan === "DP" ? { roundKonfirmasiPada: booking.sumberBooking === "TAMU" ? booking.dibuatPada : booking.dikonfirmasiPada } : {}) }, include: { snap: true } });
     if (aktif?.snap) return { baru: false as const, attempt: aktif.snap, transaksiId: aktif.id };
     const ledger = aktif ?? await tx.transaksiPembayaranBooking.create({ data: { bookingId: id, tujuan, kanal: "MIDTRANS", nominal: jumlah,
       kunciIdempotensi: kunci, sidikPermintaan: sidik({ id, tujuan, jumlah }),
-      ...(tujuan === "DP" ? { roundKonfirmasiPada: booking.dikonfirmasiPada, deadlinePada: booking.deadlineDp } : {}) } });
+      ...(tujuan === "DP" ? { roundKonfirmasiPada: booking.sumberBooking === "TAMU" ? booking.dibuatPada : booking.dikonfirmasiPada, deadlinePada: booking.deadlineDp } : {}) } });
     const orderId = `BBF7-${tujuan}-${ledger.id}-${randomUUID().replaceAll("-","").slice(0,16)}`;
     await tx.transaksiPembayaranBooking.update({ where: { id: ledger.id }, data: { referensiProvider: orderId } });
     const attempt = await tx.percobaanSnapBooking.create({ data: { transaksiId: ledger.id, orderId } });
-    return { baru: true as const, attempt, transaksiId: ledger.id, jumlah, menit: tujuan === "DP" ? Math.max(1, Math.ceil((booking.deadlineDp!.getTime() - sekarang.getTime()) / 60000)) : 60 };
+    return { baru: true as const, attempt, transaksiId: ledger.id, jumlah, guest: booking.sumberBooking === "TAMU", mulai: booking.dibuatPada, menit: tujuan === "DP" ? Math.max(1, Math.ceil((booking.deadlineDp!.getTime() - sekarang.getTime()) / 60000)) : 60 };
   });
   if (!persiapan.baru) {
     if (persiapan.attempt.status !== "READY") return gagal("Pembuatan Snap sedang diproses/belum pasti; lakukan sinkronisasi sebelum mengulang", 503);
@@ -76,9 +77,13 @@ export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "
   }
   try {
     const snap = await gerbangMidtrans.buatSnap({ transaction_details: { order_id: persiapan.attempt.orderId, gross_amount: persiapan.jumlah },
-      expiry: { unit: "minute", duration: persiapan.menit },page_expiry:{unit:"minute",duration:persiapan.menit} });
-    await transaksiKeuanganBooking(tx => tx.percobaanSnapBooking.update({ where: { id: persiapan.attempt.id },
-      data: { status: "READY", tokenSnap: snap.token, urlSnap: snap.redirect_url } }));
+      expiry: persiapan.guest && tujuan === "DP" ? {start_time: new Date(persiapan.mulai.getTime()+7*3600000).toISOString().slice(0,19).replace("T"," ")+" +0700", unit:"minute",duration:15} : { unit: "minute", duration: persiapan.menit },
+      ...(!persiapan.guest || tujuan !== "DP" ? {page_expiry:{unit:"minute" as const,duration:persiapan.menit}} : {}) });
+    await transaksiKeuanganBooking(async tx => {
+      const b=await ambilBookingPembayaran(tx,id);
+      if(persiapan.guest&&tujuan==="DP"&&(b.status!=="AWAITING_DP"||!b.deadlineDp||await waktuDatabaseBooking(tx)>=b.deadlineDp))return gagal("Deadline booking telah berakhir; checkout tidak dibuka");
+      return tx.percobaanSnapBooking.update({where:{id:persiapan.attempt.id},data:{status:"READY",tokenSnap:snap.token,urlSnap:snap.redirect_url}});
+    });
     return { transaksiId: persiapan.transaksiId, ...snap };
   } catch(error) {
     await transaksiKeuanganBooking(tx => tx.percobaanSnapBooking.update({ where: { id: persiapan.attempt.id }, data: { status: "UNCERTAIN" } }));
@@ -151,9 +156,22 @@ const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true, alokasi
           terverifikasiPada: new Date(), metodeVerifikasi: "MIDTRANS_STATUS_V1" } } } });
     } else await tx.transaksiPembayaranBooking.update({ where: { id: t.id }, data: { statusProvider: data.transaction_status } });
     if (rekonsiliasiRefund) await catatRefundTerverifikasi(tx, t, data);
-    const b = await ambilBookingPembayaran(tx, t.bookingId);
+    let b = await ambilBookingPembayaran(tx, t.bookingId);
+    if(b.sumberBooking==="TAMU"&&t.tujuan==="DP"&&b.status==="AWAITING_DP"){
+      const sekarang=await waktuDatabaseBooking(tx), dibayar=waktuProvider(data.settlement_time??data.transaction_time);
+      const tepatWaktu=b.deadlineDp&&sekarang<b.deadlineDp&&dibayar<=b.deadlineDp&&dibayar.getTime()>=Math.floor(b.dibuatPada.getTime()/1000)*1000&&t.roundKonfirmasiPada?.getTime()===b.dibuatPada.getTime();
+      const aktif=(await tx.pelanggan.findUnique({where:{id:b.pelangganId},select:{status:true}}))?.status==="AKTIF";
+      if(tepatWaktu && aktif && await dpProviderSah(tx,b.id) && await kapasitasLintasBooking(tx,{mulaiPada:b.mulaiPada,selesaiPada:b.selesaiPada},{bookingId:b.id})){
+        await tx.booking.update({where:{id:b.id},data:{status:"CONFIRMED",dikonfirmasiPada:sekarang}});
+        await tx.riwayatBooking.create({data:{bookingId:b.id,aksi:"AUTO_CONFIRM_GUEST",statusSebelum:"AWAITING_DP",statusSetelah:"CONFIRMED",dibuatPada:sekarang,rincian:{sumber:"MIDTRANS_GET_STATUS",transaksiId:t.id}}});
+      }else{
+        await tx.booking.update({where:{id:b.id},data:{status:"CANCELLED",dibatalkanPada:sekarang}});
+        await tx.riwayatBooking.create({data:{bookingId:b.id,aksi:tepatWaktu?"SYSTEM_GUEST_INELIGIBLE":"TIMEOUT_DP",statusSebelum:"AWAITING_DP",statusSetelah:"CANCELLED",dibuatPada:sekarang,rincian:{sumber:tepatWaktu?"GUEST_ELIGIBILITY_CHANGED":"GUEST_VERIFICATION_LATE"}}});
+      }
+      b=await ambilBookingPembayaran(tx,b.id);
+    }
     const timeoutSistem = b.status === "CANCELLED" && await tx.riwayatBooking.findFirst({ where: { bookingId: b.id,
-      aksi: { in: ["TIMEOUT_CONFIRMATION", "TIMEOUT_RESCHEDULE", "TIMEOUT_DP"] }, statusSetelah: "CANCELLED" }, select: { id: true } });
+      aksi: { in: ["TIMEOUT_CONFIRMATION", "TIMEOUT_RESCHEDULE", "TIMEOUT_DP", "SYSTEM_GUEST_INELIGIBLE"] }, statusSetelah: "CANCELLED" }, select: { id: true } });
     if (alokasiRefund) {
     if (timeoutSistem && t.tujuan === "DP") {
       await mintaRefundDalamTransaksi(tx, b.id, t.nominal, `SYSTEM-TIMEOUT-${b.id}`, "DP terverifikasi setelah pembatalan sistem", true);
@@ -198,6 +216,7 @@ const bacaStatusPembayaran = async (id: number, pelangganId: number | undefined,
   return terapkanStatus(parsed.data, rekonsiliasiRefund, rekonsiliasiRefund);
 };
 // Alur ADMIN/refund existing tetap membaca status provider terbaru.
+export const sinkronkanPembayaranTamu = (id: number) => periksaPembayaran(id, () => bacaStatusPembayaran(id, undefined, true));
 export const sinkronkanPembayaran = (id: number, pelangganId?: number) => bacaStatusPembayaran(id, pelangganId, true);
 export const sinkronkanPembayaranPelanggan = async (id: number, pelangganId: number) => {
   // Periksa pemilik sebelum bergabung dengan request/cooldown transaksi yang sama.

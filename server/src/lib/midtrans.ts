@@ -19,6 +19,7 @@ const konfigurasi = () => {
   }
   return { merchant:merchant.trim(), serverKey:serverKey.trim(), clientKey:clientKey.trim(), isProduction: false };
 };
+export const konfigurasiSnapPublik = () => ({clientKey:konfigurasi().clientKey,isProduction:false as const});
 export const merchantSandbox = () => konfigurasi().merchant;
 export const verifikasiSignatureMidtrans = (data: { order_id: string; status_code: string; gross_amount: string; signature_key: string }) => {
   const hasil = createHash("sha512").update(data.order_id + data.status_code + data.gross_amount + konfigurasi().serverKey).digest();
@@ -33,7 +34,7 @@ export const skemaStatusMidtrans = z.object({ order_id: z.string().min(1), trans
   settlement_time: z.string().optional(), transaction_time: z.string(), refunds: z.array(refund).optional() });
 export type StatusMidtrans = z.infer<typeof skemaStatusMidtrans>;
 export type ParameterSnap = { transaction_details: { order_id: string; gross_amount: number };
-    expiry: { unit: "minute"; duration: number }; page_expiry: { unit:"minute";duration:number } };
+    expiry: { unit: "minute"; duration: number; start_time?: string }; page_expiry?: { unit:"minute";duration:number } };
 export interface GerbangMidtrans {
   buatSnap(data: ParameterSnap): Promise<{ token: string; redirect_url: string }>;
   status(orderId: string): Promise<unknown>;

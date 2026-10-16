@@ -1,3 +1,5 @@
+import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
+import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 import basisData from "../lib/prisma.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { bayarPelunasanKasirBooking, KesalahanPembayaranBooking } from "./pembayaran-booking.service.js";
@@ -83,7 +85,11 @@ export const tambahPesanan = async (
   const diskon = Math.floor((subtotal * discountPercent) / 100);
   const total = subtotal - diskon;
 
-  const pesanan = await basisData.pesanan.create({
+  const pesanan = await basisData.$transaction(async tx => {
+    await kunciJadwalBooking(tx);
+    const mulaiPada=await waktuDatabaseBooking(tx), selesaiPada=new Date(mulaiPada.getTime()+itemSnapshot.reduce((n,i)=>n+i.durasiMenit*i.qty,0)*60000);
+    if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada},{barberId:data.barberId,hanyaJikaAdaTamu:true}))return null;
+    return tx.pesanan.create({
     data: {
       nomorPesanan: nomorUnik("ORD"),
       pelangganId: data.pelangganId,
@@ -97,8 +103,10 @@ export const tambahPesanan = async (
       riwayatStatus: { create: { status: "WAITING", penggunaId } },
     },
     include: detailPesanan,
-  });
+    });
+  },{isolationLevel:"ReadCommitted"});
 
+  if(!pesanan)return{berhasil:false,alasan:"JADWAL_TIDAK_TERSEDIA"} as const;
   return { berhasil: true, data: pesanan } as const;
 };
 
@@ -126,6 +134,11 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
       barberId = barberPilihanId ?? pesanan.barberId ?? undefined;
       if (!barberId || !(await tx.barber.findFirst({ where: { id: barberId, aktif: true } }))) return null;
       if (await tx.pesanan.count({ where: { id: { not: id }, barberId, status: "IN_SERVICE" } })) return null;
+    }
+    if(statusBaru==="IN_SERVICE"){
+      const items=await tx.itemPesanan.findMany({where:{pesananId:id}}), mulaiPada=await waktuDatabaseBooking(tx);
+      const selesaiPada=new Date(mulaiPada.getTime()+items.reduce((n,i)=>n+i.durasiMenit*i.qty,0)*60000);
+      if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada},{pesananId:id,barberId,hanyaJikaAdaTamu:true}))return null;
     }
     const hasil = await tx.pesanan.updateMany({
       where: { id, status: pesanan.status },

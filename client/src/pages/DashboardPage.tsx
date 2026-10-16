@@ -11,30 +11,30 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import NewOrderModal from "../components/NewOrderModal";
 import OrderDetailModal from "../components/OrderDetailModal";
-import { api } from "../lib/api";
-import RingkasanBookingDashboard from "../components/RingkasanBookingDashboard";
-import type { DashboardData } from "../types";
-import { rupiah, waktu } from "../lib/format";
+import { ambilPesananTerpadu, useHariOperasional } from "../lib/pesanan-terpadu";
+import TabelPesananTerpadu from "../components/TabelPesananTerpadu";
+import { rupiah } from "../lib/format";
 import {
   Button,
   Card,
-  Empty,
   ErrorState,
   LoadingState,
   PageTitle,
-  StatusBadge,
 } from "../components/ui";
 
 export default function DashboardPage() {
   const [newOrderOpen, setNewOrderOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: async () => (await api.get<DashboardData>("/dashboard")).data,
+  const [serverTime, aturServerTime] = useState<string>();
+  const hari = useHariOperasional(serverTime);
+  const { data: terpadu, isLoading, isError, refetch } = useQuery({
+    queryKey: ["dashboard", "terpadu", hari],
+    queryFn: async () => { const d = await ambilPesananTerpadu({periode:"HARI_INI",batas:7,ringkasan:"true"}); aturServerTime(d.serverTime); return d; },
     refetchInterval: 15000,
   });
 
+  const data = terpadu?.metrik;
   const cards = [
     ["Menunggu", data?.waiting ?? 0, Clock3],
     ["Sedang Dilayani", data?.inService ?? 0, Scissors],
@@ -52,7 +52,6 @@ export default function DashboardPage() {
         }
       />
 
-      <RingkasanBookingDashboard />
       {isLoading ? (
         <Card>
           <LoadingState text="Memuat dashboard..." />
@@ -89,7 +88,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div>
                   <div className="font-bold">Pesanan Terbaru</div>
-                  <div className="text-xs text-slate-400">Aktivitas terbaru</div>
+                  <div className="text-xs text-slate-400">Jadwal pelayanan hari ini (WIB)</div>
                 </div>
                 <Link
                   to="/orders"
@@ -99,57 +98,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              <div className="overflow-x-auto">
-                {!data?.pesananTerbaru.length ? (
-                  <Empty text="Belum ada pesanan terbaru" />
-                ) : (
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3">Pesanan</th>
-                        <th>Pelanggan</th>
-                        <th>Barber</th>
-                        <th>Status</th>
-                        <th>Pembayaran</th>
-                        <th>Check-in</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.pesananTerbaru.map((o) => (
-                        <tr
-                          key={o.id}
-                          role="link"
-                          tabIndex={0}
-                          aria-label={`Buka pesanan ${o.nomorPesanan}`}
-                          onClick={() => setSelectedOrderId(o.id)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              setSelectedOrderId(o.id);
-                            }
-                          }}
-                          className="group cursor-pointer border-t border-slate-100 transition-all duration-200 hover:bg-indigo-50/70 hover:shadow-[inset_4px_0_0_#4f46e5] focus-visible:bg-indigo-50/70 focus-visible:outline-none focus-visible:shadow-[inset_4px_0_0_#4f46e5] active:bg-indigo-100/70"
-                        >
-                          <td className="px-4 py-3 font-bold text-indigo-600">
-                            <span className="inline-flex transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
-                              {o.nomorPesanan}
-                            </span>
-                          </td>
-                          <td>{o.pelanggan.nama}</td>
-                          <td>{o.barber?.nama ?? "Belum ditentukan"}</td>
-                          <td>
-                            <StatusBadge value={o.status} />
-                          </td>
-                          <td>
-                            <StatusBadge value={o.statusPembayaran} />
-                          </td>
-                          <td>{waktu(o.checkInTime)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+              <TabelPesananTerpadu data={terpadu?.data ?? []} />
             </Card>
 
             <div className="space-y-4">

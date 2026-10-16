@@ -1,4 +1,4 @@
-export type StatusBooking = "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECKED_IN" | "IN_SERVICE" | "COMPLETED" | "REJECTED" | "CANCELLED" | "NO_SHOW";
+export type StatusBooking = "AWAITING_DP" | "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECKED_IN" | "IN_SERVICE" | "COMPLETED" | "REJECTED" | "CANCELLED" | "NO_SHOW";
 export type ItemBooking = { layananId: number; namaLayanan: string; harga: number; durasiMenit: number; qty: number; subtotal: number };
 export type Booking = {
   id: number; nomorBooking: string; status: StatusBooking; mulaiPada: string; selesaiPada: string; zonaWaktu: string;

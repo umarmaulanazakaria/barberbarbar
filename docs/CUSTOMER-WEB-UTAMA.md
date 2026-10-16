@@ -19,7 +19,7 @@ Perubahan historis dipertahankan: tiga path Project 3 (termasuk Prisma staged), 
 | Verifikasi Midtrans | REST/realtime setelah webhook | Signature/status provider backend; callback hanya refetch | Sudah tersedia; callback tidak menetapkan settlement |
 | Tracking/pemulihan | Login/reset akun | Kode rahasia setelah DP, `LacakBooking`, pemulihan ADMIN | Sudah tersedia; kode salah/revoked ditolak, legacy tetap didukung |
 | Invoice/riwayat pembayaran | Milik akun | Endpoint final guest, transaksi per booking | Sudah tersedia; invoice harus COMPLETED dan PAID |
-| Sinkronisasi | Socket.IO/AppState | Polling REST 10 detik, visibility/online; sync provider terbatas | Sudah tersedia; tidak perlu menyalin socket Native ke Web |
+| Sinkronisasi | Socket.IO/AppState | Socket.IO guest terotorisasi, event memicu REST; polling 10 detik dan visibility/online sebagai fallback | Integrasi lanjutan tersedia; lihat [audit Socket.IO/Midtrans](INTEGRASI-SOCKET-MIDTRANS.md) |
 | Error/jaringan/sesi | Axios/SecureStore | Timeout, pesan aman, kunci submit/idempotency, cookie HttpOnly | Sudah tersedia; retry bukan bukti pembayaran |
 | Akun/profil/password | Registrasi/login/pengaitan/profil/reset | Tidak ada akun | Khusus workflow Native; sengaja tidak dipindahkan |
 | Membership | Permohonan dan diskon sesuai ADMIN | Guest tidak mendapat membership dari HP | Memerlukan keputusan bisnis bila hendak ditambahkan |

@@ -37,7 +37,7 @@ server/scripts/            Pengujian, backup, dan audit
 docs/                      Panduan dan bukti audit
 ```
 
-Mobile Staff memakai JWT operator. Customer Web memakai sesi guest HttpOnly tanpa registrasi/login atau pemilihan barber; JWT CUSTOMER tetap tersedia untuk kompatibilitas Native historis. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
+Mobile Staff memakai JWT operator. Customer Web memakai sesi guest HttpOnly tanpa registrasi/login atau pemilihan barber; JWT CUSTOMER tetap tersedia untuk kompatibilitas Native historis. Socket guest memakai cookie sesi terverifikasi dan room booking yang ditentukan server; polling REST tetap menjadi fallback. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
 
 ## Menjalankan lokal
 
@@ -115,6 +115,7 @@ Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar 
 - Customer Web aktif: folder `../barberbarbar-customer-web`, http://127.0.0.1:5175
 - [Customer Native arsip](https://github.com/umarmaulanazakaria/barberbarbar-customer)
 - [Keputusan migrasi Customer Web](docs/CUSTOMER-WEB-UTAMA.md)
+- [Integrasi Socket.IO dan Midtrans](docs/INTEGRASI-SOCKET-MIDTRANS.md)
 - [Panduan ekosistem](docs/README-FINAL.md), [pengujian Android](docs/README-PENGUJIAN-ANDROID.md), [demo](docs/PANDUAN-DEMO.md).
 - [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
 

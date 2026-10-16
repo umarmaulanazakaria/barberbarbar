@@ -3,7 +3,7 @@ import { lstat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 const stage = path.resolve('../..'), publik = [], staging = {};
 const lindungi = new Set(['barberbarbar/server/src/lib/prisma.ts', 'barberbarbar-mobile/src/layar/LayarTambahPelanggan.tsx', 'barberbarbar-mobile/src/layanan/booking.ts']);
-for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) {
+for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web']) {
   const repo = path.join(stage, r);
   const git = args => execFileSync('git', ['-c', `safe.directory=${repo.replaceAll('\\', '/')}`, '-C', repo, ...args], { encoding: 'utf8', windowsHide: true });
   const daftar = new Set([...git(['diff', 'HEAD', '--name-only', '-z']).split('\0'), ...git(['ls-files', '--others', '--exclude-standard', '-z']).split('\0')].filter(Boolean));

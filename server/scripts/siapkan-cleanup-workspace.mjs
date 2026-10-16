@@ -11,7 +11,7 @@ const valid = JSON.parse(await readFile(path.join(backup, 'TERVERIFIKASI.json'),
 assert.equal(valid.status, 'PASS'); assert.equal(await hash(path.join(backup, 'MANIFEST-BACKUP.json')), valid.manifestSha256);
 const manifest = JSON.parse(await readFile(path.join(backup, 'MANIFEST-BACKUP.json'), 'utf8'));
 const index = new Map(manifest.files.map(f => [f.path, f]));
-const repos = ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer'];
+const repos = ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web'];
 const hapus = (await readdir(stage)).filter(n => !repos.includes(n));
 hapus.push('barberbarbar/START-HERE.txt', 'barberbarbar-mobile/assets/splash-icon.png');
 for (const r of repos) for (const p of r === 'barberbarbar' ? ['server/dist', 'client/dist'] : ['dist', '.expo']) {

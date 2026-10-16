@@ -30,7 +30,7 @@ for (const rel of daftar) {
 }
 const git = (repo, args) => execFileSync('git', ['-c', `safe.directory=${repo.replaceAll('\\', '/')}`, '-C', repo, ...args], { encoding: 'utf8', windowsHide: true });
 const envTracked = [];
-for (const repo of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) {
+for (const repo of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web']) {
   const files = git(path.join(akar, repo), ['ls-files']).split('\n');
   envTracked.push(...files.filter(f => { const n = path.posix.basename(f).toLowerCase(); return (n === '.env' || n.startsWith('.env.')) && !['.env.example', '.env.sample'].includes(n); }));
 }

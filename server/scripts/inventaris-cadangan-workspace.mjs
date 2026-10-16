@@ -11,7 +11,7 @@ const basis = path.resolve(process.env.LOCALAPPDATA, 'BARBERBARBAR/workspace-bac
 assert.ok(!basis.startsWith(stage + path.sep) && basis !== stage);
 const folder = process.argv[3] ? path.resolve(process.argv[3]) : path.join(basis, `cleanup-${new Date().toISOString().replace(/[:.]/g, '-')}`);
 assert.ok(folder.startsWith(basis + path.sep), 'Cadangan harus di folder privat yang ditentukan');
-const repo = ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer'];
+const repo = ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web'];
 const hash = async lokasi => { const h = createHash('sha256'); for await (const b of createReadStream(lokasi)) h.update(b); return h.digest('hex'); };
 const kategori = rel => {
   if (rel.split('/').some(p => p === '.git') || /(^|\/)(package(-lock)?\.json|tsconfig[^/]*|app\.json|\.env[^/]*|[^/]*config[^/]*)$/.test(rel)) return 'B';

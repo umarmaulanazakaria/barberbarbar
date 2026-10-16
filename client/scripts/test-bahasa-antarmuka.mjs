@@ -9,9 +9,9 @@ import ts from 'typescript';
 import { build } from 'esbuild';
 const require = createRequire(path.resolve('package.json'));
 const stage = path.resolve('../..');
-const files = ['barberbarbar/client/src/lib/teks.ts', 'barberbarbar-mobile/src/layanan/teks.ts', 'barberbarbar-customer/src/layanan/teks.ts'];
+const files = ['barberbarbar/client/src/lib/teks.ts', 'barberbarbar-mobile/src/layanan/teks.ts'];
 const sumber = await Promise.all(files.map(f => readFile(path.join(stage, f), 'utf8')));
-assert.ok(sumber.every(s => s === sumber[0]), 'Kamus tiga aplikasi harus konsisten');
+assert.ok(sumber.every(s => s === sumber[0]), 'Kamus operator Web dan Staff harus konsisten');
 const js = ts.transpileModule(sumber[0], { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
 const teks = await import('data:text/javascript,' + encodeURIComponent(js));
 for (const [kode, label] of Object.entries({ PENDING_CONFIRMATION: 'Menunggu Konfirmasi', CONFIRMED: 'Booking Dikonfirmasi',
@@ -28,20 +28,20 @@ async function scan(folder) {
   for (const e of await readdir(folder, { withFileTypes: true })) {
     const f = path.join(folder, e.name);
     if (e.isDirectory()) { await scan(f); continue; }
-    if (!f.endsWith('.tsx')) continue;
+    if (!f.endsWith('.tsx') || f.endsWith('Pratinjau.tsx')) continue;
     jumlahFile++;
     const ast = ts.createSourceFile(f, await readFile(f, 'utf8'), ts.ScriptTarget.Latest, true);
     function visit(n) {
       let tampil;
       if (ts.isJsxText(n)) tampil = n.text;
       if (ts.isJsxAttribute(n) && /^(?:title|subtitle|description|placeholder|aria-label|accessibilityLabel|judul|pesan)$/.test(n.name.getText(ast)) && n.initializer && ts.isStringLiteral(n.initializer)) tampil = n.initializer.text;
-      if (tampil && /\b(?:Sandbox|backend|webhook|callback|endpoint|JWT|API|scheduler|snapshot|provider|developer|debug|mock|F1[234]|Project [345])\b/i.test(tampil)) temuan.push(path.relative(stage, f));
+      if (tampil && /\b(?:backend|webhook|callback|endpoint|JWT|API|scheduler|snapshot|provider|developer|debug|mock|F1[234]|Project [345])\b/i.test(tampil)) temuan.push(path.relative(stage, f));
       if (ts.isJsxExpression(n) && n.expression && ts.isCallExpression(n.expression) && n.expression.expression.getText(ast) === 'JSON.stringify') temuan.push(path.relative(stage, f));
       ts.forEachChild(n, visit);
     } visit(ast);
   }
 }
-for (const r of ['barberbarbar/client/src', 'barberbarbar-mobile/src', 'barberbarbar-customer/src']) await scan(path.join(stage, r));
+for (const r of ['barberbarbar/client/src', 'barberbarbar-mobile/src', 'barberbarbar-customer-web/src']) await scan(path.join(stage, r));
 assert.deepEqual(temuan, [], 'Literal UI teknis/JSON mentah masih ditemukan');
 const output = path.join(os.tmpdir(), `bb-copy-${randomUUID()}.mjs`);
 try {

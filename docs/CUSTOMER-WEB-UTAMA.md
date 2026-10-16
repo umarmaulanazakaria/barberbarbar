@@ -71,3 +71,7 @@ Pensiun pada tingkat aplikasi aktif/default launcher dan dokumentasi telah diter
 Alur guest utama telah terverifikasi pada browser + backend/DB fixture. Bukti pembayaran Sandbox nyata historis booking 3745 berada pada `server/WEB-FINALIZATION.md`; tidak diverifikasi ulang dan tidak dipakai untuk mengklaim transaksi baru. Pengujian perangkat dan provider baru tidak termasuk hasil PASS pekerjaan ini. Penghapusan source/kontrak lama, membership guest, daftar riwayat lintas booking tanpa akun, dan aksi reschedule/refund mandiri memerlukan keputusan terpisah.
 
 Hanya commit lokal dengan path eksplisit. Tidak ada push, merge, PR, instalasi dependency, deploy, reset database atau perubahan migration.
+
+## Pembaruan 17 Oktober 2026
+
+Customer Web kini memakai metadata Git mandiri. Runner aktif tidak lagi mengimpor source Native; kontrak JWT CUSTOMER historis diuji melalui adapter fixture lokal Admin. Native beserta perubahan lokal dan history diamankan dalam backup privat. Prosedur, publikasi dan hasil cleanup aktual dicatat pada [finalisasi workspace](cleanup/FINALISASI-WORKSPACE.md). Bagian audit terdahulu di atas merupakan snapshot pada tanggalnya.

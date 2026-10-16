@@ -2,7 +2,7 @@ import {spawn} from 'node:child_process';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 const npm=path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js'),results=[];
-for(const [project,cwd]of[['backend',process.cwd()],['web',path.resolve('../client')],['staff',path.resolve('../../barberbarbar-mobile')],['customer',path.resolve('../../barberbarbar-customer')]]){
+for(const [project,cwd]of[['backend',process.cwd()],['web',path.resolve('../client')],['staff',path.resolve('../../barberbarbar-mobile')],['customer',path.resolve('../../barberbarbar-customer-web')]]){
  const pkg=JSON.parse(await readFile(path.join(cwd,'package.json'),'utf8')),row={project,paketLangsung:pkg.dependencies,paketDevelopment:pkg.devDependencies};
  row.terpasang={};for(const nama of Object.keys({...pkg.dependencies,...pkg.devDependencies})){try{row.terpasang[nama]=JSON.parse(await readFile(path.join(cwd,'node_modules',nama,'package.json'),'utf8')).version;}catch{row.terpasang[nama]='NOT_FOUND';}}
  for(const omit of [false,true]){

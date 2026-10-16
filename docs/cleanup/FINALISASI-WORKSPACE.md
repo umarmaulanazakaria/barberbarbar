@@ -40,6 +40,40 @@ Satu percobaan UI awal mengalami konflik direktori trace antara runner bersamaan
 
 Pengujian Android fisik tidak dilakukan ulang. Beranda/form dari HP melalui Wi-Fi dilaporkan berhasil oleh pengguna pada pekerjaan sebelumnya; browser desktop dengan viewport HP tidak menggantikan bukti device. Tidak ada transaksi Midtrans nyata baru, refund atau perubahan mode Production.
 
-## Penutupan
+## Penutupan aktual
 
-Publikasi remote, penghapusan Native setelah seluruh prasyarat, pemindahan checkpoint/artifact privat dan verifikasi pascapenghapusan dicatat dalam pembaruan penutupan setelah tindakan aktual. Jangan menafsirkan validasi awal sebagai bukti tindakan tersebut sudah dijalankan.
+Push non-force ketiga repository berhasil; remote refs diperiksa ulang. Customer default `HEAD -> main` menunjuk `7c7bd9764a84e3b33b9d1d764e63eaa4159fa474`, sama dengan branch `feat/project5-react-web-mobile-first`. Tree remote memuat React/Vite, Socket.IO, source/test Web; tidak ada `App.tsx`, `app.json`, konfigurasi Expo atau direktori aset Native lama. Tidak ada repository baru, force push, penghapusan branch atau merge.
+
+| Repository | Branch publikasi | Commit publikasi |
+|---|---|---|
+| barberbarbar | feature/project5-integration | 092dac2d7b68711cde52219050d88b38632950ab |
+| barberbarbar-mobile | feature/project5-integration | 1bb254b89792e1dca87faa484b892bbd14ba3572 |
+| barberbarbar-customer | main dan feat/project5-react-web-mobile-first | 7c7bd9764a84e3b33b9d1d764e63eaa4159fa474 |
+
+Pembaruan laporan penutupan ini disimpan pada commit dokumentasi berikutnya di branch Project 3 yang sama. Tidak memasukkan perubahan pengguna yang belum direview ke publikasi tersebut.
+
+Sebelum penghapusan, 378 file Native dan checksum dua arsip diverifikasi ulang; bundle lengkap valid, tidak ada proses Native atau junction/dependensi filesystem dari aplikasi aktif menuju Native. Folder `barberbarbar-customer` kemudian dihapus permanen. Batas panjang path Windows pada dependency sempat menghentikan penghapusan; residu pada target eksak yang sama dibersihkan dengan dukungan long-path, dan folder dipastikan tidak ada.
+
+Checkpoint privat dipindahkan ke `final-workspace-20261017-012411/checkpoint` (182 file), artifact ignored server ke `server-artifacts` (15 file), dan metadata generated Web ke `customer-web-test-results` (1 file). Seluruh salinan diperiksa jumlah dan SHA-256 sebelum source dikeluarkan dari workspace. Backup, bukti provider dan riwayat keputusan tetap tersedia secara privat. Path checkpoint dalam laporan historis mengacu lokasi pada tanggal audit, bukan instruksi runtime aktif.
+
+Root akhir tepat tiga folder:
+
+```text
+Stage 2/
+  barberbarbar/
+  barberbarbar-mobile/
+  barberbarbar-customer-web/
+```
+
+Source/config/dependency/build aktif, `.env`, migration, dokumentasi keamanan dan konfigurasi pengguna tetap dipertahankan. Aset `public/logo.png` Customer Web tetap ada. Fixture preview/test tetap disimpan karena masih direferensikan tes; tidak dimuat sebagai UI publik. Git fsck ketiga repository lulus; dangling object/tree pada repo lama tidak dihapus dan bukan kerusakan.
+
+## Verifikasi pascapenghapusan
+
+- PASS: tujuh suite/98 kelompok integrasi diulang setelah Native tidak ada; realtime, booking, pembayaran mock, tracking, Staff, browser Admin, invoice dan pembersihan fixture lulus.
+- PASS: build TypeScript/Vite Web diulang tanpa Native. Browser realtime/tracking Customer masing-masing lulus lagi; fixture 24 model dibersihkan.
+- PASS: backend3000, Admin5173, Customer5175 dan Expo Staff8081 merespons HTTP200; `/api/public/services` serta `/api/public/booking-availability` Web merespons HTTP200. Akses melalui IP Wi-Fi laptop dan proxy layanan juga HTTP200. Ini bukan pengujian HP fisik baru.
+- PASS: Git Web normal/common-dir `.git` lokal, worktree hanya Web, tracking origin branch Web diatur; metadata tidak membutuhkan folder yang dihapus.
+- PASS: pemeriksaan ulang hash source historis, index Prisma, environment dan scan tree commit; tidak ada perubahan historis yang dibersihkan.
+- TERBATAS: launcher source hanya merujuk tiga aplikasi aktif dan sintaksnya valid. Mode live `-Periksa` menolak backend existing yang dijalankan oleh dev watcher memakai path relatif `dist/server.js`, karena guard mensyaratkan entrypoint absolut. Tidak melonggarkan guard atau menghentikan backend pengguna. Proxy webhook3001 belum aktif pada sesi pemeriksaan; peluncuran webhook/tunnel baru dan transaksi provider tidak dilakukan. Ini bukan dependensi Native yang tertinggal.
+
+Pengujian pascapenghapusan memakai mock, bukan bukti pembayaran Sandbox baru. Pengujian HP fisik tetap NOT RUN pada finalisasi ini. Perubahan lokal tetap terlihat di Git: Project 3 tiga file, Staff satu file, Web 18 file; semuanya dipertahankan sesuai baseline dan tidak dimasukkan massal ke commit.

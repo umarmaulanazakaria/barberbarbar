@@ -503,6 +503,23 @@ model AksesBookingTamu {
   nomorTelepon String
   kedaluwarsaPada DateTime @db.Timestamptz(3)
   dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  trackingHash String? @unique
+  trackingTerenkripsi String?
+  versiAkses Int @default(1)
+  sesi SesiBookingTamu[]
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  @@index([kedaluwarsaPada])
+}
+
+model SesiBookingTamu {
+  id Int @id @default(autoincrement())
+  tokenHash String @unique
+  bookingId Int
+  versiAkses Int
+  sumber String
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  kedaluwarsaPada DateTime @db.Timestamptz(3)
+  akses AksesBookingTamu @relation(fields: [bookingId], references: [bookingId], onDelete: Restrict)
+  @@index([bookingId, versiAkses])
   @@index([kedaluwarsaPada])
 }

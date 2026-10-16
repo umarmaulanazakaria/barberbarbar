@@ -16,12 +16,12 @@ export const skemaGuest=z.object({nama:z.string().trim().min(2).max(80),nomorTel
   mulaiPada:z.string().datetime({offset:true}),items:z.array(z.object({layananId:z.number().int().positive(),qty:z.number().int().min(1).max(10)}).strict()).min(1).max(20),kunciIdempotensi:z.uuid()}).strict()
   .refine(d=>new Set(d.items.map(i=>i.layananId)).size===d.items.length);
 export type DataGuest=z.infer<typeof skemaGuest>;
-export const buatBookingTamu=async(data:DataGuest)=>basisData.$transaction(async tx=>{
+export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisData.$transaction(async tx=>{
   await kunciJadwalBooking(tx);
   const sekarang=await waktuDatabaseBooking(tx);
   const sidik=hash(JSON.stringify({...data,items:[...data.items].sort((a,b)=>a.layananId-b.layananId)}));
   const lama=await tx.aksesBookingTamu.findUnique({where:{kunciIdempotensi:data.kunciIdempotensi},select:{id:true}});
-  if(lama)return tolak("Permintaan ini sudah diterima. Gunakan tautan pribadi yang telah diterbitkan; jangan membuat pembayaran ulang.",409);
+  if(lama)return tolak("Permintaan ini sudah diterima. Periksa booking pada browser yang sama; jangan membuat pembayaran ulang.",409);
   const layanan=await tx.layanan.findMany({where:{id:{in:data.items.map(i=>i.layananId)},aktif:true}});
   if(layanan.length!==data.items.length)return tolak("Layanan tidak tersedia");
   const items=data.items.map(i=>{const l=layanan.find(l=>l.id===i.layananId)!;return{layananId:l.id,namaLayanan:l.nama,harga:l.harga,durasiMenit:l.durasiMenit,qty:i.qty,subtotal:l.harga*i.qty};});
@@ -35,7 +35,7 @@ export const buatBookingTamu=async(data:DataGuest)=>basisData.$transaction(async
   const token=randomBytes(32).toString("hex"),deadlineDp=new Date(sekarang.getTime()+15*60000);
   const booking=await tx.booking.create({data:{nomorBooking:`BKG-${randomUUID()}`,sumberBooking:"TAMU",pelangganId:identitas.id,status:"AWAITING_DP",dibuatPada:sekarang,
     mulaiPada,selesaiPada,durasiMenit,subtotal:total,total,membershipAktif:false,discountPercent:0,diskon:0,dpPersen:50,nominalDp:Math.ceil(total/2),deadlineDp,
-    items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:data.nama,nomorTelepon:data.nomorTelepon,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000)}},
+    items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:data.nama,nomorTelepon:data.nomorTelepon,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000),...(tokenSesiHash?{sesi:{create:{tokenHash:tokenSesiHash,sumber:"SEMENTARA",versiAkses:1,kedaluwarsaPada:new Date(sekarang.getTime()+24*3600000)}}}:{})}},
     riwayat:{create:{aksi:"GUEST_CREATED",statusSebelum:"AWAITING_DP",statusSetelah:"AWAITING_DP",dibuatPada:sekarang,rincian:{sumber:"WEB_TAMU"}}}},select:{id:true,nomorBooking:true,deadlineDp:true}});
   return{token,tautanPribadi:`#/b/${token}`,booking,serverTime:sekarang.toISOString()};
 },{isolationLevel:"ReadCommitted"});
@@ -56,10 +56,11 @@ export const detailBookingTamu=async(id:number)=>{
     await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
     const serverTime=await waktuDatabaseBooking(tx);
     const booking=await tx.booking.findUniqueOrThrow({where:{id},select:{nomorBooking:true,status:true,mulaiPada:true,selesaiPada:true,durasiMenit:true,dibuatPada:true,deadlineDp:true,deadlinePelunasan:true,
+      barberFinal:{select:{nama:true}},barberDisetujui:{select:{nama:true}},barberPilihan:{select:{nama:true}},dikonfirmasiPada:true,checkInPada:true,layananMulaiPada:true,layananSelesaiPada:true,
       items:{select:{namaLayanan:true,layananId:true,qty:true,harga:true,subtotal:true,durasiMenit:true}},pesanan:{select:{items:{select:{namaLayanan:true,layananId:true,qty:true,harga:true,subtotal:true,durasiMenit:true}}}},aksesTamu:{select:{nama:true,nomorTelepon:true,kedaluwarsaPada:true}}}});
     const ringkasan=await bacaRingkasanPembayaran(tx,await ambilBookingPembayaran(tx,id),serverTime);
-    const {pesanan,...rincian}=booking;
-    return {booking:{...rincian,items:pesanan?.items??booking.items},ringkasan,serverTime:serverTime.toISOString()};
+    const {pesanan,barberFinal,barberDisetujui,barberPilihan,...rincian}=booking;
+    return {booking:{...rincian,barber:barberFinal?.nama??barberDisetujui?.nama??barberPilihan?.nama??null,items:pesanan?.items??booking.items},ringkasan,serverTime:serverTime.toISOString()};
   },{isolationLevel:"RepeatableRead"});
 };
 export const checkoutTamu=async(id:number,tujuan:"DP"|"PELUNASAN",kunci:string)=>{

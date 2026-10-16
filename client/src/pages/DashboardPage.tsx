@@ -33,6 +33,11 @@ export default function DashboardPage() {
     queryFn: async () => { const d = await ambilPesananTerpadu({periode:"HARI_INI",batas:7,ringkasan:"true"}); aturServerTime(d.serverTime); return d; },
     refetchInterval: 15000,
   });
+  const mendatang = useQuery({
+    queryKey: ["dashboard", "mendatang", hari],
+    queryFn: () => ambilPesananTerpadu({periode:"MENDATANG",batas:7}),
+    refetchInterval: 15000,
+  });
 
   const data = terpadu?.metrik;
   const cards = [
@@ -88,7 +93,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div>
                   <div className="font-bold">Pesanan Terbaru</div>
-                  <div className="text-xs text-slate-400">Jadwal pelayanan hari ini (WIB)</div>
+                  <div className="text-xs text-slate-400">Jadwal pelayanan dalam WIB</div>
                 </div>
                 <Link
                   to="/orders"
@@ -98,7 +103,10 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
+              <h2 className="border-b px-4 py-3 text-sm font-semibold text-slate-700">Hari Ini</h2>
               <TabelPesananTerpadu data={terpadu?.data ?? []} tampilan="dashboard" />
+              <div className="flex items-center justify-between gap-3 border-y px-4 py-3"><h2 className="text-sm font-semibold text-slate-700">Jadwal Mendatang</h2><Link className="text-xs font-semibold text-indigo-600" to="/orders?periode=MENDATANG&jenis=BOOKING">Lihat semua booking mendatang{mendatang.data ? ` (${mendatang.data.total})` : ""}</Link></div>
+              {mendatang.isPending ? <LoadingState text="Memuat jadwal mendatang..."/> : mendatang.isError ? <ErrorState text="Jadwal mendatang belum dapat dimuat." onRetry={()=>void mendatang.refetch()}/> : <TabelPesananTerpadu data={mendatang.data.data} tampilan="mendatang"/>}
             </Card>
 
             <div className="space-y-4">

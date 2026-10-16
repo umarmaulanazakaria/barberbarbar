@@ -1,6 +1,7 @@
 export type StatusBooking = "AWAITING_DP" | "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECKED_IN" | "IN_SERVICE" | "COMPLETED" | "REJECTED" | "CANCELLED" | "NO_SHOW";
 export type ItemBooking = { layananId: number; namaLayanan: string; harga: number; durasiMenit: number; qty: number; subtotal: number };
 export type Booking = {
+  aksesTamu?: {nama:string;nomorTelepon:string}|null;
   id: number; nomorBooking: string; status: StatusBooking; mulaiPada: string; selesaiPada: string; zonaWaktu: string;
   durasiMenit: number; barberPilihanId: number | null; barberDisetujuiId: number | null; barberFinalId: number | null;
   pesananId: number | null; subtotal: number; discountPercent: number; diskon: number; total: number; nominalDp: number;

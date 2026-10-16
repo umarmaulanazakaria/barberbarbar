@@ -1,4 +1,5 @@
 import { Router } from "express";
+import routerSesi from "./tracking-booking.routes.js";
 import type { Request, Response } from "express";
 import { z } from "zod";
 import { batasiPercobaanPelanggan } from "../middleware/batas-percobaan-pelanggan.middleware.js";
@@ -7,6 +8,7 @@ import { KesalahanPembayaranBooking } from "../services/pembayaran-booking.servi
 import { buatBookingTamu,skemaGuest,verifikasiAksesTamu,detailBookingTamu,checkoutTamu,sinkronTamu } from "../services/guest-booking.service.js";
 const router=Router();
 router.use((_req,res,next)=>{res.set({"Cache-Control":"no-store","Referrer-Policy":"no-referrer","X-Content-Type-Options":"nosniff"});if(process.env.GUEST_BOOKING_ENABLED!=="true")return res.status(503).json({pesan:"Booking Web belum diaktifkan."});next();});
+router.use("/session",routerSesi);
 const bungkus=(kerja:(req:Request,res:Response)=>Promise<unknown>)=>async(req:Request,res:Response)=>{
   try{await kerja(req,res);}catch(e){if(e instanceof KesalahanPembayaranBooking||e instanceof KesalahanMidtrans)return res.status(e.kode).json({pesan:e.message});console.error({kejadian:"GUEST_REQUEST_FAILED",kategori:e instanceof Error?e.name:"UNKNOWN",kode:typeof e==="object"&&e!==null&&"code" in e&&/^P\d{4}$/.test(String(e.code))?String(e.code):"INTERNAL"});return res.status(503).json({pesan:"Permintaan belum dapat dipastikan. Periksa status sebelum mencoba kembali."});}
 };

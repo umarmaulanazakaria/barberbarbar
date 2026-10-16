@@ -1,11 +1,12 @@
 import {createServer} from 'node:http';
-import {randomUUID,createHash} from 'node:crypto';
+import {randomUUID,createHash,randomBytes} from 'node:crypto';
 import bcrypt from 'bcrypt';
 if(!/^\/bb_guest_20261016_[a-f0-9]{8}$/.test(new URL(process.env.DATABASE_URL??'').pathname))throw Error('Wajib database fixture guest');
-process.env.GUEST_BOOKING_ENABLED='true';process.env.MIDTRANS_MERCHANT_ID='fixture-browser';process.env.MIDTRANS_SERVER_KEY='fixture-server-only';process.env.MIDTRANS_CLIENT_KEY='fixture-client';process.env.MIDTRANS_IS_PRODUCTION='false';
+process.env.BOOKING_TRACKING_ENCRYPTION_KEY=randomBytes(32).toString('base64');process.env.GUEST_WEB_ORIGINS='http://localhost:5175,http://127.0.0.1:5175,http://127.0.0.1:5186';process.env.GUEST_BOOKING_ENABLED='true';process.env.MIDTRANS_MERCHANT_ID='fixture-browser';process.env.MIDTRANS_SERVER_KEY='fixture-server-only';process.env.MIDTRANS_CLIENT_KEY='fixture-client';process.env.MIDTRANS_IS_PRODUCTION='false';
 const {default:db}=await import('../dist/lib/prisma.js'),{default:app}=await import('../dist/app.js');
 const {gerbangMidtrans}=await import('../dist/lib/midtrans.js');const {notifikasiMidtrans}=await import('../dist/services/midtrans-booking.service.js');
 const {verifikasiAksesTamu}=await import('../dist/services/guest-booking.service.js');
+const {verifikasiSesi}=await import('../dist/services/tracking-booking.service.js');
 const {checkInBooking,mulaiLayananBooking,selesaikanBooking}=await import('../dist/services/operasional-booking.service.js');
 const tanda='browser-guest-'+randomUUID(),provider=new Map(),bids=new Set();let berhenti=false;
 const barber=await db.barber.create({data:{nama:tanda}}),layanan=await db.layanan.create({data:{nama:'Guest Browser Haircut',harga:10000,durasiMenit:30}}),wash=await db.layanan.create({data:{nama:'Guest Browser Wash',harga:5000,durasiMenit:15}});
@@ -18,7 +19,7 @@ const server=createServer((req,res)=>{
  void(async()=>{try{
   if(req.method==='GET'&&req.url==='/__fixture/health'){res.writeHead(200,{'Content-Type':'application/json'});return res.end('{"fixture":true}');}
   if(req.method==='POST'&&req.url==='/__fixture/shutdown'){res.end('{}');await tutup();return;}
-  const token=/^Guest ([a-f0-9]{64})$/.exec(req.headers.authorization??'')?.[1]??'',id=await verifikasiAksesTamu(token);bids.add(id);
+  const token=/^Guest ([a-f0-9]{64})$/.exec(req.headers.authorization??'')?.[1]??'',id=token?await verifikasiAksesTamu(token):await verifikasiSesi(/(?:^|;\s*)bb_guest_session=([a-f0-9]{64})/.exec(req.headers.cookie??'')?.[1]??'');bids.add(id);
   if(req.url==='/__fixture/settle'&&req.method==='POST'){
    const tr=await db.transaksiPembayaranBooking.findFirstOrThrow({where:{bookingId:id,kanal:'MIDTRANS',tujuan:{not:'REFUND'}},orderBy:{id:'desc'}});const p=provider.get(tr.referensiProvider);p.status_code='200';p.transaction_status='settlement';p.settlement_time=waktu();const n={...p,signature_key:createHash('sha512').update(p.order_id+p.status_code+p.gross_amount+process.env.MIDTRANS_SERVER_KEY).digest('hex')};await notifikasiMidtrans(n);
   }else if(req.url==='/__fixture/complete'&&req.method==='POST'){await checkInBooking(id,op.id);await mulaiLayananBooking(id,barber.id,op.id);await selesaikanBooking(id,op.id);}
@@ -30,6 +31,6 @@ const server=createServer((req,res)=>{
 });
 async function tutup(){if(berhenti)return;berhenti=true;server.close();
  const books=await db.booking.findMany({where:{items:{some:{layananId:{in:[layanan.id,wash.id]}}}},select:{id:true,pelangganId:true,pesananId:true}}),ids=books.map(b=>b.id),oids=books.flatMap(b=>b.pesananId?[b.pesananId]:[]);
- await db.$transaction(async tx=>{await tx.aksesBookingTamu.deleteMany({where:{bookingId:{in:ids}}});await tx.permohonanRefundBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.invoiceBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.transaksiPembayaranBooking.deleteMany({where:{bookingId:{in:ids},tujuan:'REFUND'}});await tx.transaksiPembayaranBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.booking.deleteMany({where:{id:{in:ids}}});await tx.pembayaran.deleteMany({where:{pesananId:{in:oids}}});await tx.pesanan.deleteMany({where:{id:{in:oids}}});await tx.pelanggan.deleteMany({where:{id:{in:books.map(b=>b.pelangganId)}}});});await db.pengguna.delete({where:{id:op.id}});await db.layanan.deleteMany({where:{id:{in:[layanan.id,wash.id]}}});await db.barber.delete({where:{id:barber.id}});await db.$disconnect();console.log('PASS browser fixture cleanup; data existing tidak disentuh.');}
+ await db.$transaction(async tx=>{await tx.sesiBookingTamu.deleteMany({where:{bookingId:{in:ids}}});await tx.aksesBookingTamu.deleteMany({where:{bookingId:{in:ids}}});await tx.permohonanRefundBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.invoiceBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.transaksiPembayaranBooking.deleteMany({where:{bookingId:{in:ids},tujuan:'REFUND'}});await tx.transaksiPembayaranBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.booking.deleteMany({where:{id:{in:ids}}});await tx.pembayaran.deleteMany({where:{pesananId:{in:oids}}});await tx.pesanan.deleteMany({where:{id:{in:oids}}});await tx.pelanggan.deleteMany({where:{id:{in:books.map(b=>b.pelangganId)}}});});await db.pengguna.delete({where:{id:op.id}});await db.layanan.deleteMany({where:{id:{in:[layanan.id,wash.id]}}});await db.barber.delete({where:{id:barber.id}});await db.$disconnect();console.log('PASS browser fixture cleanup; data existing tidak disentuh.');}
 process.on('SIGINT',()=>void tutup());process.on('SIGTERM',()=>void tutup());
 server.listen(3185,'127.0.0.1',()=>console.log('Fixture backend siap http://127.0.0.1:3185; provider MOCK, bukan Sandbox nyata.'));

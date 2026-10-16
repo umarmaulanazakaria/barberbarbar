@@ -8,7 +8,7 @@ const tanggal = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => {
 });
 export const skemaDaftarTerpadu = z.object({
   jenis: z.enum(["SEMUA", "BOOKING", "WALK_IN"]).default("SEMUA"),
-  periode: z.enum(["HARI_INI", "SEMUA", "RENTANG", "RIWAYAT"]).default("HARI_INI"), mulai: tanggal.optional(), selesai: tanggal.optional(),
+  periode: z.enum(["HARI_INI", "MENDATANG", "SEMUA", "RENTANG", "RIWAYAT"]).default("HARI_INI"), mulai: tanggal.optional(), selesai: tanggal.optional(),
   status: z.enum(["SEMUA", "WAITING", "AWAITING_DP", "PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE", "COMPLETED", "CANCELLED", "REJECTED", "NO_SHOW"]).default("SEMUA"),
   pembayaran: z.enum(["SEMUA", "PAID", "UNPAID"]).default("SEMUA"), cari: z.string().trim().max(100).default(""),
   halaman: z.coerce.number().int().min(1).max(100000).default(1), batas: z.coerce.number().int().min(1).max(50).default(20),
@@ -23,7 +23,7 @@ type Baris = { jenis: "BOOKING" | "WALK_IN"; id: number; bookingId: number | nul
 export const daftarPesananTerpadu = (f: Filter) => basisData.$transaction(async tx => {
   await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
   const sekarang = await waktuDatabaseBooking(tx), hariIni = hariWib(sekarang), awal = awalWib(hariIni), akhir = new Date(awal.getTime() + 86400000);
-  const dari = f.periode === "HARI_INI" ? awal : f.periode === "RENTANG" ? awalWib(f.mulai!) : null;
+  const dari = f.periode === "MENDATANG" ? akhir : f.periode === "HARI_INI" ? awal : f.periode === "RENTANG" ? awalWib(f.mulai!) : null;
   const sampai = f.periode === "HARI_INI" ? akhir : f.periode === "RENTANG" ? new Date(awalWib(f.selesai!).getTime() + 86400000) : f.periode === "RIWAYAT" ? awal : null;
   const rentang = (kolom: Prisma.Sql) => Prisma.sql`${dari ? Prisma.sql`AND ${kolom} >= ${dari}` : Prisma.empty} ${sampai ? Prisma.sql`AND ${kolom} < ${sampai}` : Prisma.empty}`;
   // Kredit sah sama dengan ringkasan existing; refund tidak dihitung sebagai pembayaran baru.
@@ -47,12 +47,20 @@ export const daftarPesananTerpadu = (f: Filter) => basisData.$transaction(async 
     WHERE NOT EXISTS (SELECT 1 FROM "Booking" b WHERE b."pesananId"=p.id) ${rentang(Prisma.sql`(p."checkInTime" AT TIME ZONE 'UTC')`)}
   ), tersaring AS (SELECT * FROM kandidat WHERE true
     ${f.jenis !== "SEMUA" ? Prisma.sql`AND jenis=${f.jenis}` : Prisma.empty}
+    ${f.periode === "MENDATANG" ? Prisma.sql`AND jenis='BOOKING' AND status IN ('AWAITING_DP','PENDING_CONFIRMATION','CONFIRMED','CHECKED_IN','IN_SERVICE')
+      AND NOT EXISTS (SELECT 1 FROM "Booking" x WHERE x.id="bookingId" AND x.status='AWAITING_DP' AND (x."deadlineDp" IS NULL OR x."deadlineDp"<=${sekarang}))` : Prisma.empty}
+    ${f.periode === "MENDATANG" ? Prisma.sql`AND NOT EXISTS (SELECT 1 FROM "Booking" x WHERE x.id="bookingId" AND x.status='PENDING_CONFIRMATION' AND
+      COALESCE((SELECT r."dibuatPada" FROM "RiwayatBooking" r WHERE r."bookingId"=x.id AND r.aksi='RESCHEDULE' ORDER BY r.id DESC LIMIT 1),x."dibuatPada") + interval '30 minutes' <= ${sekarang})` : Prisma.empty}
+    ${f.periode === "MENDATANG" ? Prisma.sql`AND NOT EXISTS (SELECT 1 FROM "Booking" x WHERE x.id="bookingId" AND x.status='CONFIRMED' AND (x."deadlineDp" IS NULL OR x."deadlineDp"<=${sekarang}) AND
+      (SELECT COALESCE(sum(t.nominal),0) FROM "TransaksiPembayaranBooking" t JOIN "BuktiProviderBooking" e ON e."transaksiId"=t.id
+       WHERE t."bookingId"=x.id AND t.status='SUCCEEDED' AND t.kanal='MIDTRANS' AND t.tujuan='DP' AND e."referensiProvider"=t."referensiProvider" AND e.nominal=t.nominal AND e."mataUang"='IDR'
+        AND t."dibayarPada"<=t."deadlinePada" AND (t."roundKonfirmasiPada"=CASE WHEN x."sumberBooking"='TAMU' THEN x."dibuatPada" ELSE x."dikonfirmasiPada" END OR t."roundKonfirmasiPada"=x."dpDibawaDariRound")) < x."nominalDp")` : Prisma.empty}
     ${f.status !== "SEMUA" ? Prisma.sql`AND status=${f.status}` : Prisma.empty}
     ${f.pembayaran === "PAID" ? Prisma.sql`AND lunas` : f.pembayaran === "UNPAID" ? Prisma.sql`AND NOT lunas AND status NOT IN ('CANCELLED','REJECTED','NO_SHOW')` : Prisma.empty}
     ${f.cari ? Prisma.sql`AND (nomor ILIKE ${"%" + f.cari + "%"} OR "nomorPesanan" ILIKE ${"%" + f.cari + "%"} OR pelanggan ILIKE ${"%" + f.cari + "%"})` : Prisma.empty}
   )`;
   const [hitung] = await tx.$queryRaw<{ jumlah: bigint }[]>(Prisma.sql`${kandidat} SELECT count(*) AS jumlah FROM tersaring`);
-  const baris = await tx.$queryRaw<(Omit<Baris, "statusPembayaran"> & { lunas: boolean })[]>(Prisma.sql`${kandidat} SELECT * FROM tersaring ORDER BY jadwal DESC, jenis ASC, id DESC LIMIT ${f.batas} OFFSET ${(f.halaman - 1) * f.batas}`);
+  const baris = await tx.$queryRaw<(Omit<Baris, "statusPembayaran"> & { lunas: boolean })[]>(Prisma.sql`${kandidat} SELECT * FROM tersaring ORDER BY jadwal ${f.periode === "MENDATANG" ? Prisma.sql`ASC` : Prisma.sql`DESC`}, jenis ASC, id DESC LIMIT ${f.batas} OFFSET ${(f.halaman - 1) * f.batas}`);
   const data: Baris[] = [];
   for (const b of baris) {
     const { lunas, ...rincian } = b;

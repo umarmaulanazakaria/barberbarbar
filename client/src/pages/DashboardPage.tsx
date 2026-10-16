@@ -84,7 +84,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-4 grid gap-4 xl:grid-cols-[1.6fr_.8fr]">
-            <Card className="overflow-hidden">
+            <Card className="min-w-0 overflow-hidden">
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div>
                   <div className="font-bold">Pesanan Terbaru</div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              <TabelPesananTerpadu data={terpadu?.data ?? []} />
+              <TabelPesananTerpadu data={terpadu?.data ?? []} tampilan="dashboard" />
             </Card>
 
             <div className="space-y-4">

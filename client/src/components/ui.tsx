@@ -389,7 +389,7 @@ export const Modal = ({
     </div>
   ) : null;
 
-export const StatusBadge = ({ value }: { value: string }) => {
+export const StatusBadge = ({ value, label: labelKustom }: { value: string; label?: string }) => {
   const cls =
     value === "WAITING" || value === "PENDING_CONFIRMATION" || value === "PENDING_APPROVAL"
       ? "bg-indigo-50 text-indigo-600"
@@ -402,7 +402,7 @@ export const StatusBadge = ({ value }: { value: string }) => {
             : value === "INACTIVE"
               ? "bg-slate-100 text-slate-500"
               : "bg-slate-100 text-slate-600";
-  const label = statusRamah(value);
+  const label = labelKustom ?? statusRamah(value);
   return (
     <span
       className={cn(

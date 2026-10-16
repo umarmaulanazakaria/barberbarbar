@@ -13,6 +13,7 @@ process.env.MIDTRANS_SERVER_KEY=randomBytes(32).toString('hex');
 process.env.MIDTRANS_CLIENT_KEY='fixture-client';process.env.MIDTRANS_IS_PRODUCTION='false';
 const {default:db}=await import('../dist/lib/prisma.js'),{default:app}=await import('../dist/app.js');
 const {pasangRealtime}=await import('../dist/realtime/server.js'),{gerbangMidtrans}=await import('../dist/lib/midtrans.js');
+const {asalWebTamu}=await import('../dist/lib/asal-web-tamu.js');
 const models=['pelanggan','akunPelanggan','pengguna','barber','layanan','membership','pesanan','itemPesanan','pembayaran','riwayatStatusPesanan','passwordResetToken','permohonanPengaitanAkun','permohonanMembership','booking','itemBooking','usulanBarberBooking','riwayatBooking','transaksiPembayaranBooking','buktiProviderBooking','invoiceBooking','percobaanSnapBooking','permohonanRefundBooking','aksesBookingTamu','sesiBookingTamu'];
 for(const m of models)assert.equal(await db[m].count(),0,'Fixture harus kosong');
 const tag='rt-tamu-'+randomUUID(),clients=[],provider=new Map(),asal={...gerbangMidtrans};
@@ -39,6 +40,9 @@ try{
  const so=await sambung(socket({token:aToken})),ss=await sambung(socket({token:sToken}));
  const a=await baru(3),b=await baru(4);await tunggu(()=>event(so,'booking.changed',a.id).length&&event(ss,'booking.changed',a.id).length);pass('Create guest setelah commit terlihat oleh socket ADMIN dan STAFF existing');
  const sa=await sambung(socket({tipe:'TAMU'},a.cookie)),sb=await sambung(socket({tipe:'TAMU'},b.cookie));
+ const asalLan=asalWebTamu().find(o=>/^http:\/\/(?:10\.|192\.168\.|172\.)/.test(o));
+ if(asalLan){const r=await fetch(alamat+'/guest/bookings/session/current',{headers:{Origin:asalLan,Cookie:a.cookie}});assert.equal(r.status,200);const lan=await sambung(socket({tipe:'TAMU'},a.cookie,asalLan));assert.ok(rt.io.sockets.sockets.get(lan.id).rooms.has('booking:'+a.id));lan.disconnect();pass('Origin LAN adapter lokal diterima REST dan Socket.IO dengan sesi sah; room tetap scoped')}
+ else console.log('NOT RUN Origin LAN: adapter privat tidak tersedia');
  const ruang=rt.io.sockets.sockets.get(sa.id).rooms;assert.ok(ruang.has('booking:'+a.id));assert.ok(!ruang.has('operator:all'));assert.ok(!ruang.has('catalog:authenticated'));
  assert.deepEqual(await sa.timeout(2000).emitWithAck('booking.subscribe',{bookingId:b.id}),{berhasil:false});assert.deepEqual(await sa.timeout(2000).emitWithAck('room.join',{room:'booking:'+b.id}),{berhasil:false});pass('Sesi server menentukan satu room; ID diketahui dan room.join tidak dapat melompati booking');
  for(const s of [socket({tipe:'TAMU'}),socket({tipe:'TAMU'},'bb_guest_session=invalid'),socket({tipe:'TAMU',bookingId:b.id},a.cookie),socket({tipe:'TAMU'},a.cookie,''),socket({tipe:'TAMU'},a.cookie,'http://localhost:5173'),socket({tipe:'TAMU'},a.cookie,'https://evil.invalid')])await tolak(s);

@@ -1,4 +1,5 @@
 import {Router} from "express";
+import {asalWebTamu} from "../lib/asal-web-tamu.js";
 import type {Request,Response} from "express";
 import {z} from "zod";
 import {batasiPercobaanPelanggan as batas} from "../middleware/batas-percobaan-pelanggan.middleware.js";
@@ -11,7 +12,7 @@ const token=(req:Request)=>{const v=(req.get("Cookie")??"").split(";").map(s=>s.
 const cookie=(req:Request,res:Response,t:string,akhir:Date)=>res.cookie(namaCookie,t,{httpOnly:true,secure:req.secure||process.env.NODE_ENV==="production",sameSite:"lax",path:"/",expires:akhir});
 router.use((req,res,next)=>{
  res.set({"Cache-Control":"no-store","Referrer-Policy":"no-referrer","X-Content-Type-Options":"nosniff"});
- const origins=(process.env.GUEST_WEB_ORIGINS??"http://localhost:5175,http://127.0.0.1:5175").split(",").map(s=>s.trim());const origin=req.get("Origin");
+ const origins=asalWebTamu();const origin=req.get("Origin");
  if((origin&&!origins.includes(origin))||(!["GET","HEAD"].includes(req.method)&&!origin))return res.status(403).json({pesan:"Permintaan tidak diizinkan."});
  try{kunciTracking();next()}catch{return res.status(503).json({pesan:"Akses booking belum tersedia."})}
 });

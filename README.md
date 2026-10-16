@@ -116,6 +116,7 @@ Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar 
 - [Customer Native arsip](https://github.com/umarmaulanazakaria/barberbarbar-customer)
 - [Keputusan migrasi Customer Web](docs/CUSTOMER-WEB-UTAMA.md)
 - [Integrasi Socket.IO dan Midtrans](docs/INTEGRASI-SOCKET-MIDTRANS.md)
+- Akses Customer Web melalui HP: `../barberbarbar-customer-web/docs/AKSES-HP-LAN.md`. Origin REST/socket development mengikuti IP privat adapter laptop pada port5175; Production tetap memakai allowlist eksplisit.
 - [Panduan ekosistem](docs/README-FINAL.md), [pengujian Android](docs/README-PENGUJIAN-ANDROID.md), [demo](docs/PANDUAN-DEMO.md).
 - [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
 

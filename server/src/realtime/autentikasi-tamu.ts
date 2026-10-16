@@ -2,8 +2,7 @@ import { verifikasiSesi } from "../services/tracking-booking.service.js";
 
 export type IdentitasTamuRealtime = { tipe: "TAMU"; bookingId: number };
 
-export const asalWebTamu = () => (process.env.GUEST_WEB_ORIGINS ??
-  "http://localhost:5175,http://127.0.0.1:5175").split(",").map(s => s.trim()).filter(Boolean);
+export { asalWebTamu } from "../lib/asal-web-tamu.js";
 
 export const tokenCookieTamu = (cookie: string | undefined) => {
   const nilai = cookie?.split(";").map(s => s.trim()).filter(s => s.startsWith("bb_guest_session=")) ?? [];

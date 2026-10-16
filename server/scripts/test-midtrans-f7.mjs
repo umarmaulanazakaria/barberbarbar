@@ -33,8 +33,8 @@ const pass=pesan=>{total++;console.log(`PASS MOCK F7: ${pesan}`);};
 const http=async(path,method="GET",body,token)=>{const r=await fetch(`${alamat}${path}`,{method,headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return{status:r.status,body:await r.json()};};
 const utc=kerja=>db.$transaction(async tx=>{await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;return kerja(tx);});
 const hari=n=>`${new Date(Date.now()+7*3600000+n*86400000).toISOString().slice(0,10)}T10:00:00+07:00`;
-const buat=async(p,n)=>{
- const r=await http("/customer/bookings","POST",{mulaiPada:hari(n),barberPilihanId:barber.id,items:[{layananId:layanan.id,qty:1}]},p.token);assert.equal(r.status,201);
+const buat=async(p,n,jam="10:00")=>{
+ const r=await http("/customer/bookings","POST",{mulaiPada:hari(n).replace("T10:00:00","T"+jam+":00"),barberPilihanId:barber.id,items:[{layananId:layanan.id,qty:1}]},p.token);assert.equal(r.status,201);
  assert.equal((await http(`/bookings/${r.body.booking.id}/confirm`,"POST",{},operator[0].token)).status,200);return r.body.booking;
 };
 const snap=async(b,p,tujuan="dp",key=randomUUID())=>http(`/customer/bookings/${b.id}/payments/${tujuan}`,"POST",{kunciIdempotensi:key},p.token);
@@ -255,7 +255,8 @@ try{
  assert.ok(await db.riwayatBooking.count({where:{bookingId:ba.id,aksi:'PAYMENT_STATUS_VERIFIED'}})>0);
  assert.equal(await db.riwayatBooking.count({where:{bookingId:bi.id,aksi:'PAYMENT_STATUS_VERIFIED'}}),1);
  pass('Perubahan ledger memiliki audit atomik; rollback/retry menghasilkan satu catatan status berhasil');
- const bl=await buat(g,14),sl=await snap(bl,g);assert.equal(sl.status,200);
+ // Tetap di dalam jendela 14x24 jam saat suite dijalankan sebelum pukul 10 WIB.
+ const bl=await buat(g,13,"16:00"),sl=await snap(bl,g);assert.equal(sl.status,200);
  const tl=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:sl.body.transaksiId}}),pl=provider.get(tl.referensiProvider);
  assert.equal((await http(`/customer/bookings/${bl.id}/cancel`,'POST',{},g.token)).status,200);
  pl.transaction_status='settlement';pl.status_code='200';pl.settlement_time=waktu();

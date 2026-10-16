@@ -1,3 +1,5 @@
+> **Keputusan aktif 16 Oktober 2026:** Customer utama adalah React Web di port 5175. Customer Native pada panduan historis ini telah dipensiunkan sebagai arsip. Gunakan [panduan menjalankan terbaru](PANDUAN-JALANKAN-DEMO.md) dan [audit migrasi](CUSTOMER-WEB-UTAMA.md).
+
 > Dokumen historis dipindahkan dari `barberbarbar/README-FINAL.md`. Hasil dan path bukti mencatat waktu audit; panduan aktif ada di README utama dan laporan cleanup. Arsip privat kini berada di luar Stage 2.
 
 # Panduan ekosistem BARBER BARBAR

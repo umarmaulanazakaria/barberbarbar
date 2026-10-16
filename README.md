@@ -1,6 +1,6 @@
 # BARBER BARBAR — Web Management & Backend
 
-Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer App melalui satu API dan satu database PostgreSQL.
+Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer Web melalui satu API dan satu database PostgreSQL.
 
 Project untuk **tugas kuliah, pembelajaran Fullstack, portofolio, dan demonstrasi lokal**; bukan aplikasi Production. Hosting berbayar bukan kebutuhan demo. Mobile berhasil menurut laporan pengguna (**USER-REPORTED**); bukti rinci UI native/checkout Android belum lengkap. Email nyata, refund historis dan advisory tetap dicatat jujur. Lihat [acceptance demo](docs/DEMO-ACCEPTANCE.md).
 
@@ -37,7 +37,7 @@ server/scripts/            Pengujian, backup, dan audit
 docs/                      Panduan dan bukti audit
 ```
 
-Mobile Staff memakai JWT operator; Customer memakai JWT CUSTOMER tanpa akses operator. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
+Mobile Staff memakai JWT operator. Customer Web memakai sesi guest HttpOnly tanpa registrasi/login atau pemilihan barber; JWT CUSTOMER tetap tersedia untuk kompatibilitas Native historis. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
 
 ## Menjalankan lokal
 
@@ -50,8 +50,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\jalankan-barbe
 ```
 
 Launcher memeriksa identitas backend, memakai port 3000 dan proxy webhook 3001,
-serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web dan kedua
-Expo ikut dijalankan bila port kosong. Panduan pemulihan status, hasil pengujian
+serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web Admin (5173), Customer Web (5175), dan
+Expo Staff (8081) dijalankan bila port kosong. Customer Native dipensiunkan;
+source dan endpoint historis tetap dipertahankan. Panduan pemulihan status, hasil pengujian
 dan batas webhook laptop ada di [audit pembayaran dan antarmuka](docs/PAYMENT-WEBHOOK-UI-COPY-AUDIT.md).
 
 Persyaratan: Node.js/npm sesuai lockfile (baseline Node 24), PostgreSQL, serta `pg_dump`/`pg_restore` untuk backup. Database existing memerlukan konfigurasi pemilik. Dari `server`, pasang dependency lalu buat `.env` berdasarkan `.env.example`:
@@ -111,7 +112,9 @@ Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar 
 
 - [Web Management + Backend](https://github.com/umarmaulanazakaria/barberbarbar)
 - [Mobile ADMIN/STAFF](https://github.com/umarmaulanazakaria/barberbarbar-mobile)
-- [Customer App](https://github.com/umarmaulanazakaria/barberbarbar-customer)
+- Customer Web aktif: folder `../barberbarbar-customer-web`, http://127.0.0.1:5175
+- [Customer Native arsip](https://github.com/umarmaulanazakaria/barberbarbar-customer)
+- [Keputusan migrasi Customer Web](docs/CUSTOMER-WEB-UTAMA.md)
 - [Panduan ekosistem](docs/README-FINAL.md), [pengujian Android](docs/README-PENGUJIAN-ANDROID.md), [demo](docs/PANDUAN-DEMO.md).
 - [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
 

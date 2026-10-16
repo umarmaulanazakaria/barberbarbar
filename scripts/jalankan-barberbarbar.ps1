@@ -110,12 +110,14 @@ try {
     if (-not $HanyaBackend) {
         $npmCli = Join-Path (Split-Path $node -Parent) 'node_modules\npm\bin\npm-cli.js'
         Mulai-Aplikasi 'web' (Join-Path $repo 'client') $node @(('"'+$npmCli+'"'),'run','dev') 5173
-        foreach ($app in @(@{Nama='staff';Repo='barberbarbar-mobile';Port=8081},@{Nama='customer';Repo='barberbarbar-customer';Port=8082})) {
+        Mulai-Aplikasi 'customer-web' (Join-Path $akar 'barberbarbar-customer-web') $node @(('"'+$npmCli+'"'),'run','dev') 5175
+        foreach ($app in @(@{Nama='staff';Repo='barberbarbar-mobile';Port=8081})) {
             $folder = Join-Path $akar $app.Repo
             Mulai-Aplikasi $app.Nama $folder $node @(('"'+(Join-Path $folder 'node_modules\expo\bin\cli')+'"'),'start','--lan','--port',[string]$app.Port) $app.Port
         }
     }
     Write-Host "[SIAP] Backend 3000; proxy 3001. Log privat: $log"
+    if (-not $HanyaBackend) { Write-Host '[APLIKASI] Web Admin http://127.0.0.1:5173; Customer Web http://127.0.0.1:5175; Expo Staff 8081. Customer Native merupakan arsip dan tidak dijalankan.' }
     Write-Host 'Backend existing tidak di-build/restart otomatis. Laptop/tunnel mati berarti webhook tidak tersedia; bukan uptime Production.'
 } catch { Write-Error $_.Exception.Message -ErrorAction Continue; exit 1 }
 finally { if ($memilikiKunci) { $kunci.ReleaseMutex() }; if ($kunci) { $kunci.Dispose() } }

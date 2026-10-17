@@ -7,6 +7,8 @@ const tanggal = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => {
   const d = new Date(s + "T00:00:00Z"); return s >= "0001-01-01" && Number.isFinite(d.getTime()) && d.toISOString().slice(0, 10) === s;
 });
 export const skemaDaftarTerpadu = z.object({
+  urutan: z.enum(["ASC", "DESC"]).default("DESC"),
+  kelompok: z.enum(["SEMUA", "MENUNGGU"]).default("SEMUA"),
   jenis: z.enum(["SEMUA", "BOOKING", "WALK_IN"]).default("SEMUA"),
   periode: z.enum(["HARI_INI", "MENDATANG", "SEMUA", "RENTANG", "RIWAYAT"]).default("HARI_INI"), mulai: tanggal.optional(), selesai: tanggal.optional(),
   status: z.enum(["SEMUA", "WAITING", "AWAITING_DP", "PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE", "COMPLETED", "CANCELLED", "REJECTED", "NO_SHOW"]).default("SEMUA"),
@@ -19,7 +21,7 @@ export const hariWib = (w: Date) => new Date(w.getTime() + 7 * 3600000).toISOStr
 export const awalWib = (hari: string) => new Date(hari + "T00:00:00+07:00");
 type Baris = { jenis: "BOOKING" | "WALK_IN"; id: number; bookingId: number | null; pesananId: number | null;
   nomor: string; nomorPesanan: string | null; pelanggan: string; barber: string | null; jadwal: Date; checkIn: Date | null;
-  status: string; statusPembayaran: string; total: number; nomorInvoice: string | null };
+  status: string; statusPembayaran: string; total: number; nomorInvoice: string | null; layanan?: string[]; member?: boolean };
 export const daftarPesananTerpadu = (f: Filter) => basisData.$transaction(async tx => {
   await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
   const sekarang = await waktuDatabaseBooking(tx), hariIni = hariWib(sekarang), awal = awalWib(hariIni), akhir = new Date(awal.getTime() + 86400000);
@@ -55,20 +57,27 @@ export const daftarPesananTerpadu = (f: Filter) => basisData.$transaction(async 
       (SELECT COALESCE(sum(t.nominal),0) FROM "TransaksiPembayaranBooking" t JOIN "BuktiProviderBooking" e ON e."transaksiId"=t.id
        WHERE t."bookingId"=x.id AND t.status='SUCCEEDED' AND t.kanal='MIDTRANS' AND t.tujuan='DP' AND e."referensiProvider"=t."referensiProvider" AND e.nominal=t.nominal AND e."mataUang"='IDR'
         AND t."dibayarPada"<=t."deadlinePada" AND (t."roundKonfirmasiPada"=CASE WHEN x."sumberBooking"='TAMU' THEN x."dibuatPada" ELSE x."dikonfirmasiPada" END OR t."roundKonfirmasiPada"=x."dpDibawaDariRound")) < x."nominalDp")` : Prisma.empty}
+    ${f.kelompok === "MENUNGGU" ? Prisma.sql`AND status IN ('WAITING','AWAITING_DP','PENDING_CONFIRMATION','CONFIRMED','CHECKED_IN')` : Prisma.empty}
     ${f.status !== "SEMUA" ? Prisma.sql`AND status=${f.status}` : Prisma.empty}
     ${f.pembayaran === "PAID" ? Prisma.sql`AND lunas` : f.pembayaran === "UNPAID" ? Prisma.sql`AND NOT lunas AND status NOT IN ('CANCELLED','REJECTED','NO_SHOW')` : Prisma.empty}
     ${f.cari ? Prisma.sql`AND (nomor ILIKE ${"%" + f.cari + "%"} OR "nomorPesanan" ILIKE ${"%" + f.cari + "%"} OR pelanggan ILIKE ${"%" + f.cari + "%"})` : Prisma.empty}
   )`;
   const [hitung] = await tx.$queryRaw<{ jumlah: bigint }[]>(Prisma.sql`${kandidat} SELECT count(*) AS jumlah FROM tersaring`);
-  const baris = await tx.$queryRaw<(Omit<Baris, "statusPembayaran"> & { lunas: boolean })[]>(Prisma.sql`${kandidat} SELECT * FROM tersaring ORDER BY jadwal ${f.periode === "MENDATANG" ? Prisma.sql`ASC` : Prisma.sql`DESC`}, jenis ASC, id DESC LIMIT ${f.batas} OFFSET ${(f.halaman - 1) * f.batas}`);
+  const baris = await tx.$queryRaw<(Omit<Baris, "statusPembayaran"> & { lunas: boolean })[]>(Prisma.sql`${kandidat} SELECT * FROM tersaring ORDER BY jadwal ${f.periode === "MENDATANG" || f.urutan === "ASC" ? Prisma.sql`ASC` : Prisma.sql`DESC`}, jenis ASC, id DESC LIMIT ${f.batas} OFFSET ${(f.halaman - 1) * f.batas}`);
+  // Metadata kartu Staff dibaca berkelompok, tanpa mengubah workflow/kontrak lama.
+  const bookingMeta = await tx.booking.findMany({ where: { id: { in: baris.filter(b => b.jenis === "BOOKING").map(b => b.id) } }, select: { id: true, memberBebasDp: true, items: { select: { namaLayanan: true } } } });
+  const walkinMeta = await tx.pesanan.findMany({ where: { id: { in: baris.filter(b => b.jenis === "WALK_IN").map(b => b.id) } }, select: { id: true, membershipBerbayarId: true, items: { select: { namaLayanan: true } } } });
   const data: Baris[] = [];
   for (const b of baris) {
     const { lunas, ...rincian } = b;
     const ringkas = b.bookingId === null ? null : await bacaRingkasanPembayaran(tx, await ambilBookingPembayaran(tx, b.bookingId), sekarang);
-    data.push({ ...rincian, statusPembayaran: ringkas?.statusPembayaran ?? (lunas ? "PAID" : "UNPAID") });
+    const meta = b.jenis === "BOOKING" ? bookingMeta.find(m => m.id === b.id) : walkinMeta.find(m => m.id === b.id);
+    data.push({ ...rincian, layanan: meta?.items.map(i => i.namaLayanan) ?? [], member: !!meta && ("memberBebasDp" in meta ? meta.memberBebasDp : !!meta.membershipBerbayarId), statusPembayaran: ringkas?.statusPembayaran ?? (lunas ? "PAID" : "UNPAID") });
   }
   // Domain metrik tetap receipt kasir final existing. Tidak menjumlah receipt dan ledger booking dua kali.
+  const [operasional] = f.ringkasan === "true" ? await tx.$queryRaw<{ menunggu: bigint; berlangsung: bigint; selesai: bigint }[]>(Prisma.sql`${kandidat} SELECT count(*) FILTER (WHERE status IN ('WAITING','AWAITING_DP','PENDING_CONFIRMATION','CONFIRMED','CHECKED_IN')) menunggu, count(*) FILTER (WHERE status='IN_SERVICE') berlangsung, count(*) FILTER (WHERE status='COMPLETED') selesai FROM kandidat WHERE jadwal>=${awal} AND jadwal<${akhir}`) : [];
   const metrik = f.ringkasan === "true" ? {
+    operasionalHariIni: operasional ? { menunggu: Number(operasional.menunggu), berlangsung: Number(operasional.berlangsung), selesai: Number(operasional.selesai) } : undefined,
     waiting: await tx.pesanan.count({ where: { status: "WAITING" } }), inService: await tx.pesanan.count({ where: { status: "IN_SERVICE" } }),
     completedUnpaid: await tx.pesanan.count({ where: { status: "COMPLETED", statusPembayaran: "UNPAID" } }),
     paidToday: await tx.pembayaran.count({ where: { dibayarPada: { gte: awal, lt: akhir } } }),

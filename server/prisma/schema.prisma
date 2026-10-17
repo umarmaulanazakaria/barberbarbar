@@ -10,7 +10,7 @@ datasource db {
 model Pelanggan {
   id                  Int                       @id @default(autoincrement())
   nama                String
-  nomorTelepon        String                    @unique
+  nomorTelepon        String?                   @unique
   alamat              String?
   dibuatPada          DateTime                  @default(now())
   status              StatusPelanggan           @default(AKTIF)
@@ -54,6 +54,7 @@ model Pengguna {
   riwayatBooking RiwayatBooking[]
   transaksiBooking TransaksiPembayaranBooking[]
   keputusanRefund PermohonanRefundBooking[]
+  permintaanWalkIn PermintaanWalkIn[]
 }
 
 enum Role {
@@ -107,6 +108,7 @@ model Pesanan {
   pembayaran       Pembayaran?
   riwayatStatus    RiwayatStatusPesanan[]
   booking          Booking?
+  permintaanWalkIn PermintaanWalkIn?
 
   @@index([status])
   @@index([statusPembayaran])
@@ -522,4 +524,18 @@ model SesiBookingTamu {
   akses AksesBookingTamu @relation(fields: [bookingId], references: [bookingId], onDelete: Restrict)
   @@index([bookingId, versiAkses])
   @@index([kedaluwarsaPada])
+}
+
+// Kunci pengiriman operator; tidak menyimpan payload pelanggan atau pembayaran.
+model PermintaanWalkIn {
+  id              Int      @id @default(autoincrement())
+  penggunaId      Int
+  kunci           String   @db.VarChar(128)
+  sidikPermintaan String   @db.Char(64)
+  pesananId       Int      @unique
+  dibuatPada      DateTime @default(now()) @db.Timestamptz(3)
+  pengguna        Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Restrict)
+  pesanan         Pesanan  @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+
+  @@unique([penggunaId, kunci])
 }

@@ -1,3 +1,4 @@
+import { tambahWalkInDashboard, statusWalkInDashboard } from "../controllers/walkin-dashboard.controller.js";
 import { Router } from "express";
 import {
   ambilSemua,
@@ -13,6 +14,8 @@ const routerPesanan = Router();
 routerPesanan.get("/", ambilSemua);
 routerPesanan.get("/active", ambilAktif);
 routerPesanan.get("/history", ambilRiwayat);
+routerPesanan.post("/walk-in", tambahWalkInDashboard);
+routerPesanan.get("/walk-in/requests/:kunci", statusWalkInDashboard);
 routerPesanan.get("/:id", ambilBerdasarkanId);
 routerPesanan.post("/", tambah);
 routerPesanan.patch("/:id/status", ubahStatus);

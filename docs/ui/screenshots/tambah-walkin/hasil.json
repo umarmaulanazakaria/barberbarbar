@@ -1,0 +1,46 @@
+{
+  "hasil": [
+    {
+      "width": 320,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 375,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 390,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 768,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 1024,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 1280,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 1440,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    },
+    {
+      "width": 1920,
+      "status": "PASS",
+      "bukti": "Dashboard 4 KPI, drawer kanan tanpa route, pelanggan lama/baru, multi-layanan, footer tetap, tanpa overflow atau POST."
+    }
+  ],
+  "galat": [],
+  "catatan": "Backend utama asli, login manual, tidak submit. Nomor HP dimask. Tanpa gambar referensi sehingga bukan pixel-perfect."
+}

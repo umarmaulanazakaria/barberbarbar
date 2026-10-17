@@ -1,3 +1,4 @@
+import type { Prisma } from "../generated/prisma/client.js";
 import basisData from "../lib/prisma.js";
 
 export const ambilDataSemuaPelanggan = async () =>
@@ -6,21 +7,13 @@ export const ambilDataSemuaPelanggan = async () =>
     orderBy: { nama: "asc" },
   });
 
-export const tambahDataPelanggan = async (dataPelanggan: {
-  nama: string;
-  nomorTelepon: string;
-  alamat?: string | undefined;
-}) => {
-  const sama = await basisData.pelanggan.findUnique({
-    where: { nomorTelepon: dataPelanggan.nomorTelepon },
-  });
-  if (sama) return null;
-
-  return basisData.pelanggan.create({
-    data: { ...dataPelanggan, alamat: dataPelanggan.alamat ?? null },
-    include: { membership: true },
-  });
+type DataPelangganBaru = { nama: string; nomorTelepon: string | null; alamat?: string | undefined };
+export const buatPelangganDalamTransaksi = async (tx: Prisma.TransactionClient, data: DataPelangganBaru) => {
+  if (data.nomorTelepon && await tx.pelanggan.findUnique({ where: { nomorTelepon: data.nomorTelepon } })) return null;
+  return tx.pelanggan.create({ data: { ...data, alamat: data.alamat ?? null }, include: { membership: true } });
 };
+export const tambahDataPelanggan = (data: { nama: string; nomorTelepon: string; alamat?: string | undefined }) =>
+  basisData.$transaction(tx => buatPelangganDalamTransaksi(tx, data));
 
 export const ambilDataPelangganBerdasarkanId = async (idPelanggan: number) =>
   basisData.pelanggan.findUnique({

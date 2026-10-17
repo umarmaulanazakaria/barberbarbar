@@ -8,7 +8,17 @@ const router = Router();
 const id = (v: unknown) => { const p = z.coerce.number().int().positive().safeParse(v); if (!p.success) throw new KesalahanProfil(400, "ID tidak valid"); return p.data; };
 const baca = <T>(s: z.ZodType<T>, v: unknown) => { const p = s.safeParse(v); if (!p.success) throw new KesalahanProfil(400, "Data profil tidak valid. Nama dan nomor HP Indonesia wajib; email harus valid bila diisi."); return p.data; };
 router.use((_req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
-router.get("/options", async (_req, res) => {
+router.get("/options", async (req, res) => {
+  // Bentuk respons legacy dipertahankan. Pencarian combobox dibatasi di database.
+  if (Object.keys(req.query).length) {
+    const p = baca(z.object({ cari: z.string().trim().max(100).default(""), batas: z.coerce.number().int().min(1).max(25).default(20), id: z.coerce.number().int().positive().optional() }).strict(), req.query);
+    const hp = normalisasiHpWalkIn(p.cari);
+    const data = await basisData.profilPelanggan.findMany({ where: { diarsipkanPada: null, nomorTelepon: { not: null }, pelanggan: { status: "AKTIF" },
+      ...(p.id ? { id: p.id } : p.cari ? { OR: [{ nama: { contains: p.cari, mode: "insensitive" as const } }, ...(hp ? [{ nomorTelepon: { contains: hp } }] : [])] } : {}) },
+      select: { id: true, nama: true, nomorTelepon: true, pelanggan: { select: { membership: { select: { id: true, memberCode: true } } } } },
+      orderBy: [{ nama: "asc" }, { id: "asc" }], take: p.batas });
+    return res.json(data.map(p => ({ id: p.id, nama: p.nama, nomorTelepon: p.nomorTelepon, membership: p.pelanggan.membership })));
+  }
   const data = await basisData.profilPelanggan.findMany({ include: { pelanggan: { include: { membership: true } } }, orderBy: [{ nama: "asc" }, { id: "asc" }] });
   res.json(data.map(p => ({ id: p.id, pelangganId: p.pelangganId, nama: p.nama, nomorTelepon: p.nomorTelepon ?? "", email: p.email, catatan: p.catatan, diarsipkanPada: p.diarsipkanPada,
     status: p.diarsipkanPada ? "DIARSIPKAN" : p.pelanggan.status, membership: p.pelanggan.membership })));

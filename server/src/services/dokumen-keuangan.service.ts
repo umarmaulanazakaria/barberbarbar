@@ -1,11 +1,11 @@
 import db from "../lib/prisma.js";
 import { hitungUangBooking } from "../lib/uang-booking.js";
 
-type Item = { nama: string; qty: number; nominal: number };
+type Item = { nama: string; qty: number; nominal: number; hargaReguler: number };
 export type DokumenKeuangan = {
   id: string; nomor: string; referensi: string; pelanggan: string;
   sumber: "BOOKING" | "WALK_IN" | "MEMBERSHIP"; tanggal: string;
-  total: number; dibayar: number; refund: number; balance: number;
+  total: number; subtotal: number; diskon: number; dibayar: number; refund: number; balance: number;
   status: "UNPAID" | "DP_PAID" | "PAID" | "FREE"; final: boolean;
   keadaan: string; catatan: string | null; items: Item[]; struk: StrukKeuangan[];
 };
@@ -17,7 +17,17 @@ export type StrukKeuangan = {
 };
 const tanggalWib = (d: Date) => new Date(d.getTime() + 7 * 3600000).toISOString().slice(0, 10);
 const objek = (v: unknown): Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v) ? v as Record<string, unknown> : {};
-const itemsDokumen = (items: { namaLayanan: string; qty: number; subtotal: number }[]) => items.map(i => ({ nama: i.namaLayanan, qty: i.qty, nominal: i.subtotal }));
+const rincianHarga = (items: { layananId: number; namaLayanan: string; harga: number; qty: number; subtotal: number }[], snapshot: unknown, total: number) => {
+  const daftar = objek(snapshot).items;
+  const asli = Array.isArray(daftar) ? daftar.map(objek) : [];
+  const hasil = items.map(i => {
+    const cocok = asli.find(a => a.layananId === i.layananId && a.qty === i.qty && a.hargaMember === i.harga);
+    const reguler = cocok?.hargaReguler;
+    return { nama: i.namaLayanan, qty: i.qty, nominal: i.subtotal, hargaReguler: typeof reguler === "number" && Number.isSafeInteger(reguler) && reguler >= i.harga ? reguler : i.harga };
+  });
+  const subtotal = hasil.reduce((n, i) => n + i.hargaReguler * i.qty, 0);
+  return { items: hasil, subtotal, diskon: Math.max(0, subtotal - total) };
+};
 
 // Proyeksi baca saja. Pembayaran legacy Booking adalah artefak invoice, bukan kredit kedua.
 // Seluruh tabel dibaca dalam snapshot yang sama; tidak ada finalisasi invoice saat GET/cetak.
@@ -57,7 +67,8 @@ export const bacaKeuangan = () => db.$transaction(async tx => {
       pelanggan: nama, sumber: "BOOKING", tanggal: (b.invoice?.dibuatPada ?? b.dibuatPada).toISOString(), total: totalDokumen,
       dibayar: uang.jumlahDibayar, refund: uang.jumlahRefund, balance: terminal ? 0 : sisaDokumen,
       status: gratis ? "FREE" : totalDokumen > 0 && sisaDokumen === 0 ? "PAID" : uang.jumlahDibayar > 0 ? "DP_PAID" : "UNPAID",
-      final: !!b.invoice, keadaan: b.status, catatan: terminal ? "Kewajiban pelunasan dihentikan. Pembayaran dan refund mengikuti ledger terverifikasi; tidak ada pengembalian otomatis dari dokumen ini." : null, items: itemsDokumen(b.pesanan?.items ?? b.items), struk });
+      final: !!b.invoice, keadaan: b.status, catatan: terminal ? "Kewajiban pelunasan dihentikan. Pembayaran dan refund mengikuti ledger terverifikasi; tidak ada pengembalian otomatis dari dokumen ini." : null,
+      ...rincianHarga(b.pesanan?.items ?? b.items, b.pesanan?.snapshotManfaat ?? b.snapshotManfaat, totalDokumen), struk });
     if (b.status === "COMPLETED" && b.layananSelesaiPada && b.pesanan) selesai.push({ tanggal: b.layananSelesaiPada.toISOString(), barberId: b.pesanan.barberId,
       barber: b.pesanan.barber?.nama ?? "Belum ditentukan", total: uang.total, items: b.pesanan.items });
   }
@@ -76,7 +87,8 @@ export const bacaKeuangan = () => db.$transaction(async tx => {
       pelanggan: nama, sumber: "WALK_IN", tanggal: (sah && t ? t.dibayarPada : p.dibuatPada).toISOString(), total: p.total,
       dibayar: sah ? p.total : 0, refund: 0, balance: sah || gratis ? 0 : p.total,
       status: gratis ? "FREE" : sah ? "PAID" : "UNPAID", final: !!t || gratis, keadaan: p.status,
-      catatan: t && !sah ? "Dokumen historis tersedia, tetapi bukti penerimaan belum memenuhi verifikasi. Pembayaran ini tidak masuk pendapatan atau struk otomatis; perlu pemeriksaan Admin." : null, items: itemsDokumen(p.items), struk });
+      catatan: t && !sah ? "Dokumen historis tersedia, tetapi bukti penerimaan belum memenuhi verifikasi. Pembayaran ini tidak masuk pendapatan atau struk otomatis; perlu pemeriksaan Admin." : null,
+      ...rincianHarga(p.items, p.snapshotManfaat, p.total), struk });
     const akhir = p.riwayatStatus[0]?.diubahPada;
     if (p.status === "COMPLETED" && akhir) selesai.push({ tanggal: akhir.toISOString(), barberId: p.barberId, barber: p.barber?.nama ?? "Belum ditentukan", total: p.total, items: p.items });
   }
@@ -97,7 +109,7 @@ export const bacaKeuangan = () => db.$transaction(async tx => {
     dokumen.push({ id, nomor: sah ? `INV-MEM-${t.id}` : `TAG-MEM-${t.id}`, referensi: t.membership.memberCode,
       pelanggan: nama, sumber: "MEMBERSHIP", tanggal: (t.dibayarPada ?? t.dibuatPada).toISOString(), total: t.nominal,
       dibayar: sah ? t.nominal : 0, refund: 0, balance: sah ? 0 : t.nominal, status: sah ? "PAID" : "UNPAID", final: sah,
-      keadaan: t.status, catatan: t.status === "SUCCEEDED" && !sah ? "Bukti penerimaan perlu pemeriksaan Admin; belum dihitung sebagai pendapatan." : null, items: [{ nama: `${tujuan} 12 bulan`, qty: 1, nominal: t.nominal }], struk });
+      subtotal: t.nominal, diskon: 0, keadaan: t.status, catatan: t.status === "SUCCEEDED" && !sah ? "Bukti penerimaan perlu pemeriksaan Admin; belum dihitung sebagai pendapatan." : null, items: [{ nama: `${tujuan} 12 bulan`, qty: 1, nominal: t.nominal, hargaReguler: t.nominal }], struk });
   }
   return { dokumen: dokumen.sort((a, b) => b.tanggal.localeCompare(a.tanggal)), arus, selesai, perluPemeriksaan };
 }, { isolationLevel: "RepeatableRead", timeout: 20000 });

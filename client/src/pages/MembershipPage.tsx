@@ -16,7 +16,7 @@ type Penjualan = { id: number; membershipId: number; nominal: number; metode: st
 type Detail = Member & { berlakuMulai: string | null; isActive: boolean; penjualan: Penjualan[]; penggunaan: { id: number; pesananId: number; bookingId: number | null; selesaiPada: string }[] };
 type Paket = { harga: number; layananGratisId: number | null };
 type Pembelian = { berlakuSampaiDiharapkan?: string | null; profilId?: number; profilBaru?: { nama: string; nomorTelepon: string; email: string; catatan: string; konfirmasiDuplikat: boolean }; membershipId?: number; metode: string; kunci: string; hargaDiharapkan: number; diterima?: true; jumlahDiterima?: number; referensi?: string };
-const kunciPenjualan = () => { if(crypto.randomUUID)return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]!&15)|64;b[8]=(b[8]!&63)|128;const h=Array.from(b,v=>v.toString(16).padStart(2,"0")).join("");return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20); };
+const kunciPenjualan = () => { if(typeof crypto.randomUUID==="function")return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]!&15)|64;b[8]=(b[8]!&63)|128;const h=Array.from(b,v=>v.toString(16).padStart(2,"0")).join("");return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20); };
 const tgl = (v: string | null) => v ? waktuWib(v) : "Belum aktif";
 export default function MembershipPage() {
  const {user} = useAuth(), admin = user?.role === "ADMIN", klien = useQueryClient();

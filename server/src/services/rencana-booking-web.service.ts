@@ -8,7 +8,7 @@ import { kapasitasLintasBooking, siapkanKapasitasLintasBooking } from "../lib/ka
 import { terapkanManfaat } from "./manfaat-membership.service.js";
 import { KesalahanProfil } from "./profil-pelanggan.service.js";
 import { KesalahanPembayaranBooking } from "./pembayaran-booking.service.js";
-const gagal = (pesan: string, kode = 409): never => { throw new KesalahanPembayaranBooking(kode, pesan); };
+const gagal = (pesan: string, kode = 409, kodeKesalahan?: string): never => { throw new KesalahanPembayaranBooking(kode, pesan, kodeKesalahan); };
 export const skemaRencanaBooking = z.object({ nomorMember: z.string().trim().min(1).max(60).optional(),
   barberPilihanId: z.number().int().positive().optional(), mulaiPada: z.string().datetime({ offset: true }),
   items: z.array(z.object({ layananId: z.number().int().positive(), qty: z.number().int().min(1).max(10) }).strict()).min(1).max(20),
@@ -17,7 +17,7 @@ export type RencanaBookingWeb = z.infer<typeof skemaRencanaBooking>;
 export async function siapkanRencanaBookingWeb(tx: Prisma.TransactionClient, data: RencanaBookingWeb, bacaSaja = false) {
   const sekarang = await waktuDatabaseBooking(tx), mulaiPada = new Date(data.mulaiPada);
   const selesaiPada = validasiWaktuBooking(mulaiPada, slotLayananMenit, sekarang);
-  if (!selesaiPada) return gagal("Jadwal tidak tersedia. Pilih ulang tanggal dan slot Booking.");
+  if (!selesaiPada) return gagal("Jadwal tidak tersedia. Pilih ulang tanggal dan slot Booking.", 409, "SLOT_TIDAK_TERSEDIA");
   const layanan = await tx.layanan.findMany({ where: { id: { in: data.items.map(i => i.layananId) }, aktif: true } });
   if (layanan.length !== data.items.length) return gagal("Layanan tidak tersedia. Perbarui pilihan Anda.");
   let items = data.items.map(i => { const l = layanan.find(l => l.id === i.layananId)!; return { layananId: l.id, namaLayanan: l.nama, harga: l.harga, durasiMenit: l.durasiMenit, qty: i.qty, subtotal: l.harga * i.qty }; });
@@ -25,16 +25,16 @@ export async function siapkanRencanaBookingWeb(tx: Prisma.TransactionClient, dat
   let manfaat: Awaited<ReturnType<typeof terapkanManfaat>> | null = null;
   if (data.nomorMember) {
     try { manfaat = await terapkanManfaat(tx, items, data.nomorMember, mulaiPada); }
-    catch (e) { if (e instanceof KesalahanProfil) return gagal("Membership tidak dapat digunakan pada jadwal ini. Periksa nomor atau lanjutkan sebagai Booking Reguler."); throw e; }
-    if (!manfaat.member.pelanggan.profil || manfaat.member.pelanggan.profil.diarsipkanPada) return gagal("Membership tidak dapat digunakan untuk Booking ini. Hubungi Admin atau lanjutkan reguler.");
-    if (manfaat.gratis && await tx.booking.count({ where: { membershipBerbayarId: manfaat.member.id, status: { in: ["AWAITING_DP", "PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE"] }, items: { some: { layananId: manfaat.snapshot.layananGratisId, harga: 0 } } } })) return gagal("Manfaat Member belum dapat digunakan untuk Booking ini. Hubungi Admin atau lanjutkan reguler.");
+    catch (e) { if (e instanceof KesalahanProfil) return gagal("Membership tidak dapat digunakan pada jadwal ini. Periksa nomor atau lanjutkan sebagai Booking Reguler.", 409, "MEMBERSHIP_TIDAK_VALID"); throw e; }
+    if (!manfaat.member.pelanggan.profil || manfaat.member.pelanggan.profil.diarsipkanPada) return gagal("Membership tidak dapat digunakan untuk Booking ini. Hubungi Admin atau lanjutkan reguler.", 409, "MEMBERSHIP_TIDAK_VALID");
+    if (manfaat.gratis && await tx.booking.count({ where: { membershipBerbayarId: manfaat.member.id, status: { in: ["AWAITING_DP", "PENDING_CONFIRMATION", "CONFIRMED", "CHECKED_IN", "IN_SERVICE"] }, items: { some: { layananId: manfaat.snapshot.layananGratisId, harga: 0 } } } })) return gagal("Booking gratis aktif sudah ada untuk Membership ini. Selesaikan Booking tersebut sebelum menggunakan manfaat lagi.", 409, "BOOKING_GRATIS_AKTIF");
     items = manfaat.items;
   }
   const total = items.reduce((n, i) => n + i.subtotal, 0);
   if (!Number.isSafeInteger(total) || total > 2147483647 || total < 0 || total === 0 && !manfaat || !Number.isSafeInteger(subtotal)) return gagal("Nominal layanan tidak dapat diproses.");
   const barber = data.barberPilihanId ? await tx.barber.findFirst({ where: { id: data.barberPilihanId, aktif: true }, select: { id: true, nama: true } }) : null;
-  if (data.barberPilihanId && !barber) return gagal("Barber tidak tersedia. Pilih kembali.");
-  if (!await kapasitasLintasBooking(tx, { mulaiPada, selesaiPada }, { barberId: data.barberPilihanId, bacaSaja })) return gagal("Slot atau barber sudah tidak tersedia. Pilih jadwal lain.");
+  if (data.barberPilihanId && !barber) return gagal("Barber tidak tersedia. Pilih kembali.", 409, "SLOT_TIDAK_TERSEDIA");
+  if (!await kapasitasLintasBooking(tx, { mulaiPada, selesaiPada }, { barberId: data.barberPilihanId, bacaSaja })) return gagal("Slot atau barber sudah tidak tersedia. Pilih jadwal lain.", 409, "SLOT_TIDAK_TERSEDIA");
   return { items, manfaat, total, subtotal, mulaiPada, selesaiPada, barber };
 }
 export const kutipanBookingWeb = (data: RencanaBookingWeb) => db.$transaction(async tx => {

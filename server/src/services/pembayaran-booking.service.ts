@@ -6,7 +6,7 @@ import { hitungUangBooking } from "../lib/uang-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export class KesalahanPembayaranBooking extends Error {
-  constructor(public kode: number, public pesan: string) { super(pesan); }
+  constructor(public kode: number, public pesan: string, public kodeKesalahan?: string) { super(pesan); }
 }
 const gagal = (pesan: string, kode = 409): never => { throw new KesalahanPembayaranBooking(kode, pesan); };
 const hash = (data: unknown) => createHash("sha256").update(JSON.stringify(data)).digest("hex");

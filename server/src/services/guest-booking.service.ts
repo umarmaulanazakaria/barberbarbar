@@ -11,7 +11,7 @@ import { lepaskanTamuKedaluwarsa } from "../lib/kapasitas-lintas-booking.js";
 import { KesalahanPembayaranBooking, ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
 import { buatSnapBooking, sinkronkanPembayaranTamu } from "./midtrans-booking.service.js";
 
-const tolak = (pesan:string,kode=400):never=>{throw new KesalahanPembayaranBooking(kode,pesan);};
+const tolak = (pesan:string,kode=400,kodeKesalahan?:string):never=>{throw new KesalahanPembayaranBooking(kode,pesan,kodeKesalahan);};
 const hash=(v:string)=>createHash("sha256").update(v).digest("hex");
 const telepon=(s:string)=>{const n=s.replace(/[\s()-]/g,"");return n.startsWith("08")?"+62"+n.slice(1):n.startsWith("62")?"+"+n:n;};
 export const skemaGuest=z.object({...skemaRencanaBooking.shape,nama:z.string().trim().min(2).max(80).optional(),nomorTelepon:z.string().max(24).transform(telepon).pipe(z.string().regex(/^\+628\d{7,11}$/)).optional(),totalDiharapkan:z.number().int().nonnegative().max(2147483647).optional(),
@@ -23,10 +23,10 @@ export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisD
   const sekarang=await waktuDatabaseBooking(tx);
   const sidik=hash(JSON.stringify({...data,items:[...data.items].sort((a,b)=>a.layananId-b.layananId)}));
   const lama=await tx.aksesBookingTamu.findUnique({where:{kunciIdempotensi:data.kunciIdempotensi},select:{id:true}});
-  if(lama)return tolak("Permintaan ini sudah diterima. Periksa booking pada browser yang sama; jangan membuat pembayaran ulang.",409);
+  if(lama)return tolak("Permintaan ini sudah diterima. Periksa booking pada browser yang sama; jangan membuat pembayaran ulang.",409,"PERMINTAAN_SUDAH_DITERIMA");
   await lepaskanTamuKedaluwarsa(tx,sekarang);
   const {items,manfaat,total,mulaiPada,selesaiPada}=await siapkanRencanaBookingWeb(tx,data);
-  if(data.totalDiharapkan!==undefined&&data.totalDiharapkan!==total)return tolak("Harga berubah. Perbarui checkout sebelum membuat Booking.",409);
+  if(data.totalDiharapkan!==undefined&&data.totalDiharapkan!==total)return tolak("Harga berubah. Perbarui checkout sebelum membuat Booking.",409,"HARGA_BERUBAH");
   const durasiMenit=slotLayananMenit;
   const identitas=manfaat?{id:manfaat.member.pelangganId}:await tx.pelanggan.create({data:{nama:data.nama!,nomorTelepon:`TAMU-${randomUUID()}`}});
   const namaBooking=manfaat?"Booking Member":data.nama!,teleponBooking=manfaat?"":data.nomorTelepon!;

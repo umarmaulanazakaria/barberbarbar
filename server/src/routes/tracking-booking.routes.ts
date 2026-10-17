@@ -3,6 +3,7 @@ import {asalWebTamu} from "../lib/asal-web-tamu.js";
 import type {Request,Response} from "express";
 import {z} from "zod";
 import {batasiPercobaanPelanggan as batas} from "../middleware/batas-percobaan-pelanggan.middleware.js";
+import {batasiNomorMemberPublik} from "../middleware/batas-percobaan-pelanggan.middleware.js";
 import {KesalahanPembayaranBooking as Salah} from "../services/pembayaran-booking.service.js";
 import {KesalahanMidtrans} from "../lib/midtrans.js";
 import {buatBookingTamu,skemaGuest,detailBookingTamu,checkoutTamu,sinkronTamu} from "../services/guest-booking.service.js";
@@ -17,7 +18,7 @@ router.use((req,res,next)=>{
  try{kunciTracking();next()}catch{return res.status(503).json({pesan:"Akses booking belum tersedia."})}
 });
 const bungkus=(f:(req:Request,res:Response)=>Promise<unknown>)=>async(req:Request,res:Response)=>{try{await f(req,res)}catch(e){if(e instanceof Salah||e instanceof KesalahanMidtrans)return res.status(e.kode).json({pesan:e.message});console.error({kejadian:"TRACKING_REQUEST_FAILED",kategori:e instanceof Error?e.name:"UNKNOWN"});res.status(503).json({pesan:"Akses booking belum tersedia."});}};
-router.post("/",batas(20),bungkus(async(req,res)=>{const p=skemaGuest.safeParse(req.body);if(!p.success)throw new Salah(400,"Data booking tidak valid.");const t=rahasiaSesi(),hasil=await buatBookingTamu(p.data,hashRahasia(t));cookie(req,res,t,new Date(Date.parse(hasil.serverTime)+86400000));res.status(201).json({booking:hasil.booking,serverTime:hasil.serverTime});}));
+router.post("/",batas(20),batasiNomorMemberPublik(6),bungkus(async(req,res)=>{const p=skemaGuest.safeParse(req.body);if(!p.success)throw new Salah(400,"Data booking tidak valid.");const t=rahasiaSesi(),hasil=await buatBookingTamu(p.data,hashRahasia(t));cookie(req,res,t,new Date(Date.parse(hasil.serverTime)+86400000));res.status(201).json({booking:hasil.booking,serverTime:hasil.serverTime});}));
 router.post("/track",batas(12),bungkus(async(req,res)=>{const p=z.object({kode:z.string().max(100)}).strict().safeParse(req.body);if(!p.success)throw new Salah(404,"Kode booking tidak ditemukan atau tidak valid.");const s=await bukaSesiTracking(p.data.kode);cookie(req,res,s.token,s.kedaluwarsaPada);res.json({berhasil:true});}));
 router.post("/legacy",batas(12),bungkus(async(req,res)=>{const p=z.object({token:z.string().regex(/^[0-9a-f]{64}$/)}).strict().safeParse(req.body);if(!p.success)throw new Salah(404,"Kode booking tidak ditemukan atau tidak valid.");const s=await bukaSesiLegacy(p.data.token);cookie(req,res,s.token,s.kedaluwarsaPada);res.json({berhasil:true});}));
 router.get("/current",batas(180),bungkus(async(req,res)=>res.json(await detailBookingTamu(await verifikasiSesi(token(req))))));

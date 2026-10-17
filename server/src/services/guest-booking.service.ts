@@ -1,24 +1,22 @@
-import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { skemaRencanaBooking, siapkanRencanaBookingWeb } from "./rencana-booking-web.service.js";
 import { slotLayananMenit } from "../lib/slot-layanan.js";
 import { kebijakanBookingTamu } from "../lib/kebijakan-booking-tamu.js";
-import { KesalahanProfil } from "./profil-pelanggan.service.js";
 import {konfigurasiSnapPublik} from "../lib/midtrans.js";
 ﻿import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import basisData from "../lib/prisma.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
-import { validasiWaktuBooking } from "../lib/jadwal-booking.js";
-import { kapasitasLintasBooking, lepaskanTamuKedaluwarsa } from "../lib/kapasitas-lintas-booking.js";
+import { lepaskanTamuKedaluwarsa } from "../lib/kapasitas-lintas-booking.js";
 import { KesalahanPembayaranBooking, ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
 import { buatSnapBooking, sinkronkanPembayaranTamu } from "./midtrans-booking.service.js";
 
 const tolak = (pesan:string,kode=400):never=>{throw new KesalahanPembayaranBooking(kode,pesan);};
 const hash=(v:string)=>createHash("sha256").update(v).digest("hex");
 const telepon=(s:string)=>{const n=s.replace(/[\s()-]/g,"");return n.startsWith("08")?"+62"+n.slice(1):n.startsWith("62")?"+"+n:n;};
-export const skemaGuest=z.object({nomorMember:z.string().trim().min(1).max(60).optional(),nama:z.string().trim().min(2).max(80),nomorTelepon:z.string().max(24).transform(telepon).pipe(z.string().regex(/^\+628\d{7,11}$/)),
-  mulaiPada:z.string().datetime({offset:true}),items:z.array(z.object({layananId:z.number().int().positive(),qty:z.number().int().min(1).max(10)}).strict()).min(1).max(20),kunciIdempotensi:z.uuid()}).strict()
-  .refine(d=>new Set(d.items.map(i=>i.layananId)).size===d.items.length);
+export const skemaGuest=z.object({...skemaRencanaBooking.shape,nama:z.string().trim().min(2).max(80).optional(),nomorTelepon:z.string().max(24).transform(telepon).pipe(z.string().regex(/^\+628\d{7,11}$/)).optional(),totalDiharapkan:z.number().int().nonnegative().max(2147483647).optional(),
+  kunciIdempotensi:z.uuid()}).strict().refine(d=>new Set(d.items.map(i=>i.layananId)).size===d.items.length)
+  .refine(d=>!!d.nomorMember||!!d.nama&&!!d.nomorTelepon);
 export type DataGuest=z.infer<typeof skemaGuest>;
 export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisData.$transaction(async tx=>{
   await kunciJadwalBooking(tx);
@@ -26,27 +24,17 @@ export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisD
   const sidik=hash(JSON.stringify({...data,items:[...data.items].sort((a,b)=>a.layananId-b.layananId)}));
   const lama=await tx.aksesBookingTamu.findUnique({where:{kunciIdempotensi:data.kunciIdempotensi},select:{id:true}});
   if(lama)return tolak("Permintaan ini sudah diterima. Periksa booking pada browser yang sama; jangan membuat pembayaran ulang.",409);
-  const layanan=await tx.layanan.findMany({where:{id:{in:data.items.map(i=>i.layananId)},aktif:true}});
-  if(layanan.length!==data.items.length)return tolak("Layanan tidak tersedia");
-  let items=data.items.map(i=>{const l=layanan.find(l=>l.id===i.layananId)!;return{layananId:l.id,namaLayanan:l.nama,harga:l.harga,durasiMenit:l.durasiMenit,qty:i.qty,subtotal:l.harga*i.qty};});
-  let manfaat: Awaited<ReturnType<typeof terapkanManfaat>> | null = null;
-  if(data.nomorMember){
-    try { manfaat=await terapkanManfaat(tx,items,data.nomorMember,new Date(data.mulaiPada)); } catch(e) { if(e instanceof KesalahanProfil)return tolak(e.message,e.status);throw e; }
-    if(manfaat.gratis && await tx.booking.count({where:{membershipBerbayarId:manfaat.member.id,status:{in:["AWAITING_DP","PENDING_CONFIRMATION","CONFIRMED","CHECKED_IN","IN_SERVICE"]},items:{some:{layananId:manfaat.snapshot.layananGratisId,harga:0}}}}))return tolak("Member sudah memiliki satu Booking Haircut + Wash gratis yang aktif.",409);
-    items=manfaat.items;
-  }
-  const durasiMenit=slotLayananMenit,total=items.reduce((n,i)=>n+i.subtotal,0),mulaiPada=new Date(data.mulaiPada);
-  const selesaiPada=validasiWaktuBooking(mulaiPada,durasiMenit,sekarang);
-  if(!selesaiPada)return tolak("Jadwal tidak valid. Jam operasional 09.00–23.00 WIB, maksimal 14 hari, minimal 3 jam untuk hari ini.");
-  if((total<=0&&!manfaat)||total>2147483647||!Number.isSafeInteger(total)||items.some(i=>i.harga<0||i.durasiMenit<=0))return tolak("Nominal layanan tidak dapat diproses");
-  if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada}))return tolak("Kapasitas jadwal sudah penuh. Pilih waktu lain.",409);
-  // Nomor HP adalah klaim kontak, bukan bukti kepemilikan akun. Jangan cari/link akun dari nomor ini.
-  const identitas=await tx.pelanggan.create({data:{nama:data.nama,nomorTelepon:`TAMU-${randomUUID()}`}});
+  await lepaskanTamuKedaluwarsa(tx,sekarang);
+  const {items,manfaat,total,mulaiPada,selesaiPada}=await siapkanRencanaBookingWeb(tx,data);
+  if(data.totalDiharapkan!==undefined&&data.totalDiharapkan!==total)return tolak("Harga berubah. Perbarui checkout sebelum membuat Booking.",409);
+  const durasiMenit=slotLayananMenit;
+  const identitas=manfaat?{id:manfaat.member.pelangganId}:await tx.pelanggan.create({data:{nama:data.nama!,nomorTelepon:`TAMU-${randomUUID()}`}});
+  const namaBooking=manfaat?"Booking Member":data.nama!,teleponBooking=manfaat?"":data.nomorTelepon!;
   const token=randomBytes(32).toString("hex"),deadlineDp=new Date(sekarang.getTime()+kebijakanBookingTamu.deadlineDpMenit*60000);
-  const booking=await tx.booking.create({data:{nomorBooking:`BKG-${randomUUID()}`,sumberBooking:"TAMU",pelangganId:identitas.id,status:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,
-    ...(manfaat?{membershipBerbayarId:manfaat.member.id,memberBebasDp:true,snapshotManfaat:manfaat.snapshot,dikonfirmasiPada:sekarang}:{}),
+  const booking=await tx.booking.create({data:{nomorBooking:`BKG-${randomUUID()}`,sumberBooking:"TAMU",pelangganId:identitas.id,profilPelangganId:manfaat?.member.pelanggan.profil?.id??null,barberPilihanId:data.barberPilihanId??null,status:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,
+    ...(manfaat?{membershipBerbayarId:manfaat.member.id,memberBebasDp:true,snapshotManfaat:{...manfaat.snapshot,pemesananCukupNomorMember:true},dikonfirmasiPada:sekarang}:{}),
     mulaiPada,selesaiPada,durasiMenit,subtotal:total,total,membershipAktif:!!manfaat,discountPercent:0,diskon:0,dpPersen:manfaat?0:kebijakanBookingTamu.dpPersen,nominalDp:manfaat?0:Math.ceil(total*kebijakanBookingTamu.dpPersen/100),deadlineDp:manfaat?null:deadlineDp,
-    items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:data.nama,nomorTelepon:data.nomorTelepon,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000),...(tokenSesiHash?{sesi:{create:{tokenHash:tokenSesiHash,sumber:"SEMENTARA",versiAkses:1,kedaluwarsaPada:new Date(sekarang.getTime()+24*3600000)}}}:{})}},
+    items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:namaBooking,nomorTelepon:teleponBooking,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000),...(tokenSesiHash?{sesi:{create:{tokenHash:tokenSesiHash,sumber:"SEMENTARA",versiAkses:1,kedaluwarsaPada:new Date(sekarang.getTime()+24*3600000)}}}:{})}},
     riwayat:{create:{aksi:manfaat?"MEMBER_GUEST_CONFIRMED":"GUEST_CREATED",statusSebelum:manfaat?"CONFIRMED":"AWAITING_DP",statusSetelah:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,rincian:{sumber:"WEB_TAMU"}}}},select:{id:true,nomorBooking:true,deadlineDp:true}});
   return{token,tautanPribadi:`#/b/${token}`,booking,serverTime:sekarang.toISOString()};
 },{isolationLevel:"ReadCommitted"});

@@ -13,13 +13,13 @@ export async function lepaskanTamuKedaluwarsa(tx: Prisma.TransactionClient, seka
     if(hasil.count)await tx.riwayatBooking.create({data:{bookingId:b.id,aksi:"TIMEOUT_DP",statusSebelum:"AWAITING_DP",statusSetelah:"CANCELLED",dibuatPada:sekarang,rincian:{sumber:"GUEST_DEADLINE",alasan:"DP guest belum diverifikasi dalam 15 menit"}}});
   }
 }
-export async function kapasitasLintasBooking(tx: Prisma.TransactionClient, calon: {mulaiPada:Date;selesaiPada:Date}, opsi: {
-  bookingId?:number|undefined;pesananId?:number|undefined;barberId?:number|null|undefined;pelangganId?:number|undefined;hanyaJikaAdaTamu?:boolean;
+export async function siapkanKapasitasLintasBooking(tx: Prisma.TransactionClient, opsi: {
+  bookingId?:number|undefined;pesananId?:number|undefined;barberId?:number|null|undefined;pelangganId?:number|undefined;hanyaJikaAdaTamu?:boolean;bacaSaja?:boolean;
 } = {}) {
   const sekarang=await waktuDatabaseBooking(tx);
-  await lepaskanTamuKedaluwarsa(tx,sekarang);
+  if(!opsi.bacaSaja)await lepaskanTamuKedaluwarsa(tx,sekarang);
   const aktif=await tx.barber.findMany({where:{aktif:true},select:{id:true}});
-  const booking=await tx.booking.findMany({where:{status:{in:[...statusReservasi]},...(opsi.bookingId?{id:{not:opsi.bookingId}}:{})},
+  const booking=await tx.booking.findMany({where:{status:{in:[...statusReservasi]},...(opsi.bacaSaja?{NOT:{sumberBooking:"TAMU",status:"AWAITING_DP" as const,deadlineDp:{lte:sekarang}}}:{}),...(opsi.bookingId?{id:{not:opsi.bookingId}}:{})},
     select:{id:true,sumberBooking:true,pelangganId:true,pesananId:true,barberPilihanId:true,barberDisetujuiId:true,barberFinalId:true,mulaiPada:true,selesaiPada:true}});
   const orders=await tx.pesanan.findMany({where:{status:{in:["WAITING","IN_SERVICE"]},...(opsi.pesananId?{id:{not:opsi.pesananId}}:{}),...(opsi.bookingId?{NOT:{booking:{id:opsi.bookingId}}}:{})},
     select:{id:true,barberId:true,checkInTime:true,snapshotManfaat:true,items:{select:{durasiMenit:true,qty:true}},booking:{select:{id:true,durasiMenit:true}}}});
@@ -31,9 +31,15 @@ export async function kapasitasLintasBooking(tx: Prisma.TransactionClient, calon
     if(terhubung){if(terhubung.selesaiPada<akhir)terhubung.selesaiPada=akhir;continue;}
     rentang.push({id:-p.id,sumberBooking:"PESANAN",pelangganId:-1,pesananId:p.id,barberPilihanId:null,barberDisetujuiId:null,barberFinalId:p.barberId,barberId:p.barberId,mulaiPada:p.checkInTime,selesaiPada:akhir});
   }
+  return (calon: {mulaiPada:Date;selesaiPada:Date}, barberId=opsi.barberId) => {
   const bentrok=rentang.filter(b=>b.mulaiPada<calon.selesaiPada&&b.selesaiPada>calon.mulaiPada);
   if(opsi.hanyaJikaAdaTamu&&!bentrok.some(b=>b.sumberBooking==="TAMU"))return true;
   if(opsi.pelangganId&&bentrok.some(b=>b.pelangganId===opsi.pelangganId))return false;
-  if(opsi.barberId&&bentrok.some(b=>b.barberId===opsi.barberId))return false;
-  return kapasitasBookingCukup(bentrok,calon,aktif.length)&&alokasiBarberUtuh(rentang,{...calon,barberId:opsi.barberId??null},aktif.map(b=>b.id));
+  if(barberId&&bentrok.some(b=>b.barberId===barberId))return false;
+  return kapasitasBookingCukup(bentrok,calon,aktif.length)&&alokasiBarberUtuh(rentang,{...calon,barberId:barberId??null},aktif.map(b=>b.id));
+  };
+}
+
+export async function kapasitasLintasBooking(tx: Prisma.TransactionClient, calon: {mulaiPada:Date;selesaiPada:Date}, opsi: Parameters<typeof siapkanKapasitasLintasBooking>[1] = {}) {
+  return (await siapkanKapasitasLintasBooking(tx,opsi))(calon);
 }

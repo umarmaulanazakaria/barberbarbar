@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { batasiPercobaanPelanggan } from "../middleware/batas-percobaan-pelanggan.middleware.js";
+import { batasiPercobaanPelanggan, batasiNomorMemberPublik } from "../middleware/batas-percobaan-pelanggan.middleware.js";
 import { KesalahanProfil, transaksiProfil } from "../services/profil-pelanggan.service.js";
 import { terapkanManfaat } from "../services/manfaat-membership.service.js";
 import { lihatMemberBooking, verifikasiMemberBooking } from "../services/verifikasi-member-booking.service.js";
@@ -14,7 +14,7 @@ const katalog = async (tx: import("../generated/prisma/client.js").Prisma.Transa
   if (daftar.length !== pilihan.length) throw new KesalahanProfil(409, "Layanan tidak tersedia.");
   return pilihan.map(i => { const l = daftar.find(l => l.id === i.layananId)!; return { layananId: l.id, namaLayanan: l.nama, harga: l.harga, durasiMenit: l.durasiMenit, qty: i.qty, subtotal: l.harga * i.qty }; });
 };
-routerManfaatPublik.post("/member-quote", batasiPercobaanPelanggan(15), async (req, res) => {
+routerManfaatPublik.post("/member-quote", batasiPercobaanPelanggan(15), batasiNomorMemberPublik(30), async (req, res) => {
   const d = baca(z.object({ nomorMember: z.string().trim().min(1).max(60), mulaiPada: z.string().datetime({ offset: true }), items }).strict(), req.body);
   const hasil = await transaksiProfil(async tx => { const manfaat = await terapkanManfaat(tx, await katalog(tx, d.items), d.nomorMember, new Date(d.mulaiPada)); return { items: manfaat.items.map(i => ({ layananId: i.layananId, harga: i.harga, subtotal: i.subtotal })), total: manfaat.items.reduce((n, i) => n + i.subtotal, 0), bebasDp: true }; });
   res.set("Cache-Control", "no-store").json(hasil); // Tidak mengembalikan identitas pemilik.

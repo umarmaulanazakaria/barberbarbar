@@ -1,3 +1,4 @@
+import { nomorMemberTerbit } from "../lib/nomor-member.js";
 import { Router } from "express";
 import { z } from "zod";
 import basisData from "../lib/prisma.js";
@@ -17,7 +18,7 @@ router.get("/options", async (req, res) => {
       ...(p.id ? { id: p.id } : p.cari ? { OR: [{ nama: { contains: p.cari, mode: "insensitive" as const } }, ...(hp ? [{ nomorTelepon: { contains: hp } }] : [])] } : {}) },
       select: { id: true, nama: true, nomorTelepon: true, pelanggan: { select: { membership: { select: { id: true, memberCode: true } } } } },
       orderBy: [{ nama: "asc" }, { id: "asc" }], take: p.batas });
-    return res.json(data.map(p => ({ id: p.id, nama: p.nama, nomorTelepon: p.nomorTelepon, membership: p.pelanggan.membership })));
+    return res.json(data.map(p => ({ id: p.id, nama: p.nama, nomorTelepon: p.nomorTelepon, membership: p.pelanggan.membership ? { ...p.pelanggan.membership, memberCode: nomorMemberTerbit(p.pelanggan.membership.memberCode) } : null })));
   }
   const data = await basisData.profilPelanggan.findMany({ include: { pelanggan: { include: { membership: true } } }, orderBy: [{ nama: "asc" }, { id: "asc" }] });
   res.json(data.map(p => ({ id: p.id, pelangganId: p.pelangganId, nama: p.nama, nomorTelepon: p.nomorTelepon ?? "", email: p.email, catatan: p.catatan, diarsipkanPada: p.diarsipkanPada,

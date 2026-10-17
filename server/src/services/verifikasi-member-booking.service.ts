@@ -31,10 +31,20 @@ export const verifikasiMemberBooking = (id: number, penggunaId: number, data: { 
   const total = items.reduce((n, i) => n + i.subtotal, 0), uang = await bacaRingkasanPembayaran(tx, await ambilBookingPembayaran(tx, id));
   if (!Number.isSafeInteger(total) || total > 2147483647 || total < uang.jumlahDibayar) throw new KesalahanProfil(409, "Tagihan baru tidak dapat mengurangi pembayaran yang sudah tercatat.");
   const sekarang = await waktuDatabaseBooking(tx), perluDp = !manfaat && !uang.dpTerverifikasi;
+  const cukupNomor = b.snapshotManfaat && typeof b.snapshotManfaat === "object" && !Array.isArray(b.snapshotManfaat) && b.snapshotManfaat.pemesananCukupNomorMember === true;
+  let pemesan: { pelangganId: number; profilPelangganId: number | null } | undefined;
+  if (cukupNomor) {
+    if (manfaat) pemesan = { pelangganId: manfaat.member.pelangganId, profilPelangganId: manfaat.member.pelanggan.profil?.id ?? null };
+    else {
+      if (data.nama.trim().length < 2 || !/^08\d{8,11}$/.test(normalisasiHpWalkIn(data.nomorTelepon))) throw new KesalahanProfil(400, "Isi nama dan HP orang yang hadir sebelum melepas Membership. Akun pemilik tidak diubah.");
+      const tamu = await tx.pelanggan.create({ data: { nama: data.nama.trim(), nomorTelepon: null } });
+      pemesan = { pelangganId: tamu.id, profilPelangganId: null };
+    }
+  }
   await tx.itemBooking.deleteMany({ where: { bookingId: id } }); await tx.itemBooking.createMany({ data: items.map(i => ({ ...i, bookingId: id })) });
-  await tx.booking.update({ where: { id }, data: { membershipBerbayarId: manfaat?.member.id ?? null, memberBebasDp: !!manfaat, identitasMemberPada: manfaat ? sekarang : null,
-    snapshotManfaat: manfaat?.snapshot ?? { koreksi: "HARGA_NORMAL", penggunaId }, membershipAktif: !!manfaat, discountPercent: 0, subtotal: total, diskon: 0, total, nominalDp: manfaat ? 0 : Math.ceil(total / 2), dpPersen: manfaat ? 0 : 50,
+  await tx.booking.update({ where: { id }, data: { ...pemesan, membershipBerbayarId: manfaat?.member.id ?? null, memberBebasDp: !!manfaat, identitasMemberPada: manfaat ? sekarang : null,
+    snapshotManfaat: { ...(manfaat?.snapshot ?? { koreksi: "HARGA_NORMAL", penggunaId }), ...(cukupNomor ? { pemesananCukupNomorMember: true } : {}) }, membershipAktif: !!manfaat, discountPercent: 0, subtotal: total, diskon: 0, total, nominalDp: manfaat ? 0 : Math.ceil(total / 2), dpPersen: manfaat ? 0 : 50,
     deadlineDp: perluDp ? new Date(sekarang.getTime() + 15 * 60000) : null, ...(perluDp ? { status: "AWAITING_DP", checkInPada: null } : {}) } });
-  await tx.riwayatBooking.create({ data: { bookingId: id, penggunaId, aksi: "VERIFY_MEMBERSHIP_IDENTITY", statusSebelum: b.status, statusSetelah: perluDp ? "AWAITING_DP" : b.status, rincian: { memberSebelumnya: b.membershipBerbayarId, memberBaru: manfaat?.member.id ?? null, hargaNormal: data.hargaNormal, totalSebelumnya: b.total, totalBaru: total } } });
+  await tx.riwayatBooking.create({ data: { bookingId: id, penggunaId, aksi: "VERIFY_MEMBERSHIP_IDENTITY", statusSebelum: b.status, statusSetelah: perluDp ? "AWAITING_DP" : b.status, rincian: { pelangganSebelumnya: b.pelangganId, pelangganBaru: pemesan?.pelangganId ?? b.pelangganId, memberSebelumnya: b.membershipBerbayarId, memberBaru: manfaat?.member.id ?? null, hargaNormal: data.hargaNormal, totalSebelumnya: b.total, totalBaru: total } } });
   return { tersimpan: true, perluDp };
 });

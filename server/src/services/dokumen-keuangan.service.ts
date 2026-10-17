@@ -1,3 +1,4 @@
+import { nomorMemberTerbit } from "../lib/nomor-member.js";
 import db from "../lib/prisma.js";
 import { hitungUangBooking } from "../lib/uang-booking.js";
 
@@ -104,9 +105,9 @@ export const bacaKeuangan = () => db.$transaction(async tx => {
     const periode = t.periodeMulai && t.periodeSampai ? `${tanggalWib(t.periodeMulai)} s.d. ${tanggalWib(t.periodeSampai)}` : null;
     const struk: StrukKeuangan[] = sah ? [{ id: `MP-${t.id}`, dokumenId: id, nomor: `INV-MEM-${t.id}`, pelanggan: nama,
       sumber: "MEMBERSHIP", tujuan, metode: t.metode, nominal: t.nominal, diterima: t.jumlahDiterima,
-      kembalian: Math.max(0, (t.jumlahDiterima ?? t.nominal) - t.nominal), tanggal: t.dibayarPada!.toISOString(), referensi: t.membership.memberCode, periode }] : [];
+      kembalian: Math.max(0, (t.jumlahDiterima ?? t.nominal) - t.nominal), tanggal: t.dibayarPada!.toISOString(), referensi: nomorMemberTerbit(t.membership.memberCode) ?? "Menunggu aktivasi", periode }] : [];
     if (sah) { pernah.add(t.membershipId); arus.push({ tanggal: t.dibayarPada!.toISOString(), sumber: "MEMBERSHIP", metode: t.metode, nominal: t.nominal }); }
-    dokumen.push({ id, nomor: sah ? `INV-MEM-${t.id}` : `TAG-MEM-${t.id}`, referensi: t.membership.memberCode,
+    dokumen.push({ id, nomor: sah ? `INV-MEM-${t.id}` : `TAG-MEM-${t.id}`, referensi: nomorMemberTerbit(t.membership.memberCode) ?? "Menunggu aktivasi",
       pelanggan: nama, sumber: "MEMBERSHIP", tanggal: (t.dibayarPada ?? t.dibuatPada).toISOString(), total: t.nominal,
       dibayar: sah ? t.nominal : 0, refund: 0, balance: sah ? 0 : t.nominal, status: sah ? "PAID" : "UNPAID", final: sah,
       subtotal: t.nominal, diskon: 0, keadaan: t.status, catatan: t.status === "SUCCEEDED" && !sah ? "Bukti penerimaan perlu pemeriksaan Admin; belum dihitung sebagai pendapatan." : null, items: [{ nama: `${tujuan} 12 bulan`, qty: 1, nominal: t.nominal, hargaReguler: t.nominal }], struk });

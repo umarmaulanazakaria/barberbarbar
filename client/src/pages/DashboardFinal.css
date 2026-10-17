@@ -6,3 +6,10 @@
 .dashboard-final .stat-grid{grid-auto-rows:1fr}
 .dashboard-final .df-table th{text-align:left;font-size:.7rem}.dashboard-final .df-table td{font-size:.78rem}.dashboard-final .df-table .ui-status{font-size:.66rem!important}
 @media(min-width:1024px) and (max-width:1199px){.df-main-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Proporsi konsep Dashboard; halaman manajemen lain mempertahankan shell existing. */
+.admin-dashboard{--admin-text:#1b2a40;--admin-border:#e8ebf1;--admin-primary:#5149d6}
+.admin-dashboard .admin-topbar{height:63px}
+.admin-dashboard .admin-content{padding:24px}
+@media(min-width:1024px){.admin-dashboard .admin-sidebar{width:194px}.admin-dashboard .admin-workspace{margin-left:194px}.admin-dashboard .admin-brand{padding-left:12px;padding-right:12px;gap:7px}.admin-dashboard .admin-brand strong{font-size:.67rem}.admin-dashboard .admin-brand span{font-size:.6rem}}
+@media(max-width:767px){.admin-dashboard .admin-content{padding:20px 16px}}

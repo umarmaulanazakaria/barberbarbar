@@ -1,0 +1,88 @@
+{
+  "waktu": "2026-10-17T06:48:28.173Z",
+  "sumber": "http://localhost:5173 → proxy /api → backend utama 3000",
+  "hasil": [
+    {
+      "uji": "Login resmi dan Booking default",
+      "status": "PASS",
+      "bukti": "Sesi login manual; GET backend asli tanpa mock/intersepsi respons."
+    },
+    {
+      "uji": "Empat KPI, dua panel, label dan nominal backend",
+      "status": "PASS",
+      "bukti": {
+        "bookingHariIni": 4,
+        "menungguCheckIn": 2,
+        "sedangDilayani": 0,
+        "pembayaranHariIni": 0
+      }
+    },
+    {
+      "uji": "Lima kolom dan status terpisah",
+      "status": "PASS",
+      "bukti": "Jumlah baris sesuai respons backend, maksimal 10."
+    },
+    {
+      "uji": "Proporsi desktop",
+      "status": "PASS",
+      "bukti": {
+        "sidebar": 194,
+        "topbar": 63,
+        "padding": "24px"
+      }
+    },
+    {
+      "uji": "Visual 1440px",
+      "status": "PASS",
+      "bukti": "Empat kartu seragam; tanpa horizontal overflow; screenshot data backend asli."
+    },
+    {
+      "uji": "Visual 390px",
+      "status": "PASS",
+      "bukti": "Empat kartu seragam; tanpa horizontal overflow; screenshot data backend asli."
+    },
+    {
+      "uji": "Lihat semua dan pagination lintas halaman",
+      "status": "DEFERRED",
+      "alasan": "Backend hanya memiliki 4 booking aktif; tidak menambah data."
+    },
+    {
+      "uji": "Tab Walk-in",
+      "status": "PASS",
+      "bukti": {
+        "halaman": 1,
+        "total": 0
+      }
+    },
+    {
+      "uji": "Pencarian dan kondisi kosong",
+      "status": "PASS",
+      "bukti": "Query server nyata tanpa hasil; halaman pertama."
+    },
+    {
+      "uji": "Accordion, kategori tunggal dan Lihat lainnya",
+      "status": "DEFERRED",
+      "alasan": "Tidak ada masalah aktif dari backend; kategori kosong sengaja tidak ditampilkan."
+    },
+    {
+      "uji": "Drawer dan pemulihan posisi",
+      "status": "PASS",
+      "bukti": "Rincian dan tiga nilai finansial backend; Escape mempertahankan tab, pencarian, dan scroll."
+    },
+    {
+      "uji": "Error jaringan dan pemulihan",
+      "status": "PASS",
+      "bukti": "Transport GET sengaja digagalkan; tidak memalsukan payload; tidak mengarang nol; pulih dari backend asli."
+    },
+    {
+      "uji": "Loading",
+      "status": "PASS",
+      "bukti": "GET asli ditunda 750ms tanpa mengubah respons; skeleton tampil lalu data backend."
+    },
+    {
+      "uji": "Refresh dan runtime",
+      "status": "PASS",
+      "bukti": "Refetch backend berhasil; tidak ada pageerror. Tidak memutasi status/data."
+    }
+  ]
+}

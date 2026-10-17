@@ -1,3 +1,4 @@
+import { useFokusDialog } from "../lib/fokus-dialog";
 import { statusRamah } from '../lib/teks';
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -53,6 +54,7 @@ export default function PaymentModal({
   open,
   onClose,
 }: PaymentModalProps) {
+  const panelDialog = useFokusDialog(open);
   const queryClient = useQueryClient();
   const toast = useToast();
   const [method, setMethod] = useState<MetodePembayaran>("CASH");
@@ -179,7 +181,7 @@ export default function PaymentModal({
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) {
+      if (!event.defaultPrevented && event.key === "Escape" && !busy) {
         onClose();
       }
     };
@@ -232,7 +234,7 @@ export default function PaymentModal({
         }
       }}
     >
-      <Card className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
+      <Card ref={panelDialog} role="dialog" aria-modal="true" aria-label="Pembayaran pesanan" className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-5xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
         <div className="flex items-start justify-between border-b border-slate-200 px-4 py-4 sm:px-6">
           <div>
             <h2 className="text-xl font-extrabold text-slate-900">Pembayaran</h2>
@@ -352,7 +354,7 @@ export default function PaymentModal({
                           <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50">
                             <button
                               type="button"
-                              aria-label={`Decrease ${item.namaLayanan} quantity`}
+                              aria-label={`Kurangi jumlah ${item.namaLayanan}`}
                               disabled={!editable || busy || item.qty <= 1}
                               onClick={() =>
                                 itemMutation.mutate({
@@ -370,7 +372,7 @@ export default function PaymentModal({
                             </div>
                             <button
                               type="button"
-                              aria-label={`Increase ${item.namaLayanan} quantity`}
+                              aria-label={`Tambah jumlah ${item.namaLayanan}`}
                               disabled={!editable || busy || item.qty >= 20}
                               onClick={() =>
                                 itemMutation.mutate({
@@ -461,8 +463,8 @@ export default function PaymentModal({
                 </div>
 
                 <div className="mb-4">
-                  <Label>Jumlah Diterima</Label>
-                  <Input
+                  <Label htmlFor="bidang-paymentmodal-1">Jumlah Diterima</Label>
+                  <Input id="bidang-paymentmodal-1"
                     type="number"
                     min={0}
                     value={amount || ""}
@@ -480,8 +482,8 @@ export default function PaymentModal({
                 </div>
 
                 <div>
-                  <Label>Catatan (opsional)</Label>
-                  <Textarea
+                  <Label htmlFor="bidang-paymentmodal-2">Catatan (opsional)</Label>
+                  <Textarea id="bidang-paymentmodal-2"
                     rows={3}
                     value={notes}
                     onChange={(event) => setNotes(event.target.value)}
@@ -504,7 +506,7 @@ export default function PaymentModal({
                     disabled={amount < order.total || busy}
                     onClick={() => setConfirmPayment(true)}
                   >
-                    {paymentMutation.isPending ? "Processing..." : "Simpan Pembayaran"}
+                    {paymentMutation.isPending ? "Memproses..." : "Simpan Pembayaran"}
                   </Button>
                 </div>
               </div>

@@ -96,7 +96,7 @@ try {
   page.on("pageerror", e => errors.push(e.name)); page.on("response", r => { if (new URL(r.url()).pathname.startsWith("/api/") && r.status() >= 500) serverErrors.push(r.status()); });
   await page.goto(web + "/login"); await page.locator("input[type=email]").fill("admin-" + tag + "@example.invalid"); await page.locator("input[type=password]").fill(password); await page.getByRole("button", { name: "Masuk", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toBeVisible();
-  for (const [p, title] of [["orders", "Pesanan"], ["customers", "Pelanggan"], ["membership", "Membership"], ["barbers", "Barber"], ["services", "Layanan"], ["refunds", "Pengembalian Dana"], ["history", "Riwayat Pesanan"], ["invoices", "Invoice"], ["reports", "Laporan"], ["settings", "Pengaturan"]]) {
+  for (const [p, title] of [["orders", "Pesanan"], ["customers", "Pelanggan"], ["membership", "Membership"], ["barbers", "Barber"], ["services", "Layanan"], ["history", "Riwayat Pesanan"], ["invoices", "Invoice"], ["reports", "Laporan"], ["settings", "Pengaturan"]]) {
     await page.goto(web + "/" + p); await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible(); await page.waitForLoadState("networkidle");
   }
   pass("Sepuluh modul Admin dapat dinavigasi dan memuat API aktual tanpa runtime/HTTP500");

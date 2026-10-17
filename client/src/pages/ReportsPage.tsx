@@ -1,10 +1,11 @@
+import { Clock3, Scissors, XCircle, ReceiptText } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { api } from "../lib/api";
 import type { ReportData } from "../types";
 import { rupiah, tanggal } from "../lib/format";
-import { Card, Input, PageTitle, StatusBadge } from "../components/ui";
+import { Card, Input, PageTitle, StatusBadge, ErrorState, LoadingState, StatCard } from "../components/ui";
 
 const revenueDateKey = (value: string) => {
   const date = new Date(value);
@@ -24,7 +25,7 @@ export default function ReportsPage() {
   const [mulai, setMulai] = useState("");
   const [selesai, setSelesai] = useState("");
 
-  const { data } = useQuery({
+  const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["reports", mulai, selesai],
     queryFn: async () =>
       (
@@ -87,39 +88,27 @@ export default function ReportsPage() {
       ].join(" ")
     : "";
 
+  if (isPending || isError) return <><PageTitle title="Laporan" subtitle="Ringkasan operasional dan pendapatan"/><Card>{isPending ? <LoadingState text="Memuat laporan..."/> : <ErrorState text="Laporan belum dapat dimuat." onRetry={()=>void refetch()}/>}</Card></>;
   return (
     <>
       <PageTitle title="Laporan" subtitle="Ringkasan operasional dan pendapatan" />
 
       <div className="mb-4 flex flex-wrap gap-3">
-        <Input
+        <label className="ui-label grid gap-2">Dari tanggal<Input
           className="max-w-44"
-          type="date"
+          aria-label="Dari tanggal" type="date"
           value={mulai}
           onChange={(event) => setMulai(event.target.value)}
-        />
-        <Input
+        /></label>
+        <label className="ui-label grid gap-2">Sampai tanggal<Input aria-label="Sampai tanggal"
           className="max-w-44"
           type="date"
           value={selesai}
           onChange={(event) => setSelesai(event.target.value)}
-        />
+        /></label>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        {[
-          ["Pesanan", data?.jumlahPesanan ?? 0],
-          ["Layanan Selesai", data?.selesai ?? 0],
-          ["Unpaid", data?.belumDibayar ?? 0],
-          ["Cancelled", data?.dibatalkan ?? 0],
-          ["Revenue", rupiah(data?.revenue ?? 0)],
-        ].map(([label, value]) => (
-          <Card key={label} className="p-4">
-            <div className="text-xs text-slate-500">{label}</div>
-            <div className="mt-1 text-xl font-black">{value}</div>
-          </Card>
-        ))}
-      </div>
+      <div className="reports-stats"><StatCard label="Pesanan" value={data.jumlahPesanan} icon={<ReceiptText size={16}/>}/><StatCard label="Layanan selesai" value={data.selesai} icon={<Scissors size={16}/>}/><StatCard label="Belum lunas" value={data.belumDibayar} icon={<Clock3 size={16}/>}/><StatCard label="Dibatalkan" value={data.dibatalkan} icon={<XCircle size={16}/>}/></div>
 
       <Card className="mb-4 overflow-hidden">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
@@ -174,7 +163,7 @@ export default function ReportsPage() {
                         x2={chartWidth - rightPadding}
                         y1={y}
                         y2={y}
-                        stroke="#e2e8f0"
+                        stroke="#e0e5ef"
                         strokeDasharray="4 6"
                       />
                       <text

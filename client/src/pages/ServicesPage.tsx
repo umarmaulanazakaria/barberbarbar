@@ -123,7 +123,7 @@ export default function ServicesPage() {
         <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_220px]">
           <div className="relative">
             <Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input
+            <Input aria-label="Cari nama, durasi, atau harga layanan..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari nama, durasi, atau harga layanan..."
@@ -139,7 +139,7 @@ export default function ServicesPage() {
             options={[
               { value: "ALL", label: "Semua status" },
               { value: "ACTIVE", label: "Aktif" },
-              { value: "INACTIVE", label: "Inactive" },
+              { value: "INACTIVE", label: "Nonaktif" },
             ]}
           />
         </div>
@@ -195,16 +195,16 @@ export default function ServicesPage() {
       >
         <div className="space-y-4">
           <div>
-            <Label>Nama Layanan</Label>
-            <Input value={nama} onChange={(event) => setNama(event.target.value)} disabled={!canManage} />
+            <Label htmlFor="bidang-servicespage-1">Nama Layanan</Label>
+            <Input id="bidang-servicespage-1" value={nama} onChange={(event) => setNama(event.target.value)} disabled={!canManage} />
           </div>
           <div>
-            <Label>Durasi (menit)</Label>
-            <Input type="number" min={1} value={durasi} onChange={(event) => setDurasi(Number(event.target.value))} disabled={!canManage} />
+            <Label htmlFor="bidang-servicespage-2">Durasi (menit)</Label>
+            <Input id="bidang-servicespage-2" type="number" min={1} value={durasi} onChange={(event) => setDurasi(Number(event.target.value))} disabled={!canManage} />
           </div>
           <div>
-            <Label>Harga</Label>
-            <Input type="number" min={1} value={harga} onChange={(event) => setHarga(Number(event.target.value))} disabled={!canManage} />
+            <Label htmlFor="bidang-servicespage-3">Harga</Label>
+            <Input id="bidang-servicespage-3" type="number" min={1} value={harga} onChange={(event) => setHarga(Number(event.target.value))} disabled={!canManage} />
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={aktif} onChange={(event) => setAktif(event.target.checked)} disabled={!canManage} />
@@ -213,7 +213,7 @@ export default function ServicesPage() {
 
           {canManage && (
             <Button className="w-full" onClick={() => save.mutate()} disabled={!nama || durasi <= 0 || harga <= 0 || save.isPending}>
-              {save.isPending ? "Saving..." : "Simpan Layanan"}
+              {save.isPending ? "Menyimpan..." : "Simpan Layanan"}
             </Button>
           )}
 

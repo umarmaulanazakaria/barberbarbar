@@ -2,7 +2,7 @@ import { statusRamah } from '../lib/teks';
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, pesanError } from "../lib/api";
-import { Button, Card } from "./ui";
+import { Button, ContentPanel } from "./ui";
 
 type Permohonan = { id: number; status: string; dibuatPada: string;
   pelanggan: { id: number; nama: string; status: string }; catatanKeputusan: string | null };
@@ -22,8 +22,7 @@ export default function PermohonanMembershipAdmin() {
       klien.invalidateQueries({ queryKey: ["customers"] }),
     ]); },
   });
-  return <Card className="mb-6 p-4">
-    <h2 className="mb-3 text-lg font-semibold">Permohonan Membership Customer</h2>
+  return <ContentPanel className="mb-4 request-panel" title="Permohonan membership"><div className="space-y-3 p-4">
     {daftar.isPending ? <p>Memuat permohonan…</p> : daftar.isError ?
       <p>Permohonan belum dapat dimuat. <button type="button" onClick={() => void daftar.refetch()}>Coba lagi</button></p> :
       daftar.data.length === 0 ? <p>Belum ada permohonan.</p> :
@@ -36,5 +35,5 @@ export default function PermohonanMembershipAdmin() {
           </div>}
         </li>)}</ul>}
     <p role="status" aria-live="polite">{pesan}</p>
-  </Card>;
+  </div></ContentPanel>;
 }

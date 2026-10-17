@@ -1,3 +1,4 @@
+import { useFokusDialog } from "../lib/fokus-dialog";
 import { statusRamah } from '../lib/teks';
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,7 @@ export default function OrderDetailModal({
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [printMode, setPrintMode] = useState<PrintMode>(null);
   const open = orderId !== null;
+  const panelDialog = useFokusDialog(open);
 
   const {
     data: order,
@@ -62,7 +64,7 @@ export default function OrderDetailModal({
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !statusMutation.isPending && !paymentOpen) {
+      if (!event.defaultPrevented && event.key === "Escape" && !statusMutation.isPending && !paymentOpen) {
         onClose();
       }
     };
@@ -107,7 +109,7 @@ export default function OrderDetailModal({
         }
       }}
     >
-      <Card className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-6xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
+      <Card ref={panelDialog} role="dialog" aria-modal="true" aria-label="Detail Pesanan" className="modal-panel-enter max-h-[calc(100dvh-1rem)] w-full max-w-6xl overflow-hidden rounded-2xl border-slate-200 shadow-2xl sm:max-h-[94vh]">
         <div className="flex items-start justify-between border-b border-slate-200 px-4 py-4 sm:px-6">
           <div className="min-w-0">
             <h2 className="text-lg font-extrabold text-slate-900 sm:text-xl">

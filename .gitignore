@@ -14,3 +14,7 @@ coverage/
 **/.env.*
 !**/.env.example
 !**/.env.sample
+
+# Hasil sementara pengujian browser lokal.
+client/test-results/
+client/playwright-report/

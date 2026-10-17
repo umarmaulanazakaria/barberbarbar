@@ -46,7 +46,7 @@ export default function InvoicesPage() {
         <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_220px]">
           <div className="relative">
             <Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input
+            <Input aria-label="Cari invoice, pesanan, atau pelanggan..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari invoice, pesanan, atau pelanggan..."

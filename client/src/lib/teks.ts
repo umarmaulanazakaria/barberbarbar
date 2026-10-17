@@ -11,7 +11,7 @@ const label: Record<string, string> = {
   APPROVED: 'Disetujui', SUCCEEDED: 'Berhasil', FAILED: 'Gagal', EXPIRED: 'Kedaluwarsa', UNSUPPORTED: 'Perlu Penanganan Pengelola',
   AWAITING_DP: 'Menunggu Pembayaran Uang Muka', DP_PAID: 'Uang Muka Terverifikasi', PARTIALLY_PAID: 'Dibayar Sebagian',
   UNPAID: 'Belum Dibayar', PAID: 'Pembayaran Berhasil', OVERDUE: 'Pembayaran Belum Dilunasi',
-  REFUND_REVIEW: 'Pengembalian Dana Sedang Ditinjau', DP_FORFEITED: 'Uang Muka Hangus',
+  REFUND_REVIEW: 'Pembayaran Perlu Ditinjau', DP_FORFEITED: 'Uang Muka Hangus',
   ACTIVE: 'Member Aktif', INACTIVE: 'Nonaktif', NON_MEMBER: 'Belum Menjadi Member', AKTIF: 'Aktif', DIBLOKIR: 'Diblokir',
   WAITING: 'Menunggu', DP: 'Uang Muka', PELUNASAN: 'Pelunasan', REFUND: 'Pengembalian Dana',
   MIDTRANS: 'Online', KASIR: 'Kasir', CASH: 'Tunai', CARD: 'Kartu', TRANSFER: 'Transfer', OTHER: 'Lainnya', QRIS: 'QRIS',

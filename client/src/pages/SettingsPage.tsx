@@ -210,7 +210,7 @@ export default function SettingsPage() {
                 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               />
 
-              <Input
+              <Input aria-label="Cari nama barber, telepon, atau email akun..."
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Cari nama barber, telepon, atau email akun..."
@@ -315,9 +315,9 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <Label>Email</Label>
+            <Label htmlFor="bidang-settingspage-1">Email</Label>
 
-            <Input
+            <Input  id="bidang-settingspage-1"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -326,9 +326,9 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <Label>Kata Sandi</Label>
+            <Label htmlFor="bidang-settingspage-2">Kata Sandi</Label>
 
-            <Input
+            <Input  id="bidang-settingspage-2"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -337,9 +337,9 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <Label>Konfirmasi Kata Sandi</Label>
+            <Label htmlFor="bidang-settingspage-3">Konfirmasi Kata Sandi</Label>
 
-            <Input
+            <Input  id="bidang-settingspage-3"
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -347,6 +347,7 @@ export default function SettingsPage() {
             />
           </div>
 
+          {confirmPassword && password !== confirmPassword && <p role="alert" className="text-sm text-red-600">Konfirmasi kata sandi belum sesuai.</p>}
           <Button
             className="w-full"
             onClick={() => createAccount.mutate()}
@@ -354,10 +355,11 @@ export default function SettingsPage() {
               !email ||
               password.length < 6 ||
               confirmPassword.length < 6 ||
+              password !== confirmPassword ||
               createAccount.isPending
             }
           >
-            {createAccount.isPending ? "Creating..." : "Buat Akun Staf"}
+            {createAccount.isPending ? "Membuat akun..." : "Buat Akun Staf"}
           </Button>
         </div>
       </Modal>

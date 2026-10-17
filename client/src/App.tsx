@@ -13,7 +13,6 @@ import InvoicesPage from "./pages/InvoicesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import DetailBookingPage from "./pages/DetailBookingPage";
-import RefundPage from "./pages/RefundPage";
 export default function App() {
   return (
     <Routes>
@@ -30,7 +29,7 @@ export default function App() {
         <Route path="/bookings" element={<Navigate to="/orders?jenis=BOOKING&periode=SEMUA" replace />} />
         <Route path="/bookings/:id" element={<RuteBookingLama />} />
         <Route path="/orders/booking/:id" element={<DetailBookingPage />} />
-        <Route path="/refunds" element={<RefundPage />} />
+        <Route path="/refunds" element={<Navigate to="/" replace />} />
         <Route path="/orders/new" element={<Navigate to="/orders" replace />} />
         <Route path="/orders/:id" element={<RutePesananLama />} />
         <Route

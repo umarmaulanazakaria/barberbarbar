@@ -199,8 +199,8 @@ export default function NewOrderModal({
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Pelanggan *</Label>
-              <SearchableSelect
+              <Label htmlFor="bidang-newordermodal-1">Pelanggan *</Label>
+              <SearchableSelect id="bidang-newordermodal-1"
                 value={customer}
                 onChange={(value) => setCustomer(Number(value))}
                 placeholder="Pilih pelanggan"
@@ -220,8 +220,8 @@ export default function NewOrderModal({
             </div>
 
             <div>
-              <Label>Barber *</Label>
-              <SearchableSelect
+              <Label htmlFor="bidang-newordermodal-2">Barber *</Label>
+              <SearchableSelect id="bidang-newordermodal-2"
                 value={barber}
                 onChange={(value) => setBarber(Number(value))}
                 placeholder="Pilih barber"
@@ -354,8 +354,8 @@ export default function NewOrderModal({
           </div>
 
           <div className="mt-5">
-            <Label>Catatan (opsional)</Label>
-            <Textarea
+            <Label htmlFor="bidang-newordermodal-3">Catatan (opsional)</Label>
+            <Textarea id="bidang-newordermodal-3"
               rows={3}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}

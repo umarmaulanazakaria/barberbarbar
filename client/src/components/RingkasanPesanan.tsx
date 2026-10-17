@@ -43,7 +43,7 @@ export default function RingkasanPesanan({ data, dashboard, mendatang = false, t
 
   return <>
     <table aria-label={mendatang ? "Jadwal mendatang" : dashboard ? "Pesanan terbaru" : "Daftar pesanan"} className={`${visibilitasTabel} w-full table-fixed text-left text-sm`}>
-      <colgroup>{(dashboard ? [36, 14, 27, 23] : [24, 18, 18, 14, 16, 10]).map((lebar, i) => <col key={i} style={{ width: `${lebar}%` }} />)}</colgroup>
+      <colgroup>{(dashboard ? (mendatang ? [30, 24, 23, 23] : [36, 14, 27, 23]) : [24, 18, 18, 14, 16, 10]).map((lebar, i) => <col key={i} style={{ width: `${lebar}%` }} />)}</colgroup>
       <thead className="bg-slate-50 text-xs text-slate-500"><tr>
         {(dashboard ? ["Pelanggan", mendatang ? "Tanggal & Jam" : "Jam", "Barber", "Status"] : ["Pelanggan", "Jadwal", "Barber", "Status", "Pembayaran", "Aksi"]).map(label => <th key={label} scope="col" className="px-4 py-3 font-semibold">{label}</th>)}
       </tr></thead>

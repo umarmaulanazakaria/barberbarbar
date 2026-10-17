@@ -252,7 +252,7 @@ export default function MembershipPage() {
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
             />
 
-            <Input
+            <Input aria-label="Cari kode member, pelanggan, atau telepon..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari kode member, pelanggan, atau telepon..."
@@ -421,9 +421,9 @@ export default function MembershipPage() {
           {!edit && (
             <>
               <div>
-                <Label>Pelanggan</Label>
+                <Label htmlFor="bidang-membershippage-1">Pelanggan</Label>
 
-                <SearchableSelect
+                <SearchableSelect id="bidang-membershippage-1"
                   value={customer}
                   onChange={(value) => setCustomer(Number(value))}
                   placeholder="Pilih pelanggan"
@@ -468,9 +468,9 @@ export default function MembershipPage() {
 
           {edit && (
             <div>
-              <Label>Pelanggan</Label>
+              <Label htmlFor="bidang-membershippage-2">Pelanggan</Label>
 
-              <Input
+              <Input id="bidang-membershippage-2"
                 value={`${edit.pelanggan?.nama ?? "-"} — ${edit.pelanggan?.nomorTelepon ?? "-"}`}
                 disabled
               />
@@ -479,17 +479,17 @@ export default function MembershipPage() {
 
           {edit && (
             <div>
-              <Label>Kode Member</Label>
+              <Label htmlFor="bidang-membershippage-3">Kode Member</Label>
 
-              <Input value={edit.memberCode} disabled />
+              <Input id="bidang-membershippage-3" value={edit.memberCode} disabled />
             </div>
           )}
 
           {edit && (
             <div>
-              <Label>Diskon (%)</Label>
+              <Label htmlFor="bidang-membershippage-4">Diskon (%)</Label>
 
-              <Input
+              <Input id="bidang-membershippage-4"
                 type="number"
                 min={0}
                 max={100}
@@ -518,7 +518,7 @@ export default function MembershipPage() {
               onClick={() => save.mutate()}
               disabled={!customer || save.isPending}
             >
-              {save.isPending ? "Saving..." : "Tambah Membership"}
+              {save.isPending ? "Menyimpan..." : "Tambah Membership"}
             </Button>
           )}
 
@@ -528,7 +528,7 @@ export default function MembershipPage() {
               onClick={() => save.mutate()}
               disabled={save.isPending}
             >
-              {save.isPending ? "Saving..." : "Simpan Membership"}
+              {save.isPending ? "Menyimpan..." : "Simpan Membership"}
             </Button>
           )}
 

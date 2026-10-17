@@ -1,180 +1,26 @@
-import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import {
-  CalendarDays,
-  ChartNoAxesCombined,
-  History,
-  LayoutDashboard,
-  Menu,
-  Scissors,
-  Settings,
-  Users,
-  UserRound,
-  ReceiptText,
-  Tags,
-  LogOut,
-  X,
-  ShieldCheck,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { CalendarDays, ChartNoAxesCombined, History, LayoutDashboard, Menu, Scissors, Settings, Users, UserRound, ReceiptText, Tags, LogOut, X, ShieldCheck, ChevronRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import RealtimeOperator from "./RealtimeOperator";
-
-const menu = [
-  ["Dashboard", "/", LayoutDashboard],
-  ["Pesanan", "/orders", CalendarDays],
-  ["Pengembalian Dana", "/refunds", ReceiptText],
-  ["Pelanggan", "/customers", Users],
-  ["Membership", "/membership", Tags],
-  ["Barber", "/barbers", UserRound],
-  ["Layanan", "/services", Scissors],
-  ["Riwayat Pesanan", "/history", History],
-  ["Invoice", "/invoices", ReceiptText],
-  ["Laporan", "/reports", ChartNoAxesCombined],
-  ["Pengaturan", "/settings", Settings],
+import RincianPesananDrawer from "./RincianPesananDrawer";
+const kelompok: readonly {nama:string;items:readonly (readonly [string,string,typeof LayoutDashboard])[]}[] = [
+ {nama:"Operasional",items:[["Dashboard","/",LayoutDashboard],["Pesanan","/orders",CalendarDays],["Riwayat pesanan","/history",History]]},
+ {nama:"Barbershop",items:[["Pelanggan","/customers",Users],["Membership","/membership",Tags],["Barber","/barbers",UserRound],["Layanan","/services",Scissors]]},
+ {nama:"Keuangan & sistem",items:[["Invoice","/invoices",ReceiptText],["Laporan","/reports",ChartNoAxesCombined],["Pengaturan","/settings",Settings]]},
 ] as const;
-
-export default function AppLayout() {
-  const [open, setOpen] = useState(false);
-  const { user, logout } = useAuth();
-
-  useEffect(() => {
-    if (!open) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  return (
-    <div className="min-h-screen bg-[#f6f8fc]">
-      <RealtimeOperator />
-      {open && (
-        <button
-          type="button"
-          aria-label="Tutup navigasi"
-          onClick={() => setOpen(false)}
-          className="no-print fixed inset-0 z-30 bg-slate-950/45 backdrop-blur-[1px] lg:hidden"
-        />
-      )}
-
-      <aside
-        className={`no-print fixed inset-y-0 left-0 z-40 w-[86vw] max-w-72 bg-gradient-to-b from-[#101a3a] to-[#081126] text-white shadow-2xl transition-transform duration-200 lg:w-60 lg:max-w-none lg:translate-x-0 lg:shadow-none ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex h-20 items-center gap-3 border-b border-white/10 px-4">
-          <img
-            src="/barber-barbar-icon.png"
-            alt="Barber Barbar"
-            className="size-12 shrink-0 object-contain"
-          />
-          <div className="min-w-0 leading-tight">
-            <div className="truncate text-[17px] font-black tracking-tight">
-              Barber Barbar
-            </div>
-            <div className="mt-1 truncate text-[9px] font-medium tracking-wide text-slate-300">
-              Not Cutting Heads, Just Hair
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="ml-auto grid size-9 place-items-center rounded-lg text-slate-300 transition hover:bg-white/10 hover:text-white lg:hidden"
-            aria-label="Tutup menu"
-          >
-            <X size={19} />
-          </button>
-        </div>
-
-        <nav className="scrollbar-thin h-[calc(100dvh-160px)] overflow-y-auto p-3">
-          {menu.filter(([, to]) => to !== "/refunds" || user?.role === "ADMIN").map(([label, to, Icon]) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === "/"}
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                `mb-1 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950/30"
-                    : "text-slate-300 hover:bg-white/8 hover:text-white"
-                }`
-              }
-            >
-              <Icon size={17} />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="absolute inset-x-3 bottom-3 rounded-xl border border-white/10 bg-white/5 p-3">
-          <div className="mb-2 flex items-center gap-2">
-            <ShieldCheck size={16} />
-            <div className="min-w-0">
-              <div className="truncate text-xs font-bold">{user?.name}</div>
-              <div className="text-[10px] text-slate-400">{user?.role}</div>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={logout}
-            className="flex min-h-10 w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-slate-300 transition hover:bg-white/10 hover:text-white"
-          >
-            <LogOut size={14} />
-            Keluar
-          </button>
-        </div>
-      </aside>
-
-      <div className="lg:pl-60">
-        <header className="no-print sticky top-0 z-30 flex h-16 items-center border-b border-slate-200 bg-white/90 px-3 backdrop-blur sm:px-4 lg:px-7">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="mr-3 grid size-10 place-items-center rounded-lg text-slate-700 transition hover:bg-slate-100 lg:hidden"
-            aria-label="Buka menu"
-          >
-            <Menu size={21} />
-          </button>
-
-          <div className="flex min-w-0 items-center gap-2 lg:hidden">
-            <img
-              src="/barber-barbar-icon.png"
-              alt=""
-              className="size-8 shrink-0 object-contain"
-            />
-            <div className="truncate text-sm font-black text-slate-900">
-              Barber Barbar
-            </div>
-          </div>
-
-          <div className="ml-auto min-w-0 text-right">
-            <div className="max-w-36 truncate text-xs font-bold text-slate-800 sm:max-w-none">
-              {user?.name}
-            </div>
-            <div className="hidden text-[10px] text-slate-400 sm:block">
-              {new Date().toLocaleDateString("id-ID", {
-                weekday: "long",
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })}
-            </div>
-          </div>
-        </header>
-        <main className="p-3 sm:p-4 lg:p-7">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+export default function AppLayout(){
+ const [terbuka,aturTerbuka]=useState(false),[desktop,aturDesktop]=useState(()=>matchMedia("(min-width:1024px)").matches);
+ const {user,logout}=useAuth(),lokasi=useLocation(),panel=useRef<HTMLElement>(null),pemicu=useRef<HTMLButtonElement>(null);
+ const judul=kelompok.flatMap(k=>k.items).find(([,p])=>p==="/"?lokasi.pathname==="/":lokasi.pathname.startsWith(p))?.[0]??"Detail kunjungan";
+ useEffect(()=>{const media=matchMedia("(min-width:1024px)");const ubah=()=>{aturDesktop(media.matches);if(media.matches)aturTerbuka(false);};media.addEventListener("change",ubah);return()=>media.removeEventListener("change",ubah);},[]);
+ useEffect(()=>{aturTerbuka(false);},[lokasi.pathname]);
+ useEffect(()=>{if(!terbuka)return;const lama=document.body.style.overflow;document.body.style.overflow="hidden";panel.current?.querySelector<HTMLButtonElement>('button')?.focus();return()=>{document.body.style.overflow=lama;pemicu.current?.focus();};},[terbuka]);
+ return <div className="admin-shell"><RincianPesananDrawer/><a className="admin-skip no-print" href="#konten-admin">Lewati ke konten</a><RealtimeOperator/>
+ {terbuka&&<button className="admin-backdrop no-print" aria-label="Tutup navigasi" onClick={()=>aturTerbuka(false)}/>}
+ <aside ref={panel} id="navigasi-admin" className={`admin-sidebar no-print ${terbuka?"terbuka":""}`} inert={!desktop&&!terbuka?true:undefined} aria-hidden={!desktop&&!terbuka} role={terbuka?"dialog":undefined} aria-modal={terbuka?true:undefined} aria-label="Navigasi manajemen" onKeyDown={e=>{if(!terbuka)return;if(e.key==="Escape"){e.preventDefault();aturTerbuka(false);}if(e.key==="Tab"){const daftar=Array.from(panel.current?.querySelectorAll<HTMLElement>('a[href],button:not(:disabled)')??[]).filter(el=>el.getClientRects().length);const awal=daftar[0],akhir=daftar.at(-1);if(e.shiftKey&&document.activeElement===awal){e.preventDefault();akhir?.focus();}else if(!e.shiftKey&&document.activeElement===akhir){e.preventDefault();awal?.focus();}}}}>
+ <div className="admin-brand"><img src="/barber-barbar-icon.png" alt="" width="48" height="48"/><div><strong>BARBER BARBAR</strong><span>Manajemen barbershop</span></div><button className="admin-tutup" aria-label="Tutup menu" onClick={()=>aturTerbuka(false)}><X size={20}/></button></div>
+ <nav aria-label="Navigasi utama">{kelompok.map(k=><div className="admin-menu-group" key={k.nama}><p>{k.nama}</p>{k.items.filter(([,p])=>p!=="/settings"||user?.role==="ADMIN").map(([nama,jalur,Ikon])=><NavLink key={jalur} to={jalur} end={jalur==="/"} className={({isActive})=>`admin-menu ${isActive?"aktif":""}`}><Ikon size={19}/><span>{nama}</span><ChevronRight className="admin-menu-panah" size={15}/></NavLink>)}</div>)}</nav>
+ <div className="admin-operator"><div className="admin-avatar" aria-hidden="true">{user?.name.slice(0,1).toUpperCase()}</div><div><strong>{user?.name}</strong><span><ShieldCheck size={12}/>{user?.role==="ADMIN"?"Administrator":"Staf operasional"}</span></div><button onClick={logout} aria-label="Keluar dari akun" title="Keluar"><LogOut size={18}/></button></div>
+ </aside><div className="admin-workspace" inert={terbuka?true:undefined}><header className="admin-topbar no-print"><button ref={pemicu} className="admin-buka" aria-label="Buka menu" aria-expanded={terbuka} aria-controls="navigasi-admin" onClick={()=>aturTerbuka(true)}><Menu size={22}/></button><div className="admin-konteks"><span>Manajemen</span><ChevronRight size={14}/><strong>{judul}</strong></div><div className="admin-tanggal">{new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",weekday:"short",day:"numeric",month:"short",year:"numeric"}).format(new Date())}<span>Waktu Indonesia Barat</span></div><div className="admin-top-avatar" title={user?.name}>{user?.name.slice(0,1).toUpperCase()}</div></header><main id="konten-admin" tabIndex={-1} className="admin-content"><Outlet/></main><footer className="admin-footer no-print"><span>BARBER BARBAR</span><span>Not cutting heads, just hair.</span></footer></div></div>;
 }

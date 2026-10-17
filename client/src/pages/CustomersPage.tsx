@@ -193,12 +193,12 @@ export default function CustomersPage() {
 
   return (
     <>
-      {user?.role === "ADMIN" && <PermohonanPengaitanAdmin />}
       <PageTitle
         title="Pelanggan"
         subtitle="Kelola informasi dan status pelanggan"
         action={<Button onClick={() => start()}>+ Tambah Pelanggan</Button>}
       />
+{user?.role === "ADMIN" && <PermohonanPengaitanAdmin />}
 
       <Card className="overflow-hidden">
         <div className="border-b border-slate-200 p-4">
@@ -207,7 +207,7 @@ export default function CustomersPage() {
               size={17}
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
             />
-            <Input
+            <Input aria-label="Cari pelanggan, telepon, alamat, atau membership..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari pelanggan, telepon, alamat, atau membership..."
@@ -366,16 +366,16 @@ export default function CustomersPage() {
           )}
 
           <div>
-            <Label>Nama</Label>
-            <Input
+            <Label htmlFor="bidang-customerspage-1">Nama</Label>
+            <Input id="bidang-customerspage-1"
               value={nama}
               onChange={(event) => setNama(event.target.value)}
             />
           </div>
 
           <div>
-            <Label>Telepon</Label>
-            <Input
+            <Label htmlFor="bidang-customerspage-2">Telepon</Label>
+            <Input id="bidang-customerspage-2"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               disabled={edit?.status === "DIBLOKIR"}
@@ -388,8 +388,8 @@ export default function CustomersPage() {
           </div>
 
           <div>
-            <Label>Alamat</Label>
-            <Input
+            <Label htmlFor="bidang-customerspage-3">Alamat</Label>
+            <Input id="bidang-customerspage-3"
               value={alamat}
               onChange={(event) => setAlamat(event.target.value)}
             />
@@ -400,7 +400,7 @@ export default function CustomersPage() {
             disabled={!nama || !phone || save.isPending}
             onClick={() => save.mutate()}
           >
-            {save.isPending ? "Saving..." : "Simpan Pelanggan"}
+            {save.isPending ? "Menyimpan..." : "Simpan Pelanggan"}
           </Button>
 
           {edit && (

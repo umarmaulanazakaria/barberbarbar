@@ -1,16 +1,13 @@
-import { Link, useLocation } from "react-router-dom";
+﻿import { Link, useLocation } from "react-router-dom";
 import type { EntriPesanan } from "../lib/pesanan-terpadu";
 import { waktuWib } from "../lib/pesanan-terpadu";
 import { rupiah } from "../lib/format";
 import { Empty, StatusBadge } from "./ui";
-import RingkasanPesanan from "./RingkasanPesanan";
-export default function TabelPesananTerpadu({ data, tampilan = "lengkap" }: { data: EntriPesanan[]; tampilan?: "lengkap" | "dashboard" | "mendatang" | "pesanan" }) {
-  const lokasi = useLocation();
-  const tujuanWalkIn = (id: number | null) => { const q = new URLSearchParams(lokasi.pathname === "/history" || lokasi.pathname === "/orders" ? lokasi.search : ""); q.set("pesananId",String(id)); return `${lokasi.pathname === "/history" ? "/history" : "/orders"}?${q}`; };
-  if (!data.length) return <Empty text="Tidak ada pesanan sesuai tanggal dan filter." />;
-  if (tampilan !== "lengkap") return <RingkasanPesanan data={data} dashboard={tampilan !== "pesanan"} mendatang={tampilan === "mendatang"} tujuan={entri => entri.bookingId !== null ? `/orders/booking/${entri.bookingId}` : tujuanWalkIn(entri.pesananId)} />;
-  return <div className="overflow-x-auto"><table className="w-full min-w-[950px] text-left text-xs"><thead className="bg-slate-50 text-slate-500"><tr>{["Pesanan / Booking","Pelanggan","Jenis","Jadwal pelayanan","Barber","Status","Pembayaran","Check-in","Total","Aksi"].map(j=><th key={j} className="px-3 py-3">{j}</th>)}</tr></thead><tbody>
-    {data.map(b=>{const tujuan=b.bookingId!==null?`/orders/booking/${b.bookingId}`:tujuanWalkIn(b.pesananId);return <tr key={`${b.jenis}:${b.id}`} className="border-t border-slate-100 hover:bg-indigo-50/70">
-      <td className="px-3 py-3"><Link className="font-bold text-indigo-600" to={tujuan}>{b.nomor}</Link>{b.bookingId!==null && b.nomorPesanan && <small className="block text-slate-500">{b.nomorPesanan}</small>}{b.nomorInvoice && <small className="block text-slate-500">{b.nomorInvoice}</small>}</td><td className="px-3">{b.pelanggan}</td><td className="px-3">{b.jenis==="BOOKING"?"Booking":"Walk-in"}</td><td className="px-3">{waktuWib(b.jadwal)}</td><td className="px-3">{b.barber??"Belum ditentukan"}</td><td className="px-3"><StatusBadge value={b.status}/></td><td className="px-3"><StatusBadge value={b.statusPembayaran}/></td><td className="px-3">{b.checkIn?waktuWib(b.checkIn):"—"}</td><td className="px-3">{rupiah(b.total)}</td><td className="px-3"><Link aria-label={`Detail ${b.nomor}`} className="font-bold text-indigo-600" to={tujuan}>Detail</Link></td>
-    </tr>})}</tbody></table></div>;
+export default function TabelPesananTerpadu({data,tampilan="lengkap"}:{data:EntriPesanan[];tampilan?:"lengkap"|"dashboard"|"mendatang"|"pesanan"}) {
+ const lokasi=useLocation();
+ const tujuan=(b:EntriPesanan)=>{const q=new URLSearchParams(lokasi.search);q.delete("rincianBooking");q.delete("rincianPesanan");q.set(b.bookingId!==null?"rincianBooking":"rincianPesanan",String(b.bookingId??b.pesananId));return `${lokasi.pathname}?${q}`;};
+ if(!data.length)return <Empty text="Tidak ada pesanan sesuai tanggal dan filter."/>;
+ const ringkas=tampilan==="dashboard"||tampilan==="mendatang";
+ return <><div className="order-desktop"><table className="order-table text-left"><colgroup>{(ringkas?[34,25,26,15]:[28,22,24,17,9]).map((n,i)=><col key={i} style={{width:`${n}%`}}/>)}</colgroup><thead><tr><th>Pelanggan</th><th>Jadwal · WIB</th><th>Status</th><th className="amount">Total</th>{!ringkas&&<th><span className="sr-only">Aksi</span></th>}</tr></thead><tbody>{data.map(b=><tr key={`${b.jenis}:${b.id}`} onClick={e=>{if(e.target instanceof Element&&!e.target.closest("a,button,input"))e.currentTarget.querySelector<HTMLAnchorElement>("a")?.click();}}><td><Link to={tujuan(b)} className="order-primary order-link" aria-label={`Rincian ${b.pelanggan}`}>{b.pelanggan}</Link><small>{b.nomor} · {b.jenis==="BOOKING"?"Booking":"Walk-in"}</small>{b.nomorInvoice&&<small>{b.nomorInvoice}</small>}</td><td>{waktuWib(b.jadwal).replace(" WIB","")}<small>{b.barber??"Barber belum ditentukan"}</small></td><td><StatusBadge value={b.status}/><small><StatusBadge value={b.statusPembayaran}/></small></td><td className="amount">{rupiah(b.total)}</td>{!ringkas&&<td><Link to={tujuan(b)} className="order-link" aria-label={`Detail ${b.nomor}`}>Detail</Link></td>}</tr>)}</tbody></table></div>
+ <div className="order-mobile">{data.map(b=><Link to={tujuan(b)} key={`${b.jenis}:${b.id}`} className="order-mobile-item" aria-label={`Rincian ${b.nomor}`}><div><span><strong>{b.pelanggan}</strong><small>{b.nomor} · {b.jenis==="BOOKING"?"Booking":"Walk-in"}</small></span><StatusBadge value={b.status}/></div><small>{waktuWib(b.jadwal)}</small><small>{b.barber??"Barber belum ditentukan"}</small><div className="order-mobile-bottom"><StatusBadge value={b.statusPembayaran}/><strong>{rupiah(b.total)}</strong></div></Link>)}</div></>;
 }

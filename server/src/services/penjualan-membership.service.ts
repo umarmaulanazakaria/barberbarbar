@@ -1,3 +1,4 @@
+import { gunakanWaktuMembership, statusMembership, filterStatusMembership } from "../lib/status-membership.js";
 import { createHash, randomUUID } from "node:crypto";
 import { terbitkanNomorMember, nomorMemberTerbit } from "../lib/nomor-member.js";
 import { z } from "zod";
@@ -97,17 +98,19 @@ export const notifikasiMembership = async (body: unknown) => {
   await sinkronMembership(t.id); return { diterima: true };
 };
 export const daftarMember = (cari: string, status: string, halaman: number) => basisData.$transaction(async tx => {
+  await gunakanWaktuMembership(tx);
   const sekarang = await waktuDatabaseBooking(tx), hp = normalisasiHpWalkIn(cari);
-  const where: Prisma.MembershipWhereInput = { ...(cari ? { OR: [{ memberCode: { contains: cari.toUpperCase() } }, { pelanggan: { profil: { nama: { contains: cari, mode: "insensitive" } } } }, { pelanggan: { profil: { nomorTelepon: { contains: hp } } } }] } : {}),
-    ...(status === "AKTIF" ? { isActive: true, berlakuSampai: { gt: sekarang }, berlakuMulai: { lte: sekarang } } : status === "KEDALUWARSA" ? { OR: [{ berlakuSampai: null }, { berlakuSampai: { lte: sekarang } }, { isActive: false }] } : {}) };
-  // AND menjaga filter pencarian dan status tetap diterapkan bersamaan.
   const pencarian: Prisma.MembershipWhereInput = cari ? { OR: [{ memberCode: { contains: cari.toUpperCase() } }, { pelanggan: { profil: { nama: { contains: cari, mode: "insensitive" } } } }, { pelanggan: { profil: { nomorTelepon: { contains: hp } } } }] } : {};
-  const filter = { AND: [where, pencarian] }, total = await tx.membership.count({ where: filter }), page = Math.min(halaman, Math.max(1, Math.ceil(total / 20)));
-  const daftar = await tx.membership.findMany({ where: filter, include: { pelanggan: { include: { profil: true } } }, orderBy: { id: "desc" }, skip: (page - 1) * 20, take: 20 });
-  return { data: daftar.map(m => ({ id: m.id, nomorMember: nomorMemberTerbit(m.memberCode), nama: m.pelanggan.profil?.nama ?? m.pelanggan.nama, nomorTelepon: m.pelanggan.profil?.nomorTelepon ?? m.pelanggan.nomorTelepon, berlakuSampai: m.berlakuSampai, status: m.isActive && m.berlakuMulai && m.berlakuMulai <= sekarang && m.berlakuSampai && m.berlakuSampai > sekarang ? "AKTIF" : "KEDALUWARSA" })), total, halaman: page };
-});
-export const detailMember = async (id: number) => {
-  const m = await basisData.membership.findUnique({ where: { id }, include: { pelanggan: { include: { profil: true } }, penjualan: { select: dtoPenjualan, orderBy: { id: "desc" } }, penggunaan: { orderBy: { id: "desc" } } } });
+  const filter = { AND: [filterStatusMembership(status, sekarang), pencarian] };
+  const total = await tx.membership.count({ where: filter }), page = Math.min(halaman, Math.max(1, Math.ceil(total / 20)));
+  const daftar = await tx.membership.findMany({ where: filter, include: { pelanggan: { include: { profil: true } }, penjualan: { select: { status: true } } }, orderBy: { id: "desc" }, skip: (page - 1) * 20, take: 20 });
+  return { data: daftar.map(m => ({ id: m.id, nomorMember: nomorMemberTerbit(m.memberCode), nama: m.pelanggan.profil?.nama ?? m.pelanggan.nama, nomorTelepon: m.pelanggan.profil?.nomorTelepon ?? m.pelanggan.nomorTelepon, berlakuSampai: m.berlakuSampai, status: statusMembership(m, sekarang) })), total, halaman: page, serverTime: sekarang };
+}, { isolationLevel: "RepeatableRead" });
+export const detailMember = (id: number) => basisData.$transaction(async tx => {
+  await gunakanWaktuMembership(tx);
+  const sekarang = await waktuDatabaseBooking(tx);
+  const m = await tx.membership.findUnique({ where: { id }, include: { pelanggan: { include: { profil: true } }, penjualan: { select: dtoPenjualan, orderBy: { id: "desc" } }, penggunaan: { orderBy: { id: "desc" } } } });
   if (!m) return gagal("Member tidak ditemukan.", 404);
-  return { id: m.id, nomorMember: nomorMemberTerbit(m.memberCode), nama: m.pelanggan.profil?.nama ?? m.pelanggan.nama, nomorTelepon: m.pelanggan.profil?.nomorTelepon ?? m.pelanggan.nomorTelepon, berlakuMulai: m.berlakuMulai, berlakuSampai: m.berlakuSampai, isActive: m.isActive, penjualan: m.penjualan, penggunaan: m.penggunaan };
-};
+  const status = statusMembership(m, sekarang), nomorMember = nomorMemberTerbit(m.memberCode);
+  return { id: m.id, nomorMember, nama: m.pelanggan.profil?.nama ?? m.pelanggan.nama, nomorTelepon: m.pelanggan.profil?.nomorTelepon ?? m.pelanggan.nomorTelepon, berlakuMulai: m.berlakuMulai, berlakuSampai: m.berlakuSampai, isActive: m.isActive, status, bolehCetakKartu: status === "AKTIF" && !!nomorMember, serverTime: sekarang, penjualan: m.penjualan, penggunaan: m.penggunaan };
+}, { isolationLevel: "RepeatableRead" });

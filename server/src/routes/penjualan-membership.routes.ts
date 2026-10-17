@@ -15,7 +15,7 @@ const tangani: import("express").ErrorRequestHandler = (e: unknown, _req, res, _
 router.use((_req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
 router.get("/package", async (_req, res) => res.json(await paketMembership()));
 router.put("/package", hanyaAdmin, async (req, res) => { const d = baca(z.object({ harga: z.number().int().positive().max(2147483647), layananGratisId: z.number().int().positive() }).strict(), req.body); res.json(await ubahPaketMembership(d.harga, d.layananGratisId, req.pengguna!.id)); });
-router.get("/", async (req, res) => { const d = baca(z.object({ cari: z.string().trim().max(100).default(""), status: z.enum(["SEMUA", "AKTIF", "KEDALUWARSA"]).default("SEMUA"), halaman: z.coerce.number().int().min(1).max(100000).default(1) }).strict(), req.query); res.json(await daftarMember(d.cari, d.status, d.halaman)); });
+router.get("/", async (req, res) => { const d = baca(z.object({ cari: z.string().trim().max(100).default(""), status: z.enum(["SEMUA", "AKTIF", "KEDALUWARSA", "BELUM_AKTIF", "MENUNGGU_PEMBAYARAN"]).default("SEMUA"), halaman: z.coerce.number().int().min(1).max(100000).default(1) }).strict(), req.query); res.json(await daftarMember(d.cari, d.status, d.halaman)); });
 router.post("/sales", hanyaAdmin, async (req, res) => res.json(await jualMembership(baca(skemaPenjualan, req.body), req.pengguna!.id)));
 router.post("/sales/:id/sync", hanyaAdmin, async (req, res) => { baca(z.object({}).strict(), req.body); res.json(await sinkronMembership(id(req.params.id))); });
 router.get("/:id", async (req, res) => res.json(await detailMember(id(req.params.id))));

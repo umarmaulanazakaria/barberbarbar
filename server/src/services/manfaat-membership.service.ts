@@ -1,9 +1,11 @@
 import type { Prisma } from "../generated/prisma/client.js";
 import { KesalahanProfil } from "./profil-pelanggan.service.js";
+import { gunakanWaktuMembership, statusMembership } from "../lib/status-membership.js";
 
 export const memberLayak = async (tx: Prisma.TransactionClient, kode: string, jadwal: Date) => {
-  const m = await tx.membership.findUnique({ where: { memberCode: kode.trim().toUpperCase() }, include: { pelanggan: { include: { profil: true } } } });
-  if (!m || !m.isActive || !m.berlakuMulai || !m.berlakuSampai || m.berlakuMulai > jadwal || m.berlakuSampai <= jadwal || m.pelanggan.status !== "AKTIF" || m.pelanggan.profil?.diarsipkanPada || !await tx.penjualanMembership.count({ where: { membershipId: m.id, status: "SUCCEEDED" } })) throw new KesalahanProfil(409, "Nomor Member tidak dapat digunakan pada jadwal pelayanan ini.");
+  await gunakanWaktuMembership(tx);
+  const m = await tx.membership.findUnique({ where: { memberCode: kode.trim().toUpperCase() }, include: { pelanggan: { include: { profil: true } }, penjualan: { select: { status: true } } } });
+  if (!m || statusMembership(m, jadwal) !== "AKTIF") throw new KesalahanProfil(409, "Nomor Member tidak dapat digunakan pada jadwal pelayanan ini.");
   return m;
 };
 type Item = { layananId: number; namaLayanan: string; harga: number; qty: number; durasiMenit: number; subtotal: number };

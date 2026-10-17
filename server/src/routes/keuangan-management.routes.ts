@@ -5,12 +5,13 @@ import { pdfKeuangan } from "../lib/pdf-keuangan.js";
 import db from "../lib/prisma.js";
 import { aturanJadwalBooking, zonaBooking } from "../lib/jadwal-booking.js";
 import { kebijakanBookingTamu } from "../lib/kebijakan-booking-tamu.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
 const router = Router();
 router.use((_req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
 router.get("/settings", async (_req, res) => {
   const paket = await db.pengaturanMembership.findUniqueOrThrow({ where: { id: 1 }, include: { layananGratis: { select: { id: true, nama: true, aktif: true } } } });
   return res.json({ profil: { nama: "BARBER BARBAR", slogan: "Not Cutting Heads, Just Hair", dapatDiubah: false },
-    jam: { ...aturanJadwalBooking, zonaWaktu: zonaBooking }, bookingTamu: kebijakanBookingTamu,
+    jam: { ...aturanJadwalBooking, zonaWaktu: zonaBooking }, bookingTamu: { ...kebijakanBookingTamu, slotMenit: slotLayananMenit },
     pembayaran: { metode: ["CASH", "TRANSFER", "QRIS"], mode: process.env.MIDTRANS_IS_PRODUCTION === "false" ? "Sandbox" : "Konfigurasi server", verifikasi: "Backend dan bukti provider resmi" },
     membership: { harga: paket.harga, layananGratisId: paket.layananGratisId, layananGratis: paket.layananGratis, bulan: 12 } });
 });

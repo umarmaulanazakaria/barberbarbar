@@ -1,4 +1,5 @@
 import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
 import { kebijakanBookingTamu } from "../lib/kebijakan-booking-tamu.js";
 import { KesalahanProfil } from "./profil-pelanggan.service.js";
 import {konfigurasiSnapPublik} from "../lib/midtrans.js";
@@ -34,7 +35,7 @@ export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisD
     if(manfaat.gratis && await tx.booking.count({where:{membershipBerbayarId:manfaat.member.id,status:{in:["AWAITING_DP","PENDING_CONFIRMATION","CONFIRMED","CHECKED_IN","IN_SERVICE"]},items:{some:{layananId:manfaat.snapshot.layananGratisId,harga:0}}}}))return tolak("Member sudah memiliki satu Booking Haircut + Wash gratis yang aktif.",409);
     items=manfaat.items;
   }
-  const durasiMenit=items.reduce((n,i)=>n+i.durasiMenit*i.qty,0),total=items.reduce((n,i)=>n+i.subtotal,0),mulaiPada=new Date(data.mulaiPada);
+  const durasiMenit=slotLayananMenit,total=items.reduce((n,i)=>n+i.subtotal,0),mulaiPada=new Date(data.mulaiPada);
   const selesaiPada=validasiWaktuBooking(mulaiPada,durasiMenit,sekarang);
   if(!selesaiPada)return tolak("Jadwal tidak valid. Jam operasional 09.00–23.00 WIB, maksimal 14 hari, minimal 3 jam untuk hari ini.");
   if((total<=0&&!manfaat)||total>2147483647||!Number.isSafeInteger(total)||items.some(i=>i.harga<0||i.durasiMenit<=0))return tolak("Nominal layanan tidak dapat diproses");

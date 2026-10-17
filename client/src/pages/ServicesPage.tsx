@@ -80,8 +80,9 @@ export default function ServicesPage() {
 
   const save = useMutation({
     mutationFn: () => {
-      if (!edit) throw new Error("Penambahan layanan menunggu penetapan aturan slot Booking.");
-      return api.patch(`/layanan/${edit.id}`, { nama, harga, aktif });
+      return edit
+        ? api.patch(`/layanan/${edit.id}`, { nama, harga, aktif })
+        : api.post("/layanan", { nama, harga, aktif });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["services"] });
@@ -189,7 +190,6 @@ export default function ServicesPage() {
         onClose={() => setOpen(false)}
       >
         <div className="space-y-4">
-          {!edit && <p className="cp-warning" role="status">Penambahan layanan sementara ditunda sampai aturan slot Booking pengganti ditetapkan.</p>}
           <div>
             <Label htmlFor="bidang-servicespage-1">Nama Layanan</Label>
             <Input id="bidang-servicespage-1" value={nama} onChange={(event) => setNama(event.target.value)} disabled={!canManage} />
@@ -204,7 +204,7 @@ export default function ServicesPage() {
           </label>
 
           {canManage && (
-            <Button className="w-full" onClick={() => save.mutate()} disabled={!edit || !nama || harga <= 0 || save.isPending}>
+            <Button className="w-full" onClick={() => save.mutate()} disabled={!nama || harga <= 0 || save.isPending}>
               {save.isPending ? "Menyimpan..." : "Simpan Layanan"}
             </Button>
           )}

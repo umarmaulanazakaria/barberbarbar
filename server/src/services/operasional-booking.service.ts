@@ -1,5 +1,6 @@
 import { ambilBookingPembayaran, bacaRingkasanPembayaran, finalisasiInvoiceDalamTransaksi } from "./pembayaran-booking.service.js";
 import { terapkanManfaat, catatPenggunaan } from "./manfaat-membership.service.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
 import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
@@ -134,7 +135,7 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
   if(booking.memberBebasDp)return tolak("Perubahan jadwal Booking Member memerlukan pembatalan dan booking baru agar masa aktif serta kuota gratis diperiksa kembali.");
   const uangBaru=pengganti?hitungUangBooking(pengganti,booking.discountPercent):null;
   if(uangBaru && (uangBaru.subtotal>2147483647 || pengganti!.some(i=>i.subtotal>2147483647)))return tolak("Nominal melampaui batas",400);
-  const durasi=pengganti?pengganti.reduce((n,i)=>n+i.durasiMenit*i.qty,0):booking.durasiMenit;
+  const durasi=slotLayananMenit;
   const mulai = new Date(data.mulaiPada);
   const selesai = validasiWaktuBooking(mulai, durasi, sekarang);
   if (!selesai) return tolak("Waktu booking tidak memenuhi ketentuan operasional", 400);
@@ -149,7 +150,7 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
   }
   if(pengganti){await tx.itemBooking.deleteMany({where:{bookingId:id}});await tx.itemBooking.createMany({data:pengganti.map(i=>({...i,bookingId:id}))});}
   await tx.booking.update({ where: { id }, data: { mulaiPada: mulai, selesaiPada: selesai, barberPilihanId: barberId,
-    ...(uangBaru?{subtotal:uangBaru.subtotal,diskon:uangBaru.diskon,total:uangBaru.total,nominalDp:uangBaru.nominalDp,durasiMenit:durasi}:{}),
+    durasiMenit:durasi, ...(uangBaru?{subtotal:uangBaru.subtotal,diskon:uangBaru.diskon,total:uangBaru.total,nominalDp:uangBaru.nominalDp}:{}),
     barberDisetujuiId: null, status: "PENDING_CONFIRMATION", deadlineDp: null, dikonfirmasiPada: null, diputuskanOlehId: null,
     ...(paid ? { dpDibawaDariRound: booking.dpDibawaDariRound ?? booking.dikonfirmasiPada } : {}) } });
   await mintaRefundKelebihan(tx, id, `RESCHEDULE-${id}-${mulai.toISOString()}`);

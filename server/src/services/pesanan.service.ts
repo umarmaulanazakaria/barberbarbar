@@ -1,3 +1,4 @@
+import { slotLayananMenit, snapshotSlotLayanan, durasiPesanan } from "../lib/slot-layanan.js";
 import { terapkanManfaat, catatPenggunaan } from "./manfaat-membership.service.js";
 import { pembayaranOperasionalPending } from "../lib/reservasi-pembayaran.js";
 import { Prisma } from "../generated/prisma/client.js";
@@ -88,10 +89,10 @@ export const buatPesananDalamTransaksi = async (tx: Prisma.TransactionClient, da
   const diskon = Math.floor(subtotal*discountPercent/100),total=subtotal-diskon;
   if (ekspektasi && (!Number.isSafeInteger(subtotal) || subtotal>2147483647 || total!==ekspektasi.totalDiharapkan ||
     ekspektasi.items.length!==ids.length || ekspektasi.items.some(i=>layananMap.get(i.layananId)?.harga!==i.hargaDiharapkan))) return {berhasil:false,alasan:"HARGA_BERUBAH"} as const;
-  const mulaiPada = await waktuDatabaseBooking(tx),selesaiPada=new Date(mulaiPada.getTime()+itemSnapshot.reduce((n,i)=>n+i.durasiMenit*i.qty,0)*60000);
+  const mulaiPada = await waktuDatabaseBooking(tx),selesaiPada=new Date(mulaiPada.getTime()+slotLayananMenit*60000);
   if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada},{barberId:data.barberId,hanyaJikaAdaTamu:true}))return {berhasil:false,alasan:"JADWAL_TIDAK_TERSEDIA"} as const;
   const pesanan = await tx.pesanan.create({data:{nomorPesanan:nomorUnik("ORD"),pelangganId:data.pelangganId,profilPelangganId:profil?.id??null,barberId:data.barberId??null,
-    ...(manfaat?{membershipBerbayarId:manfaat.member.id,snapshotManfaat:{...manfaat.snapshot,identitasDikonfirmasiOleh:penggunaId}}:{}),catatan:data.catatan??null,status:"WAITING",statusPembayaran:"UNPAID",subtotal,discountPercent,diskon,total,
+    ...(manfaat?{membershipBerbayarId:manfaat.member.id,snapshotManfaat:snapshotSlotLayanan({...manfaat.snapshot,identitasDikonfirmasiOleh:penggunaId})}:{snapshotManfaat:snapshotSlotLayanan()}),catatan:data.catatan??null,status:"WAITING",statusPembayaran:"UNPAID",subtotal,discountPercent,diskon,total,
     items:{create:itemSnapshot},riwayatStatus:{create:{status:"WAITING",penggunaId}}},include:detailPesanan});
   return {berhasil:true,data:pesanan} as const;
 };
@@ -128,7 +129,7 @@ export const ubahStatusPesanan = async (id: number, statusBaru: StatusPesanan, p
     }
     if(statusBaru==="IN_SERVICE"){
       const items=await tx.itemPesanan.findMany({where:{pesananId:id}}), mulaiPada=await waktuDatabaseBooking(tx);
-      const selesaiPada=new Date(mulaiPada.getTime()+items.reduce((n,i)=>n+i.durasiMenit*i.qty,0)*60000);
+      const selesaiPada=new Date(mulaiPada.getTime()+durasiPesanan(pesanan.snapshotManfaat,items)*60000);
       if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada},{pesananId:id,barberId,hanyaJikaAdaTamu:true}))return null;
     }
     const hasil = await tx.pesanan.updateMany({

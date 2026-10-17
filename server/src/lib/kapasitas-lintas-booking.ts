@@ -1,3 +1,4 @@
+import { durasiPesanan } from "./slot-layanan.js";
 import {alokasiBarberUtuh} from "./alokasi-barber.js";
 ﻿import type { Prisma } from "../generated/prisma/client.js";
 import { kapasitasBookingCukup } from "./jadwal-booking.js";
@@ -21,10 +22,10 @@ export async function kapasitasLintasBooking(tx: Prisma.TransactionClient, calon
   const booking=await tx.booking.findMany({where:{status:{in:[...statusReservasi]},...(opsi.bookingId?{id:{not:opsi.bookingId}}:{})},
     select:{id:true,sumberBooking:true,pelangganId:true,pesananId:true,barberPilihanId:true,barberDisetujuiId:true,barberFinalId:true,mulaiPada:true,selesaiPada:true}});
   const orders=await tx.pesanan.findMany({where:{status:{in:["WAITING","IN_SERVICE"]},...(opsi.pesananId?{id:{not:opsi.pesananId}}:{}),...(opsi.bookingId?{NOT:{booking:{id:opsi.bookingId}}}:{})},
-    select:{id:true,barberId:true,checkInTime:true,items:{select:{durasiMenit:true,qty:true}},booking:{select:{id:true}}}});
+    select:{id:true,barberId:true,checkInTime:true,snapshotManfaat:true,items:{select:{durasiMenit:true,qty:true}},booking:{select:{id:true,durasiMenit:true}}}});
   const rentang=booking.map(b=>({...b,barberId:b.barberFinalId??b.barberDisetujuiId??b.barberPilihanId}));
   for(const p of orders){
-    const durasi=p.items.reduce((n,i)=>n+i.durasiMenit*i.qty,0)*60000;
+    const durasi=(p.booking?.durasiMenit??durasiPesanan(p.snapshotManfaat,p.items))*60000;
     const akhir=new Date(Math.max(sekarang.getTime(),p.checkInTime.getTime())+Math.max(durasi,60000));
     const terhubung=rentang.find(b=>b.pesananId===p.id||b.id===p.booking?.id);
     if(terhubung){if(terhubung.selesaiPada<akhir)terhubung.selesaiPada=akhir;continue;}

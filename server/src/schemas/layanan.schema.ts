@@ -7,7 +7,7 @@ export const skemaTambahLayanan = z.object({
 
   durasiMenit: z.number().int().positive({
     message: "Durasi harus lebih dari 0 menit",
-  }),
+  }).optional(), // Kompatibilitas request legacy; bukan input wajib Admin.
 
   harga: z.number().int().positive({
     message: "Harga harus lebih dari 0",

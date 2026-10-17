@@ -1,3 +1,4 @@
+import { memilikiSlotLayanan, snapshotSlotLayanan } from "../lib/slot-layanan.js";
 import { terapkanManfaat } from "./manfaat-membership.service.js";
 import { pembayaranOperasionalPending } from "../lib/reservasi-pembayaran.js";
 import type { Prisma } from "../generated/prisma/client.js";
@@ -38,7 +39,7 @@ const hitungUlang = async (
     const regular=items.map(i=>{const l=catalogue.find(l=>l.id===i.layananId)!;return{...i,harga:l.harga,subtotal:l.harga*i.qty}});
     const manfaat=await terapkanManfaat(tx,regular,m.memberCode,pesanan.checkInTime);
     for(const i of manfaat.items)await tx.itemPesanan.update({where:{id:i.id},data:{harga:i.harga,subtotal:i.subtotal}});
-    await tx.pesanan.update({where:{id:pesananId},data:{snapshotManfaat:manfaat.snapshot}});
+    await tx.pesanan.update({where:{id:pesananId},data:{snapshotManfaat:memilikiSlotLayanan(pesanan.snapshotManfaat)?snapshotSlotLayanan(manfaat.snapshot):manfaat.snapshot}});
     items=await tx.itemPesanan.findMany({where:{pesananId}});
   }
   const subtotal = items.reduce((jumlah, item) => jumlah + item.subtotal, 0);

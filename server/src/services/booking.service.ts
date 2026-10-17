@@ -1,4 +1,5 @@
 import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
 import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
@@ -39,7 +40,7 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
         harga: sumber.harga, qty: item.qty, subtotal: sumber.harga * item.qty };
     });
     if (items.some(item => item.harga < 0 || item.durasiMenit <= 0)) return { status: "DATA_TIDAK_VALID" } as const;
-    const durasiMenit = items.reduce((total, item) => total + item.durasiMenit * item.qty, 0);
+    const durasiMenit = slotLayananMenit;
     const mulaiPada = new Date(data.mulaiPada);
     const selesaiPada = validasiWaktuBooking(mulaiPada, durasiMenit, sekarang);
     if (!selesaiPada) return { status: "WAKTU_TIDAK_VALID" } as const;

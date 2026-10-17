@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, pesanError } from "../lib/api";
+import { pembayaranBerubah } from "../lib/dokumen-keuangan";
 import { rupiah } from "../lib/format";
 import { waktuWib } from "../lib/pesanan-terpadu";
 import { useAuth } from "../context/AuthContext";
@@ -62,7 +63,7 @@ export default function TindakanPesanan({ jenis, id, pesananId, status, barberAw
     try {
       const r = (await api.post<{ transaksi: Transaksi }>(`/management/payments/${pesananId}`, data)).data;
       if (data.metode === "QRIS") diamati.current = r.transaksi.id;
-      aturTertunda(null); aturDiterima(false); aturHasil(data.metode === "QRIS" ? "Permintaan QRIS tercatat. Periksa status provider di bawah." : "Pembayaran tercatat melalui backend."); await refresh();
+      pembayaranBerubah(); aturTertunda(null); aturDiterima(false); aturHasil(data.metode === "QRIS" ? "Permintaan QRIS tercatat. Periksa status provider di bawah." : "Pembayaran tercatat melalui backend."); await refresh();
     } catch (e) { const pasti = axios.isAxiosError(e) && e.response && e.response.status < 500 && ![401,403,408,429].includes(e.response.status) && e.response.data?.kode !== "IDEMPOTENSI_BERBEDA"; if (pasti) { aturTertunda(null); aturDiterima(false); } aturGalat(pasti ? pesanError(e) : `${pesanError(e)} Periksa status terbaru sebelum mengirim ulang; kunci permintaan tetap sama.`); await refresh(); }
     finally { guard.current = false; aturSibuk(false); }
   };

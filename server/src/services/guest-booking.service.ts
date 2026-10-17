@@ -1,4 +1,5 @@
 import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { kebijakanBookingTamu } from "../lib/kebijakan-booking-tamu.js";
 import { KesalahanProfil } from "./profil-pelanggan.service.js";
 import {konfigurasiSnapPublik} from "../lib/midtrans.js";
 ﻿import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -40,10 +41,10 @@ export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisD
   if(!await kapasitasLintasBooking(tx,{mulaiPada,selesaiPada}))return tolak("Kapasitas jadwal sudah penuh. Pilih waktu lain.",409);
   // Nomor HP adalah klaim kontak, bukan bukti kepemilikan akun. Jangan cari/link akun dari nomor ini.
   const identitas=await tx.pelanggan.create({data:{nama:data.nama,nomorTelepon:`TAMU-${randomUUID()}`}});
-  const token=randomBytes(32).toString("hex"),deadlineDp=new Date(sekarang.getTime()+15*60000);
+  const token=randomBytes(32).toString("hex"),deadlineDp=new Date(sekarang.getTime()+kebijakanBookingTamu.deadlineDpMenit*60000);
   const booking=await tx.booking.create({data:{nomorBooking:`BKG-${randomUUID()}`,sumberBooking:"TAMU",pelangganId:identitas.id,status:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,
     ...(manfaat?{membershipBerbayarId:manfaat.member.id,memberBebasDp:true,snapshotManfaat:manfaat.snapshot,dikonfirmasiPada:sekarang}:{}),
-    mulaiPada,selesaiPada,durasiMenit,subtotal:total,total,membershipAktif:!!manfaat,discountPercent:0,diskon:0,dpPersen:manfaat?0:50,nominalDp:manfaat?0:Math.ceil(total/2),deadlineDp:manfaat?null:deadlineDp,
+    mulaiPada,selesaiPada,durasiMenit,subtotal:total,total,membershipAktif:!!manfaat,discountPercent:0,diskon:0,dpPersen:manfaat?0:kebijakanBookingTamu.dpPersen,nominalDp:manfaat?0:Math.ceil(total*kebijakanBookingTamu.dpPersen/100),deadlineDp:manfaat?null:deadlineDp,
     items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:data.nama,nomorTelepon:data.nomorTelepon,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000),...(tokenSesiHash?{sesi:{create:{tokenHash:tokenSesiHash,sumber:"SEMENTARA",versiAkses:1,kedaluwarsaPada:new Date(sekarang.getTime()+24*3600000)}}}:{})}},
     riwayat:{create:{aksi:manfaat?"MEMBER_GUEST_CONFIRMED":"GUEST_CREATED",statusSebelum:manfaat?"CONFIRMED":"AWAITING_DP",statusSetelah:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,rincian:{sumber:"WEB_TAMU"}}}},select:{id:true,nomorBooking:true,deadlineDp:true}});
   return{token,tautanPribadi:`#/b/${token}`,booking,serverTime:sekarang.toISOString()};

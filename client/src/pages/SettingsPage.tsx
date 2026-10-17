@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PengaturanOperasional from "../components/PengaturanOperasional";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -139,6 +140,8 @@ export default function SettingsPage() {
         subtitle="Informasi aplikasi dan akun"
       />
 
+      <PengaturanOperasional/>
+      <h2 id="pengaturan-akses" className="mb-4 font-bold">Akun &amp; Akses</h2>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">
           <h3 className="font-bold">Akun yang Masuk</h3>
@@ -173,16 +176,16 @@ export default function SettingsPage() {
             />
 
             <div>
-              <h3 className="font-black">Barber Barbar</h3>
+              <h3 className="font-black">Hak Akses</h3>
 
               <p className="text-xs font-medium text-slate-500">
-                Not Cutting Heads, Just Hair
+                Otorisasi mengikuti akun operator
               </p>
             </div>
           </div>
 
           <p className="mt-4 text-sm leading-6 text-slate-500">
-            Kelola pelanggan, barber, layanan, pesanan, pembayaran, dan laporan dalam satu tempat.
+            ADMIN mengelola akun staf dan harga paket Membership. STAFF tetap mengikuti hak operasional existing. Perubahan akun dan kata sandi tidak dilakukan melalui field konfigurasi pembayaran.
           </p>
         </Card>
       </div>

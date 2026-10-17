@@ -1,4 +1,5 @@
 export const zonaBooking = "Asia/Jakarta";
+export const aturanJadwalBooking = { bukaMenit: 9 * 60, tutupMenit: 23 * 60, maksimumHari: 14, jedaHariIniMenit: 180 } as const;
 const menit = 60_000;
 const format = new Intl.DateTimeFormat("en-CA", { timeZone: zonaBooking,
   year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
@@ -9,13 +10,13 @@ const bagian = (waktu: Date) => {
 export const validasiWaktuBooking = (mulai: Date, durasi: number, sekarang = new Date()) => {
   if (!Number.isFinite(mulai.getTime()) || !Number.isSafeInteger(durasi) || durasi <= 0 ||
       mulai.getUTCSeconds() !== 0 || mulai.getUTCMilliseconds() !== 0) return null;
-  if (mulai <= sekarang || mulai.getTime() > sekarang.getTime() + 14 * 24 * 60 * menit) return null;
+  if (mulai <= sekarang || mulai.getTime() > sekarang.getTime() + aturanJadwalBooking.maksimumHari * 24 * 60 * menit) return null;
   const awal = bagian(mulai);
-  if (awal.tanggal === bagian(sekarang).tanggal && mulai.getTime() < sekarang.getTime() + 180 * menit) return null;
+  if (awal.tanggal === bagian(sekarang).tanggal && mulai.getTime() < sekarang.getTime() + aturanJadwalBooking.jedaHariIniMenit * menit) return null;
   const selesai = new Date(mulai.getTime() + durasi * menit);
   const akhir = bagian(selesai);
-  if (awal.menitHari < 9 * 60 || awal.menitHari >= 23 * 60 ||
-      awal.tanggal !== akhir.tanggal || akhir.menitHari > 23 * 60) return null;
+  if (awal.menitHari < aturanJadwalBooking.bukaMenit || awal.menitHari >= aturanJadwalBooking.tutupMenit ||
+      awal.tanggal !== akhir.tanggal || akhir.menitHari > aturanJadwalBooking.tutupMenit) return null;
   return selesai;
 };
 

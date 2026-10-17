@@ -2,6 +2,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { api, pesanError } from "../lib/api";
+import { pembayaranBerubah } from "../lib/dokumen-keuangan";
 import { rupiah } from "../lib/format";
 import { waktuWib } from "../lib/pesanan-terpadu";
 import { hpWalkInValid } from "../lib/walkin-dashboard";
@@ -48,10 +49,10 @@ function DrawerMember({id,admin,harga,onClose,onPilih}:{id:number|"JUAL";admin:b
  const simpan=async()=>{
   if(kunci.current)return;kunci.current=true;aturSibuk(true);aturGagal("");
   const body:Pembelian=tertunda??{...(id!=="JUAL"?{membershipId:id,berlakuSampaiDiharapkan:akhirDiharapkan}:baru?{profilBaru:{nama:nama.trim(),nomorTelepon:hp,email:email.trim(),catatan,konfirmasiDuplikat:terpisah}}:{profilId}),metode,kunci:kunciPenjualan(),hargaDiharapkan:harga,...(metode!=="QRIS"?{diterima:true,jumlahDiterima:jumlah,...(metode==="TRANSFER"?{referensi:referensi.trim()}: {})}:{})};
-  try{sessionStorage.setItem(penyimpanan,JSON.stringify(body));aturTertunda(body);const hasil=(await api.post<Penjualan>("/management/memberships/sales",body,{timeout:25000})).data;sessionStorage.removeItem(penyimpanan);aturTertunda(null);aturJual(false);invalidasi();onPilih(hasil.membershipId)}catch(e){aturGagal(pesanError(e));if(axios.isAxiosError(e)&&e.response&&e.response.status<500&&![408,429].includes(e.response.status)){aturTertunda(null);sessionStorage.removeItem(penyimpanan);if(Array.isArray(e.response.data?.kandidat))aturDuplikat(e.response.data.kandidat)}}finally{kunci.current=false;aturSibuk(false)}
+  try{sessionStorage.setItem(penyimpanan,JSON.stringify(body));aturTertunda(body);const hasil=(await api.post<Penjualan>("/management/memberships/sales",body,{timeout:25000})).data;pembayaranBerubah();sessionStorage.removeItem(penyimpanan);aturTertunda(null);aturJual(false);invalidasi();onPilih(hasil.membershipId)}catch(e){aturGagal(pesanError(e));if(axios.isAxiosError(e)&&e.response&&e.response.status<500&&![408,429].includes(e.response.status)){aturTertunda(null);sessionStorage.removeItem(penyimpanan);if(Array.isArray(e.response.data?.kandidat))aturDuplikat(e.response.data.kandidat)}}finally{kunci.current=false;aturSibuk(false)}
  };
  const salinNomor=async(nomor:string)=>{try{if(navigator.clipboard){await navigator.clipboard.writeText(nomor);return;}const semula=document.activeElement,area=document.createElement("textarea");area.value=nomor;area.style.position="fixed";area.style.opacity="0";document.body.append(area);area.select();const berhasil=document.execCommand("copy");area.remove();if(semula instanceof HTMLElement)semula.focus();if(!berhasil)throw Error("SALIN_GAGAL");}catch{aturGagal("Nomor belum dapat disalin. Pilih nomor member dan salin manual.")}};
- const sinkron=async(t:Penjualan)=>{if(sibuk)return;aturSibuk(true);aturGagal("");try{await api.post(`/management/memberships/sales/${t.id}/sync`,{});invalidasi()}catch(e){aturGagal(pesanError(e))}finally{aturSibuk(false)}};
+ const sinkron=async(t:Penjualan)=>{if(sibuk)return;aturSibuk(true);aturGagal("");try{await api.post(`/management/memberships/sales/${t.id}/sync`,{});pembayaranBerubah();invalidasi()}catch(e){aturGagal(pesanError(e))}finally{aturSibuk(false)}};
  const pulihkan=async(p:KandidatProfil)=>{if(!window.confirm(`Pulihkan profil ${p.nama}? Tindakan dicatat dalam audit.`))return;aturSibuk(true);try{await api.post(`/management/customers/${p.id}/restore`,{konfirmasi:true});await profil.refetch();aturBaru(false);aturProfil(p.id);aturDuplikat([])}catch(e){aturGagal(pesanError(e))}finally{aturSibuk(false)}};
  const profilValid=id!=="JUAL"||(baru?!!nama.trim()&&!!hp.trim()&&hpWalkInValid(hp):!!profilId);
  const valid=admin&&harga>0&&profilValid&&(metode==="QRIS"||dana&&jumlah>=harga&&(metode!=="TRANSFER"||jumlah===harga&&referensi.trim().length>=3));

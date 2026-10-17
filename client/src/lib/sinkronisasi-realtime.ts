@@ -5,7 +5,7 @@ import type { Role } from "../types";
 export const jenisSinyal = ["booking.changed", "order.changed", "payment.changed", "membership.changed", "refund.changed", "customer.changed", "account-link.changed", "catalog.changed"] as const;
 export type JenisSinyal = typeof jenisSinyal[number];
 export type Sinyal = { id: number; aksi: string; versi: string; waktu: string; refetch: true };
-const akarOperator = ["dashboard", "bookings", "booking", "booking-payments", "orders", "order", "customers", "memberships", "services", "barbers", "invoices", "reports"];
+const akarOperator = ["struk-resmi", "pengaturan-operasional", "dashboard", "bookings", "booking", "booking-payments", "orders", "order", "customers", "memberships", "services", "barbers", "invoices", "reports"];
 export const akarSinkronisasi = (role: Role) => role === "ADMIN" ? [...akarOperator, "membership-requests", "account-link-requests", "barber-staff-accounts"] : akarOperator;
 export function mulaiRealtimeOperator(token: string, role: Role, klien: QueryClient, jendela: Window, dokumen: Document, bukaSocket = () => io({ auth: { token }, autoConnect: false, forceNew: true })) {
   const socket = bukaSocket();
@@ -27,7 +27,7 @@ export function mulaiRealtimeOperator(token: string, role: Role, klien: QueryCli
   return hentikan;
 }
 export function querySinyal(jenis: JenisSinyal, sinyal: Sinyal, role: Role): QueryKey[] {
-  const umum = [["dashboard"]];
+  const umum = [["dashboard"], ["struk-resmi"], ["invoices"], ["reports"]];
   switch (jenis) {
     case "booking.changed": return [...umum, ["bookings"], ["booking", sinyal.id], ["booking-payments", sinyal.id], ["orders"], ["order"]];
     case "order.changed": return [...umum, ["orders"], ["order", sinyal.id], ["reports"], ["booking"], ["booking-payments"]];

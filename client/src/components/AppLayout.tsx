@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { CalendarDays, ChartNoAxesCombined, History, LayoutDashboard, Menu, Scissors, Settings, Users, UserRound, ReceiptText, Tags, LogOut, X, ShieldCheck, ChevronRight } from "lucide-react";
+import { ChartNoAxesCombined, History, LayoutDashboard, Menu, Scissors, Settings, Users, UserRound, ReceiptText, Tags, LogOut, X, ShieldCheck, ChevronRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import RealtimeOperator from "./RealtimeOperator";
 import RincianPesananDrawer from "./RincianPesananDrawer";
 const kelompok: readonly {nama:string;items:readonly (readonly [string,string,typeof LayoutDashboard])[]}[] = [
- {nama:"Operasional",items:[["Dashboard","/",LayoutDashboard],["Pesanan","/orders",CalendarDays],["Riwayat pesanan","/history",History]]},
+ {nama:"Operasional",items:[["Dashboard","/",LayoutDashboard],["Riwayat Pesanan","/history",History]]},
  {nama:"Barbershop",items:[["Pelanggan","/customers",Users],["Membership","/membership",Tags],["Barber","/barbers",UserRound],["Layanan","/services",Scissors]]},
  {nama:"Keuangan & sistem",items:[["Invoice","/invoices",ReceiptText],["Laporan","/reports",ChartNoAxesCombined],["Pengaturan","/settings",Settings]]},
 ] as const;
@@ -16,7 +16,7 @@ export default function AppLayout(){
  useEffect(()=>{const media=matchMedia("(min-width:1024px)");const ubah=()=>{aturDesktop(media.matches);if(media.matches)aturTerbuka(false);};media.addEventListener("change",ubah);return()=>media.removeEventListener("change",ubah);},[]);
  useEffect(()=>{aturTerbuka(false);},[lokasi.pathname]);
  useEffect(()=>{if(!terbuka)return;const lama=document.body.style.overflow;document.body.style.overflow="hidden";panel.current?.querySelector<HTMLButtonElement>('button')?.focus();return()=>{document.body.style.overflow=lama;pemicu.current?.focus();};},[terbuka]);
- return <div className={`admin-shell ${lokasi.pathname==="/"?"admin-dashboard":""}`}><RincianPesananDrawer/><a className="admin-skip no-print" href="#konten-admin">Lewati ke konten</a><RealtimeOperator/>
+ return <div className={`admin-shell ${lokasi.pathname==="/"?"admin-dashboard":lokasi.pathname==="/history"?"admin-history":""}`}>{lokasi.pathname!=="/history"&&<RincianPesananDrawer/>}<a className="admin-skip no-print" href="#konten-admin">Lewati ke konten</a><RealtimeOperator/>
  {terbuka&&<button className="admin-backdrop no-print" aria-label="Tutup navigasi" onClick={()=>aturTerbuka(false)}/>}
  <aside ref={panel} id="navigasi-admin" className={`admin-sidebar no-print ${terbuka?"terbuka":""}`} inert={!desktop&&!terbuka?true:undefined} aria-hidden={!desktop&&!terbuka} role={terbuka?"dialog":undefined} aria-modal={terbuka?true:undefined} aria-label="Navigasi manajemen" onKeyDown={e=>{if(!terbuka)return;if(e.key==="Escape"){e.preventDefault();aturTerbuka(false);}if(e.key==="Tab"){const daftar=Array.from(panel.current?.querySelectorAll<HTMLElement>('a[href],button:not(:disabled)')??[]).filter(el=>el.getClientRects().length);const awal=daftar[0],akhir=daftar.at(-1);if(e.shiftKey&&document.activeElement===awal){e.preventDefault();akhir?.focus();}else if(!e.shiftKey&&document.activeElement===akhir){e.preventDefault();awal?.focus();}}}}>
  <div className="admin-brand"><img src="/barber-barbar-icon.png" alt="" width="48" height="48"/><div><strong>BARBER BARBAR</strong><span>Manajemen barbershop</span></div><button className="admin-tutup" aria-label="Tutup menu" onClick={()=>aturTerbuka(false)}><X size={20}/></button></div>

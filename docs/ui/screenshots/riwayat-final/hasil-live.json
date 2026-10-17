@@ -1,0 +1,149 @@
+{
+  "waktu": "2026-10-17T07:39:12.573Z",
+  "sumber": "Backend utama melalui http://localhost:5173/api",
+  "hasil": [
+    {
+      "uji": "Route aktif melalui sidebar, tujuh kolom, default Semua/30Hari dan menu Pesanan hilang",
+      "status": "PASS",
+      "bukti": {
+        "total": 18,
+        "tanpaWaktu": 0
+      }
+    },
+    {
+      "uji": "Responsive 320px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 375px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 390px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 768px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 1024px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 1280px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 1440px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Responsive 1920px",
+      "status": "PASS",
+      "bukti": "Screenshot backend asli; tanpa horizontal overflow"
+    },
+    {
+      "uji": "Pagination halaman kedua pada database utama",
+      "status": "DEFERRED",
+      "alasan": "Dataset aktual 18 arsip; pagination global20 dibuktikan terpisah pada DB fixture"
+    },
+    {
+      "uji": "Tab Booking",
+      "status": "PASS",
+      "bukti": "Query jenis backend; halaman kembali1"
+    },
+    {
+      "uji": "Tab Walk-in",
+      "status": "PASS",
+      "bukti": "Query jenis backend; halaman kembali1"
+    },
+    {
+      "uji": "HariIni,7Hari,30Hari",
+      "status": "PASS",
+      "bukti": "Filter backend berbasis penutupan"
+    },
+    {
+      "uji": "Rentang khusus dan validasi",
+      "status": "PASS",
+      "bukti": "Input belum lengkap tidak mengirim query; rentang sampai hari backend"
+    },
+    {
+      "uji": "Filter status akhir",
+      "status": "PASS",
+      "bukti": "Keempat pilihan backend, tanpa mengubah status"
+    },
+    {
+      "uji": "Pencarian nama/nomor dari keseluruhan dataset",
+      "status": "PASS",
+      "bukti": "Query server dengan reset halaman"
+    },
+    {
+      "uji": "Invoice resmi",
+      "status": "PASS",
+      "bukti": "Nomor dari record invoice backend tersimpan, tanpa finalisasi"
+    },
+    {
+      "uji": "Drawer read-only, angka/status history dan pemulihan konteks",
+      "status": "PASS",
+      "bukti": "GET detail asli; keuangan/timeline sesuai respons; Escape/fokus/scroll/filter utuh"
+    },
+    {
+      "uji": "Kembali ke Riwayat Pesanan",
+      "status": "PASS",
+      "bukti": "Tombol footer menutup drawer tanpa mereset filter"
+    },
+    {
+      "uji": "Pencarian telepon",
+      "status": "PASS",
+      "bukti": "Telepon dari detail resmi dipakai privat untuk query; tidak ditampilkan di tabel/laporan"
+    },
+    {
+      "uji": "Empty state",
+      "status": "PASS",
+      "bukti": "Pencarian server nyata tanpa hasil"
+    },
+    {
+      "uji": "Error/pemulihan",
+      "status": "PASS",
+      "bukti": "Transport GET digagalkan sementara tanpa memalsukan payload"
+    },
+    {
+      "uji": "Loading",
+      "status": "PASS",
+      "bukti": "GET asli ditunda800ms, tidak mengubah respons"
+    },
+    {
+      "uji": "Kompatibilitas route operasional lama",
+      "status": "PASS",
+      "bukti": "/orders tetap terbuka untuk dependensi Dashboard, bukan menu tambahan"
+    },
+    {
+      "uji": "Regresi Dashboard aktif",
+      "status": "PASS",
+      "bukti": "Empat KPI dan Booking/Walk-in tetap tampil; data asli terbaru"
+    },
+    {
+      "uji": "Tindakan Walk-in dari Dashboard",
+      "status": "PASS",
+      "bukti": "Tautan menuju route operasional yang masih berfungsi; tidak mengeksekusi tindakan"
+    },
+    {
+      "uji": "Detail operasional Booking",
+      "status": "PASS",
+      "bukti": "Route existing tetap dapat dibuka; tanpa operasi perubahan status"
+    },
+    {
+      "uji": "Runtime dan audit read-only",
+      "status": "PASS",
+      "bukti": "Tidak ada pageerror atau request mutasi /api dari browser"
+    }
+  ]
+}

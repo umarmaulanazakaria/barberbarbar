@@ -1,3 +1,4 @@
+import routerProfilPelanggan from "./routes/profil-pelanggan.routes.js";
 import routerPembayaranOperasional, { routerNotifikasiOperasional } from "./routes/pembayaran-operasional.routes.js";
 import routerTindakanDashboard from "./routes/tindakan-dashboard.routes.js";
 import { kompatibilitasTeleponPelanggan } from "./middleware/telepon-pelanggan.middleware.js";
@@ -52,6 +53,7 @@ aplikasi.use("/layanan", autentikasi, routerLayanan);
 aplikasi.use("/services", autentikasi, routerLayanan);
 aplikasi.use("/memberships", autentikasi, kompatibilitasTeleponPelanggan, routerMembership);
 aplikasi.use("/orders", autentikasi, kompatibilitasTeleponPelanggan, routerPesanan);
+aplikasi.use("/management/customers", autentikasi, routerProfilPelanggan);
 aplikasi.use("/management/payments", autentikasi, routerPembayaranOperasional);
 aplikasi.use("/management/actions", autentikasi, routerTindakanDashboard);
 aplikasi.use("/management", autentikasi, kompatibilitasTeleponPelanggan, routerManajemen);

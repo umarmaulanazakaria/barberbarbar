@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import basisData from "../lib/prisma.js";
 import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
-import { buatPelangganDalamTransaksi } from "./pelanggan.service.js";
+import { KesalahanProfil, simpanProfilDalamTransaksi } from "./profil-pelanggan.service.js";
 import { buatPesananDalamTransaksi } from "./pesanan.service.js";
-import { normalisasiHpWalkIn, type DataWalkIn } from "../schemas/walkin-dashboard.schema.js";
+import { type DataWalkIn } from "../schemas/walkin-dashboard.schema.js";
 
 export class KesalahanWalkIn extends Error {
   constructor(public status: number, public kode: string, pesan: string) { super(pesan); }
@@ -12,6 +12,9 @@ const pilihanHasil = { id: true, nomorPesanan: true, status: true, statusPembaya
 const pesanGagal: Record<string, string> = {
   PELANGGAN_TIDAK_DITEMUKAN: "Pelanggan tidak ditemukan. Pilih kembali pelanggan.",
   PELANGGAN_DIBLOKIR: "Pelanggan diblokir dan tidak dapat membuat pesanan.",
+  PROFIL_DIARSIPKAN: "Profil diarsipkan. Minta Admin memulihkannya sebelum membuat pesanan.",
+  HP_PROFIL_WAJIB: "Nomor HP profil wajib dilengkapi oleh Admin.",
+  PROFIL_TIDAK_SESUAI: "Profil tidak sesuai. Pilih kembali pelanggan.",
   BARBER_TIDAK_DITEMUKAN: "Barber tidak ditemukan. Pilih kembali barber.",
   BARBER_TIDAK_AKTIF: "Barber sudah tidak aktif. Pilih barber lain atau tentukan nanti.",
   BARBER_SIBUK: "Barber sedang melayani. Pilih barber lain atau tentukan nanti.",
@@ -33,20 +36,23 @@ export const simpanWalkInDashboard = async (data: DataWalkIn, penggunaId: number
       if (lama.sidikPermintaan !== sidik) throw new KesalahanWalkIn(409, "IDEMPOTENSI_BERBEDA", "Kunci ini sudah dipakai untuk data berbeda. Periksa status permintaan sebelumnya.");
       return { diulang: true, data: lama.pesanan };
     }
-    let pelangganId: number;
-    if (data.pelanggan.jenis === "LAMA") pelangganId = data.pelanggan.id;
-    else {
-      const hp = data.pelanggan.nomorTelepon || null;
-      // Data lama boleh memiliki format +62/spasi; jangan mengubahnya atau membuat duplikat.
-      if (hp) {
-        const pelanggan = await tx.pelanggan.findMany({ where: { nomorTelepon: { not: null } }, select: { nomorTelepon: true } });
-        if (pelanggan.some(p => p.nomorTelepon && normalisasiHpWalkIn(p.nomorTelepon) === hp)) throw new KesalahanWalkIn(409, "HP_TERPAKAI", "Nomor HP sudah tercatat. Gunakan Pelanggan Lama.");
+    let pelangganId: number | null = null, profilPelangganId: number | null = null;
+    const operator = await tx.pengguna.findUniqueOrThrow({ where: { id: penggunaId }, select: { role: true } });
+    if (data.pelanggan.jenis === "LAMA") {
+      let profil = await tx.profilPelanggan.findUnique({ where: { id: data.pelanggan.id } });
+      if (!profil || profil.diarsipkanPada) throw new KesalahanProfil(409, "Pilih profil aktif. Pemulihan hanya dapat dilakukan Admin.");
+      if (!profil.nomorTelepon) {
+        if (operator.role !== "ADMIN") throw new KesalahanProfil(403, "Minta Admin melengkapi nomor HP profil sebelum membuat Walk-in.");
+        if (!data.pelanggan.nomorTelepon) throw new KesalahanProfil(400, "Nomor HP profil wajib dilengkapi.");
+        profil = await simpanProfilDalamTransaksi(tx, { nama: profil.nama, nomorTelepon: data.pelanggan.nomorTelepon, email: profil.email, catatan: profil.catatan, konfirmasiDuplikat: data.pelanggan.konfirmasiDuplikat }, penggunaId, profil.id);
       }
-      const baru = await buatPelangganDalamTransaksi(tx, { nama: data.pelanggan.nama, nomorTelepon: hp });
-      if (!baru) throw new KesalahanWalkIn(409, "HP_TERPAKAI", "Nomor HP sudah tercatat. Gunakan Pelanggan Lama.");
-      pelangganId = baru.id;
+      pelangganId = profil.pelangganId; profilPelangganId = profil.id;
+    } else if (data.pelanggan.jenis === "BARU") {
+      if (operator.role !== "ADMIN") throw new KesalahanProfil(403, "Hanya Admin yang dapat membuat profil pelanggan.");
+      const profil = await simpanProfilDalamTransaksi(tx, { nama: data.pelanggan.nama, nomorTelepon: data.pelanggan.nomorTelepon, email: null, catatan: null, konfirmasiDuplikat: data.pelanggan.konfirmasiDuplikat }, penggunaId);
+      pelangganId = profil.pelangganId; profilPelangganId = profil.id;
     }
-    const hasil = await buatPesananDalamTransaksi(tx, { pelangganId, barberId: data.barberId, items: data.items }, penggunaId, data);
+    const hasil = await buatPesananDalamTransaksi(tx, { pelangganId, profilPelangganId, barberId: data.barberId, items: data.items }, penggunaId, data);
     // Lempar agar pelanggan baru ikut rollback jika katalog/penugasan berubah.
     if (!hasil.berhasil) throw new KesalahanWalkIn(409, hasil.alasan, pesanGagal[hasil.alasan] ?? "Pesanan belum dapat dibuat.");
     await tx.permintaanWalkIn.create({ data: { penggunaId, kunci: kunciIdempotensi, sidikPermintaan: sidik, pesananId: hasil.data.id } });

@@ -42,9 +42,9 @@ const kandidatRiwayat = Prisma.sql`WITH kandidat AS (
     ORDER BY h."dibuatPada" DESC,h.id DESC LIMIT 1) r ON true
   WHERE b.status IN ('COMPLETED','CANCELLED','REJECTED','NO_SHOW')
   UNION ALL
-  SELECT 'WALK_IN',p.id,p."nomorPesanan",c.nama,c."nomorTelepon",p."checkInTime" AT TIME ZONE 'UTC',p.status::text,
+  SELECT 'WALK_IN',p.id,p."nomorPesanan",COALESCE(f.nama,c.nama,'Pelanggan Anonim'),COALESCE(f."nomorTelepon",c."nomorTelepon"),p."checkInTime" AT TIME ZONE 'UTC',p.status::text,
     p.status::text,r.waktu,CASE WHEN r.waktu IS NOT NULL THEN 'RiwayatStatusPesanan' END
-  FROM "Pesanan" p JOIN "Pelanggan" c ON c.id=p."pelangganId"
+  FROM "Pesanan" p LEFT JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "ProfilPelanggan" f ON f.id=p."profilPelangganId"
   LEFT JOIN LATERAL (SELECT h."diubahPada" AT TIME ZONE 'UTC' AS waktu FROM "RiwayatStatusPesanan" h
     WHERE h."pesananId"=p.id AND h.status=p.status ORDER BY h."diubahPada" DESC,h.id DESC LIMIT 1) r ON true
   WHERE p.status IN ('COMPLETED','CANCELLED') AND NOT EXISTS (SELECT 1 FROM "Booking" b WHERE b."pesananId"=p.id)
@@ -114,6 +114,6 @@ export const detailRiwayatPesanan = (jenis: "BOOKING" | "WALK_IN", id: number) =
     items: { select: { namaLayanan: true, harga: true, qty: true, subtotal: true } },
     riwayatStatus: { select: { id: true, status: true, diubahPada: true }, orderBy: [{ diubahPada: "asc" }, { id: "asc" }] },
   } });
-  return { ...arsip, nomorTelepon: p.pelanggan.nomorTelepon, barber: p.barber?.nama ?? null, items: p.items, catatan: p.catatan, alasan: null, pembayaran,
+  return { ...arsip, nomorTelepon: p.pelanggan?.nomorTelepon??"", barber: p.barber?.nama ?? null, items: p.items, catatan: p.catatan, alasan: null, pembayaran,
     riwayat: p.riwayatStatus.map(h => ({ id: h.id, aksi: h.status, sebelum: null, setelah: h.status, waktu: h.diubahPada })) };
 });

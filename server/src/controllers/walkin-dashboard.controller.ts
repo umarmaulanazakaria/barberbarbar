@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
+import { KesalahanProfil } from "../services/profil-pelanggan.service.js";
 import { skemaWalkIn } from "../schemas/walkin-dashboard.schema.js";
 import { KesalahanWalkIn, simpanWalkInDashboard, periksaPermintaanWalkIn } from "../services/walkin-dashboard.service.js";
 
@@ -12,6 +13,7 @@ export const tambahWalkInDashboard = async (req: Request, res: Response) => {
     const hasil = await simpanWalkInDashboard(valid.data, req.pengguna.id);
     return res.status(hasil.diulang ? 200 : 201).json({ pesan: "Pesanan tercatat", ...hasil });
   } catch (error) {
+    if (error instanceof KesalahanProfil) return res.status(error.status).json({ pesan: error.message, kandidat: error.kandidat });
     if (error instanceof KesalahanWalkIn) return res.status(error.status).json({ pesan: error.message, kode: error.kode });
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return res.status(409).json({ pesan: "Data sudah digunakan. Periksa pelanggan atau status permintaan.", kode: "DATA_TERPAKAI" });
     throw error;

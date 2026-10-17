@@ -41,9 +41,9 @@ export const daftarPesananTerpadu = (f: Filter) => basisData.$transaction(async 
         OR (t.kanal='MIDTRANS' AND e."referensiProvider"=t."referensiProvider" AND e.nominal=t.nominal AND e."mataUang"='IDR'))) uang
     WHERE true ${rentang(Prisma.sql`b."mulaiPada"`)}
     UNION ALL
-    SELECT 'WALK_IN', p.id, NULL::int, p.id, p."nomorPesanan", p."nomorPesanan", c.nama, br.nama,
+    SELECT 'WALK_IN', p.id, NULL::int, p.id, p."nomorPesanan", p."nomorPesanan", COALESCE(f.nama,c.nama,'Pelanggan Anonim'), br.nama,
       p."checkInTime" AT TIME ZONE 'UTC', p."checkInTime" AT TIME ZONE 'UTC', p.status::text, p.total, p."statusPembayaran"='PAID', i."nomorInvoice"
-    FROM "Pesanan" p JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "Barber" br ON br.id=p."barberId" LEFT JOIN "Pembayaran" i ON i."pesananId"=p.id
+    FROM "Pesanan" p LEFT JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "ProfilPelanggan" f ON f.id=p."profilPelangganId" LEFT JOIN "Barber" br ON br.id=p."barberId" LEFT JOIN "Pembayaran" i ON i."pesananId"=p.id
     WHERE NOT EXISTS (SELECT 1 FROM "Booking" b WHERE b."pesananId"=p.id) ${rentang(Prisma.sql`(p."checkInTime" AT TIME ZONE 'UTC')`)}
   ), tersaring AS (SELECT * FROM kandidat WHERE true
     ${f.jenis !== "SEMUA" ? Prisma.sql`AND jenis=${f.jenis}` : Prisma.empty}

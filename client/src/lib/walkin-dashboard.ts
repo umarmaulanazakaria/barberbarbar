@@ -1,5 +1,5 @@
 import { api } from "./api";
-export type PelangganWalkIn = { jenis: "LAMA"; id: number } | { jenis: "BARU"; nama: string; nomorTelepon?: string };
+export type PelangganWalkIn = { jenis: "LAMA"; id: number; nomorTelepon?: string; konfirmasiDuplikat?: boolean } | { jenis: "BARU"; nama: string; nomorTelepon?: string; konfirmasiDuplikat?: boolean } | { jenis: "ANONIM" };
 export type PermintaanWalkIn = { pelanggan: PelangganWalkIn; items: { layananId: number; qty: number; hargaDiharapkan: number }[];
   barberId: number | null; totalDiharapkan: number; kunciIdempotensi: string };
 export type HasilWalkIn = { pesan: string; diulang: boolean; data: { id: number; nomorPesanan: string; status: string; statusPembayaran: string; total: number } };

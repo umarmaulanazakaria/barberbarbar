@@ -183,7 +183,7 @@ export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: n
   if (!penggunaId) return tolak("Operator belum login",401);
   if (booking.pesananId !== null || await tx.pesanan.count({ where: { barberId, status: "IN_SERVICE" } })) return tolak("Barber sedang melayani atau pesanan telah dibuat");
   const sumber = await tx.booking.findUniqueOrThrow({ where: { id }, include: { items: true } });
-  const pesanan = await tx.pesanan.create({ data: { nomorPesanan: `ORD-BKG-${randomUUID()}`, pelangganId: booking.pelangganId,
+  const pesanan = await tx.pesanan.create({ data: { nomorPesanan: `ORD-BKG-${randomUUID()}`, pelangganId: booking.pelangganId, profilPelangganId: booking.profilPelangganId,
     barberId, status: "IN_SERVICE", subtotal: booking.subtotal, discountPercent: booking.discountPercent, diskon: booking.diskon,
     total: booking.total, items: { create: sumber.items.map(({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal }) =>
       ({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal })) }, riwayatStatus: { create: { status: "IN_SERVICE", penggunaId } } } });

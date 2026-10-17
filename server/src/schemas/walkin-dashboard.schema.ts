@@ -8,8 +8,9 @@ const hp = z.string().trim().max(30).refine(v => !v || /^[+\d\s().-]+$/.test(v),
   .transform(normalisasiHpWalkIn).refine(v => !v || /^08[0-9]{8,11}$/.test(v), "Nomor HP tidak valid");
 export const skemaWalkIn = z.object({
   pelanggan: z.discriminatedUnion("jenis", [
-    z.object({ jenis: z.literal("LAMA"), id: z.number().int().positive() }).strict(),
-    z.object({ jenis: z.literal("BARU"), nama: z.string().trim().min(1).max(100), nomorTelepon: hp.optional() }).strict(),
+    z.object({ jenis: z.literal("LAMA"), id: z.number().int().positive(), nomorTelepon: hp.optional(), konfirmasiDuplikat: z.boolean().optional() }).strict(),
+    z.object({ jenis: z.literal("BARU"), nama: z.string().trim().min(1).max(100), nomorTelepon: hp.refine(v => !!v, "Nomor HP wajib"), konfirmasiDuplikat: z.boolean().optional() }).strict(),
+    z.object({ jenis: z.literal("ANONIM") }).strict(),
   ]),
   items: z.array(z.object({ layananId: z.number().int().positive(), qty: z.literal(1), hargaDiharapkan: z.number().int().min(0).max(2147483647) }).strict()).min(1).max(50)
     .refine(items => new Set(items.map(i => i.layananId)).size === items.length, "Layanan tidak boleh berulang"),

@@ -20,6 +20,7 @@ model Pelanggan {
   permohonanPengaitan PermohonanPengaitanAkun[]
   permohonanMembership PermohonanMembership[]
   booking             Booking[]
+  profil ProfilPelanggan?
 }
 
 enum StatusPelanggan {
@@ -91,7 +92,7 @@ model Layanan {
 model Pesanan {
   id               Int                    @id @default(autoincrement())
   nomorPesanan     String                 @unique
-  pelangganId      Int
+  pelangganId      Int?
   barberId         Int?
   status           StatusPesanan          @default(WAITING)
   statusPembayaran StatusPembayaran       @default(UNPAID)
@@ -103,7 +104,7 @@ model Pesanan {
   total            Int
   dibuatPada       DateTime               @default(now())
   diperbaruiPada   DateTime               @updatedAt
-  pelanggan        Pelanggan              @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  pelanggan        Pelanggan?             @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
   barber           Barber?                @relation(fields: [barberId], references: [id], onDelete: Restrict)
   items            ItemPesanan[]
   pembayaran       Pembayaran?
@@ -115,6 +116,8 @@ model Pesanan {
   @@index([status])
   @@index([statusPembayaran])
   @@index([dibuatPada])
+  profilPelangganId Int?
+  profilPelanggan ProfilPelanggan? @relation(fields:[profilPelangganId],references:[id],onDelete:Restrict)
 }
 
 enum StatusPesanan {
@@ -308,6 +311,8 @@ model Booking {
   @@index([mulaiPada, selesaiPada])
   @@index([pelangganId, status])
   @@index([barberPilihanId, status])
+  profilPelangganId Int?
+  profilPelanggan ProfilPelanggan? @relation(fields:[profilPelangganId],references:[id],onDelete:Restrict)
 }
 
 model ItemBooking {
@@ -573,4 +578,32 @@ model PembayaranOperasional {
   transaksiBooking TransaksiPembayaranBooking? @relation(fields:[transaksiBookingId],references:[id],onDelete:Restrict)
   pembayaran Pembayaran? @relation(fields:[pembayaranId],references:[id],onDelete:Restrict)
   @@index([pesananId, dibuatPada])
+}
+
+// Profil operator terdaftar terpisah dari identitas autentikasi/transaksi historis.
+model ProfilPelanggan {
+  id Int @id @default(autoincrement())
+  pelangganId Int @unique
+  nama String
+  nomorTelepon String?
+  email String?
+  catatan String?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  diarsipkanPada DateTime? @db.Timestamptz(3)
+  pelanggan Pelanggan @relation(fields:[pelangganId],references:[id],onDelete:Restrict)
+  pesanan Pesanan[]
+  booking Booking[]
+  riwayat RiwayatProfilPelanggan[]
+  @@index([nomorTelepon])
+  @@index([email])
+}
+model RiwayatProfilPelanggan {
+  id Int @id @default(autoincrement())
+  profilId Int
+  penggunaId Int?
+  aksi String
+  rincian Json?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  profil ProfilPelanggan @relation(fields:[profilId],references:[id],onDelete:Restrict)
+  @@index([profilId, dibuatPada])
 }

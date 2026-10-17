@@ -39,10 +39,10 @@ export const ambilDashboardFinal = (filter:Filter, waktuUji?:Date) => basisData.
       COALESCE((SELECT r."dibuatPada" FROM "RiwayatBooking" r WHERE r."bookingId"=b.id AND r.aksi='RESCHEDULE' ORDER BY r.id DESC LIMIT 1),b."dibuatPada")+${menitKonfirmasi}*interval '1 minute' "deadlineKonfirmasi"
     FROM "Booking" b JOIN "Pelanggan" c ON c.id=b."pelangganId" LEFT JOIN "Pesanan" p ON p.id=b."pesananId"
   ), walkin AS (
-    SELECT 'WALK_IN'::text jenis,p.id,NULL::int "bookingId",p.id "pesananId",p."nomorPesanan" nomor,c.nama pelanggan,p."checkInTime" AT TIME ZONE 'UTC' jadwal,
+    SELECT 'WALK_IN'::text jenis,p.id,NULL::int "bookingId",p.id "pesananId",p."nomorPesanan" nomor,COALESCE(f.nama,c.nama,'Pelanggan Anonim') pelanggan,p."checkInTime" AT TIME ZONE 'UTC' jadwal,
       p.status::text status,p."statusPembayaran"::text "statusPembayaran",
       (i.id IS NOT NULL AND i."jumlahDiterima">=0 AND i.kembalian>=0 AND i."jumlahDiterima"-i.kembalian=p.total) "receiptSah"
-    FROM "Pesanan" p JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "Pembayaran" i ON i."pesananId"=p.id
+    FROM "Pesanan" p LEFT JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "ProfilPelanggan" f ON f.id=p."profilPelangganId" LEFT JOIN "Pembayaran" i ON i."pesananId"=p.id
     WHERE NOT EXISTS(SELECT 1 FROM "Booking" b WHERE b."pesananId"=p.id)
   ), valid AS (
     SELECT b.* FROM booking b WHERE b.status IN ('AWAITING_DP','PENDING_CONFIRMATION','CONFIRMED','CHECKED_IN','IN_SERVICE','COMPLETED')

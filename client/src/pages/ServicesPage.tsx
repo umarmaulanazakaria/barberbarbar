@@ -40,7 +40,6 @@ export default function ServicesPage() {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Layanan | null>(null);
   const [nama, setNama] = useState("");
-  const [durasi, setDurasi] = useState(30);
   const [harga, setHarga] = useState(35000);
   const [aktif, setAktif] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -62,7 +61,6 @@ export default function ServicesPage() {
 
       return [
         service.nama,
-        service.durasiMenit,
         service.harga,
         service.aktif ? "active" : "inactive",
       ]
@@ -75,17 +73,16 @@ export default function ServicesPage() {
   const start = (service?: Layanan) => {
     setEdit(service ?? null);
     setNama(service?.nama ?? "");
-    setDurasi(service?.durasiMenit ?? 30);
     setHarga(service?.harga ?? 35000);
     setAktif(service?.aktif ?? true);
     setOpen(true);
   };
 
   const save = useMutation({
-    mutationFn: () =>
-      edit
-        ? api.patch(`/layanan/${edit.id}`, { nama, durasiMenit: durasi, harga, aktif })
-        : api.post("/layanan", { nama, durasiMenit: durasi, harga, aktif }),
+    mutationFn: () => {
+      if (!edit) throw new Error("Penambahan layanan menunggu penetapan aturan slot Booking.");
+      return api.patch(`/layanan/${edit.id}`, { nama, harga, aktif });
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["services"] });
       toast.success(edit ? "Layanan berhasil diperbarui" : "Layanan berhasil ditambahkan");
@@ -115,7 +112,7 @@ export default function ServicesPage() {
     <>
       <PageTitle
         title="Layanan"
-        subtitle="Kelola durasi dan harga layanan"
+        subtitle="Kelola nama, harga, dan status layanan"
         action={canManage ? <Button onClick={() => start()}>+ Tambah Layanan</Button> : undefined}
       />
 
@@ -123,10 +120,10 @@ export default function ServicesPage() {
         <div className="grid gap-3 border-b border-slate-200 p-4 md:grid-cols-[1fr_220px]">
           <div className="relative">
             <Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input aria-label="Cari nama, durasi, atau harga layanan..."
+            <Input aria-label="Cari nama atau harga layanan..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Cari nama, durasi, atau harga layanan..."
+              placeholder="Cari nama atau harga layanan..."
               className="pl-9"
             />
           </div>
@@ -156,7 +153,6 @@ export default function ServicesPage() {
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Layanan</th>
-                  <th>Durasi</th>
                   <th>Harga</th>
                   <th>Status</th>
                 </tr>
@@ -177,7 +173,6 @@ export default function ServicesPage() {
                     className="group cursor-pointer border-t border-slate-200 transition-all duration-200 hover:bg-indigo-50/60 hover:shadow-[inset_3px_0_0_0_#4f46e5] focus:bg-indigo-50/60 focus:outline-none focus:shadow-[inset_3px_0_0_0_#4f46e5]"
                   >
                     <td className="px-4 py-3 font-bold transition-transform duration-200 group-hover:translate-x-1">{service.nama}</td>
-                    <td>{service.durasiMenit} menit</td>
                     <td>{rupiah(service.harga)}</td>
                     <td><StatusBadge value={service.aktif ? "AKTIF" : "INACTIVE"} /></td>
                   </tr>
@@ -194,13 +189,10 @@ export default function ServicesPage() {
         onClose={() => setOpen(false)}
       >
         <div className="space-y-4">
+          {!edit && <p className="cp-warning" role="status">Penambahan layanan sementara ditunda sampai aturan slot Booking pengganti ditetapkan.</p>}
           <div>
             <Label htmlFor="bidang-servicespage-1">Nama Layanan</Label>
             <Input id="bidang-servicespage-1" value={nama} onChange={(event) => setNama(event.target.value)} disabled={!canManage} />
-          </div>
-          <div>
-            <Label htmlFor="bidang-servicespage-2">Durasi (menit)</Label>
-            <Input id="bidang-servicespage-2" type="number" min={1} value={durasi} onChange={(event) => setDurasi(Number(event.target.value))} disabled={!canManage} />
           </div>
           <div>
             <Label htmlFor="bidang-servicespage-3">Harga</Label>
@@ -212,7 +204,7 @@ export default function ServicesPage() {
           </label>
 
           {canManage && (
-            <Button className="w-full" onClick={() => save.mutate()} disabled={!nama || durasi <= 0 || harga <= 0 || save.isPending}>
+            <Button className="w-full" onClick={() => save.mutate()} disabled={!edit || !nama || harga <= 0 || save.isPending}>
               {save.isPending ? "Menyimpan..." : "Simpan Layanan"}
             </Button>
           )}

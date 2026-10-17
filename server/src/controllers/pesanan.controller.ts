@@ -51,6 +51,7 @@ export const tambah = async (req: Request, res: Response) => {
       JADWAL_TIDAK_TERSEDIA: "Kapasitas sedang direservasi booking; pilih waktu lain",
       PELANGGAN_TIDAK_DITEMUKAN: "Pelanggan tidak ditemukan",
       PELANGGAN_DIBLOKIR: "Pelanggan diblokir",
+      IDENTITAS_MEMBER_WAJIB: "Nama dan nomor HP member yang hadir wajib dicocokkan dan dikonfirmasi.",
       PROFIL_DIARSIPKAN: "Profil pelanggan diarsipkan. Minta Admin memulihkan profil.",
       HP_PROFIL_WAJIB: "Nomor HP profil wajib dilengkapi oleh Admin.",
       PROFIL_TIDAK_SESUAI: "Profil pelanggan tidak sesuai dengan identitas pesanan.",

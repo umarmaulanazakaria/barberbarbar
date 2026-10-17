@@ -93,6 +93,7 @@ export interface RiwayatStatus {
 }
 
 export interface Pesanan {
+  invoiceManfaat?: string | null;
   booking?: { id: number; nomorBooking: string } | null;
   id: number;
   nomorPesanan: string;

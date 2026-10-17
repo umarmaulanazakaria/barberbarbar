@@ -61,8 +61,9 @@ async function pembayaranRiwayat(tx: Prisma.TransactionClient, jenis: string, id
     return { total: r.total, jumlahDibayar: r.jumlahDibayar, balance: r.balance, statusPembayaran: r.statusPembayaran,
       invoice: r.invoice ? { nomorInvoice: r.invoice.nomorInvoice, dibuatPada: r.invoice.dibuatPada, total: r.invoice.total } : null };
   }
-  const p = await tx.pesanan.findUniqueOrThrow({ where: { id }, select: { total: true, statusPembayaran: true,
+  const p = await tx.pesanan.findUniqueOrThrow({ where: { id }, select: { total: true, invoiceManfaat:true, diperbaruiPada:true, statusPembayaran: true,
     pembayaran: { select: { nomorInvoice: true, jumlahDiterima: true, kembalian: true, dibayarPada: true } } } });
+  if(p.total===0 && p.invoiceManfaat && p.statusPembayaran==="PAID")return{total:0,jumlahDibayar:0,balance:0,statusPembayaran:"PAID",invoice:{nomorInvoice:p.invoiceManfaat,dibuatPada:p.diperbaruiPada,total:0}};
   const uang = p.pembayaran, sah = p.statusPembayaran === "PAID" && uang !== null && uang.kembalian >= 0 && uang.jumlahDiterima - uang.kembalian >= p.total;
   const jumlahDibayar = sah ? uang!.jumlahDiterima - uang!.kembalian : 0;
   return { total: p.total, jumlahDibayar, balance: Math.max(0, p.total - jumlahDibayar),

@@ -8,7 +8,7 @@ export function batasKonfirmasi(booking: Booking) {
   return new Date(reschedule?.dibuatPada ?? booking.dibuatPada).getTime() + 30 * 60000;
 }
 export function izinBooking(booking: Booking, pembayaran: RingkasanBooking | undefined, sekarang = Date.now()) {
-  const dp = pembayaran?.dpTerverifikasi === true;
+  const dp = pembayaran?.syaratDpTerpenuhi === true || pembayaran?.dpTerverifikasi === true;
   const usulanPending = booking.usulanBarber.some(u => u.status === "PENDING");
   const konfirmasi = booking.status === "PENDING_CONFIRMATION" && sekarang < batasKonfirmasi(booking) && sekarang < new Date(booking.mulaiPada).getTime();
   return {

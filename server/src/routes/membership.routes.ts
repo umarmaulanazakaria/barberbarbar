@@ -16,10 +16,10 @@ routerMembership.get("/", ambilSemua);
 
 routerMembership.get("/:id", ambilBerdasarkanId);
 
-routerMembership.post("/", tambah);
+routerMembership.post("/", hanyaAdmin, (_req,res)=>res.status(409).json({pesan:"Gunakan penjualan Membership berbayar pada Menu Membership."}));
 
 routerMembership.patch("/:id", hanyaAdmin, ubah);
 
-routerMembership.delete("/:id", hanyaAdmin, hapus);
+routerMembership.delete("/:id", hanyaAdmin, (_req,res)=>res.status(405).json({pesan:"Nomor Member dan riwayat pembayaran bersifat permanen."}));
 
 export default routerMembership;

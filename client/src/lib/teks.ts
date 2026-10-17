@@ -5,6 +5,7 @@ export function pesanAman(pesan: unknown, pengganti = 'Terjadi kendala. Silakan 
   return pesan;
 }
 const label: Record<string, string> = {
+  MEMBER_CONFIRMED: "Bebas DP Membership", NO_PAYMENT_DUE: "Tanpa Tagihan", VERIFY_MEMBERSHIP_IDENTITY: "Identitas Member Diperiksa", MEMBER_GUEST_CONFIRMED: "Booking Member Dikonfirmasi",
   PENDING_CONFIRMATION: 'Menunggu Konfirmasi', CONFIRMED: 'Booking Dikonfirmasi', CHECKED_IN: 'Sudah Check-in',
   IN_SERVICE: 'Sedang Dilayani', COMPLETED: 'Layanan Selesai', REJECTED: 'Ditolak', CANCELLED: 'Dibatalkan', NO_SHOW: 'Tidak Hadir',
   PENDING_APPROVAL: 'Menunggu Persetujuan', PENDING: 'Menunggu Konfirmasi', PROCESSING: 'Sedang Diproses',

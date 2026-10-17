@@ -47,7 +47,7 @@ export const bukaSesiLegacy=(token:string)=>db.$transaction(async tx=>{
 });
 const dpSah=async(tx:Prisma.TransactionClient,id:number)=>{
  const b=await ambilBookingPembayaran(tx,id);if(b.sumberBooking!=="TAMU")return false;
- const r=await bacaRingkasanPembayaran(tx,b);if(!r.dpTerverifikasi)return false;
+ const r=await bacaRingkasanPembayaran(tx,b);if(r.bebasDp && b.membershipBerbayarId)return ["CONFIRMED","CHECKED_IN","IN_SERVICE","COMPLETED"].includes(b.status);if(!r.dpTerverifikasi)return false;
  return !!await tx.riwayatBooking.findFirst({where:{bookingId:id,aksi:"AUTO_CONFIRM_GUEST"},select:{id:true}});
 };
 export const kodeUntukSesi=(token:string)=>db.$transaction(async tx=>{

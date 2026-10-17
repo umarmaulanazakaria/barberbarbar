@@ -38,6 +38,8 @@ export const dpProviderSah = async (tx: Prisma.TransactionClient, bookingId: num
   return sah.length > 0 && sah.reduce((n,t) => n + t.nominal - t.refund.reduce((r,f) => r + f.nominal, 0), 0) >= booking.nominalDp;
 };
 export const pastikanDpProviderSah = async (tx: Prisma.TransactionClient, bookingId: number) => {
+  const member = await tx.booking.findUniqueOrThrow({where:{id:bookingId},select:{memberBebasDp:true,membershipBerbayarId:true,identitasMemberPada:true}});
+  if(member.memberBebasDp && member.membershipBerbayarId){if(!member.identitasMemberPada)return gagal("Identitas member wajib diverifikasi oleh Admin/Staff sebelum pelayanan.");return;}
   if (!await dpProviderSah(tx, bookingId)) return gagal("Layanan wajib bukti DP sah hasil verifikasi Midtrans");
 };
 
@@ -191,7 +193,7 @@ const terapkanStatus = (data: StatusMidtrans, rekonsiliasiRefund = true, alokasi
     }
     }
     const ringkas = await bacaRingkasanPembayaran(tx, b);
-    if (b.status === "COMPLETED" && ringkas.statusPembayaran === "PAID" && ringkas.dpTerverifikasi) await finalisasiInvoiceDalamTransaksi(tx, b, ringkas, 0);
+    if (b.status === "COMPLETED" && ringkas.statusPembayaran === "PAID" && ringkas.syaratDpTerpenuhi) await finalisasiInvoiceDalamTransaksi(tx, b, ringkas, 0);
   } else if (t.status === "PENDING") {
     const status = data.transaction_status === "expire" ? "EXPIRED" : ["deny","cancel","failure"].includes(data.transaction_status) ? "FAILED" : "PENDING";
     statusBaru = status;

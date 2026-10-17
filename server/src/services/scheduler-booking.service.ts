@@ -83,7 +83,7 @@ export const prosesDeadlineBooking = async (id: number, opsi: OpsiPengujian = {}
         jenis = "AUTO_NO_SHOW";
         status = "NO_SHOW";
         rincian.alasan = "Customer belum check-in 15 menit setelah jadwal";
-        rincian.dpHangus = true;
+        rincian.dpHangus = !b.memberBebasDp || (await bacaRingkasanPembayaran(tx,await ambilBookingPembayaran(tx,id))).jumlahDibayar>0;
         rincian.kewajibanPelunasanDihentikan = true;
       }
     } else if (b.status === "COMPLETED") {

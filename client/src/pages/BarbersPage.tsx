@@ -1,3 +1,4 @@
+import DrawerKatalog from "../components/DrawerKatalog";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -14,7 +15,6 @@ import {
   Input,
   Label,
   LoadingState,
-  Modal,
   PageTitle,
   SearchableSelect,
   StatusBadge,
@@ -214,7 +214,7 @@ export default function BarbersPage() {
         </div>
       </Card>
 
-      <Modal
+      <DrawerKatalog
         open={open}
         title={
           edit ? (canManage ? "Ubah Barber" : "Detail Barber") : "Tambah Barber"
@@ -271,7 +271,7 @@ export default function BarbersPage() {
             </div>
           )}
         </div>
-      </Modal>
+      </DrawerKatalog>
 
       <ConfirmDialog
         open={confirmDelete}

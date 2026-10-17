@@ -1,3 +1,5 @@
+import { ambilBookingPembayaran, bacaRingkasanPembayaran, finalisasiInvoiceDalamTransaksi } from "./pembayaran-booking.service.js";
+import { terapkanManfaat, catatPenggunaan } from "./manfaat-membership.service.js";
 import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
@@ -129,6 +131,7 @@ export const rescheduleBooking = (id: number, pelangganId: number, akunPelanggan
     if(layanan.length!==data.items.length)return tolak("Layanan tidak tersedia",400);
     pengganti=data.items.map(i=>{const l=layanan.find(l=>l.id===i.layananId)!;return{layananId:l.id,namaLayanan:l.nama,harga:l.harga,durasiMenit:l.durasiMenit,qty:i.qty,subtotal:l.harga*i.qty};});
   }
+  if(booking.memberBebasDp)return tolak("Perubahan jadwal Booking Member memerlukan pembatalan dan booking baru agar masa aktif serta kuota gratis diperiksa kembali.");
   const uangBaru=pengganti?hitungUangBooking(pengganti,booking.discountPercent):null;
   if(uangBaru && (uangBaru.subtotal>2147483647 || pengganti!.some(i=>i.subtotal>2147483647)))return tolak("Nominal melampaui batas",400);
   const durasi=pengganti?pengganti.reduce((n,i)=>n+i.durasiMenit*i.qty,0):booking.durasiMenit;
@@ -183,7 +186,7 @@ export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: n
   if (!penggunaId) return tolak("Operator belum login",401);
   if (booking.pesananId !== null || await tx.pesanan.count({ where: { barberId, status: "IN_SERVICE" } })) return tolak("Barber sedang melayani atau pesanan telah dibuat");
   const sumber = await tx.booking.findUniqueOrThrow({ where: { id }, include: { items: true } });
-  const pesanan = await tx.pesanan.create({ data: { nomorPesanan: `ORD-BKG-${randomUUID()}`, pelangganId: booking.pelangganId, profilPelangganId: booking.profilPelangganId,
+  const pesanan = await tx.pesanan.create({ data: { nomorPesanan: `ORD-BKG-${randomUUID()}`, pelangganId: booking.pelangganId, profilPelangganId: booking.profilPelangganId, membershipBerbayarId:booking.membershipBerbayarId, ...(booking.snapshotManfaat?{snapshotManfaat:booking.snapshotManfaat}:{}),
     barberId, status: "IN_SERVICE", subtotal: booking.subtotal, discountPercent: booking.discountPercent, diskon: booking.diskon,
     total: booking.total, items: { create: sumber.items.map(({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal }) =>
       ({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal })) }, riwayatStatus: { create: { status: "IN_SERVICE", penggunaId } } } });
@@ -206,6 +209,8 @@ export const selesaikanBooking = (id: number, penggunaId: number) => transaksiBo
     await tx.pesanan.update({ where: { id: booking.pesananId }, data: { status: "COMPLETED" } });
     await tx.riwayatStatusPesanan.create({ data: { pesananId: booking.pesananId, status: "COMPLETED", penggunaId } });
   }
+  if(booking.pesananId)await catatPenggunaan(tx,booking.pesananId,selesaiPada,id);
+  if(booking.memberBebasDp){const selesai=await ambilBookingPembayaran(tx,id),uang=await bacaRingkasanPembayaran(tx,selesai);if(uang.statusPembayaran==="PAID")await finalisasiInvoiceDalamTransaksi(tx,selesai,uang,0);}
   await catat(tx, booking, "COMPLETE", "COMPLETED", { penggunaId });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
@@ -218,7 +223,8 @@ export const ubahLayananBooking = (id: number, items?: { layananId: number; qty:
   if (await tx.transaksiPembayaranBooking.count({ where: { bookingId: id, status: "PENDING" } })) return tolak("Payment pending harus direkonsiliasi dahulu");
   const layanan = await tx.layanan.findMany({ where: { id: { in: items.map(i=>i.layananId) }, aktif: true } });
   if (layanan.length !== items.length) return tolak("Layanan tidak tersedia",400);
-  const data = items.map(i => { const l=layanan.find(l=>l.id===i.layananId)!; return { layananId:l.id,namaLayanan:l.nama,harga:l.harga,durasiMenit:l.durasiMenit,qty:i.qty,subtotal:l.harga*i.qty }; });
+  let data = items.map(i => { const l=layanan.find(l=>l.id===i.layananId)!; return { layananId:l.id,namaLayanan:l.nama,harga:l.harga,durasiMenit:l.durasiMenit,qty:i.qty,subtotal:l.harga*i.qty }; });
+  if(booking.memberBebasDp && booking.membershipBerbayarId){const m=await tx.membership.findUniqueOrThrow({where:{id:booking.membershipBerbayarId}});const manfaat=await terapkanManfaat(tx,data,m.memberCode,booking.mulaiPada);data=manfaat.items;await tx.pesanan.update({where:{id:booking.pesananId},data:{snapshotManfaat:manfaat.snapshot}});}
   const uang = hitungUangBooking(data, booking.discountPercent);
   if (uang.subtotal > 2147483647 || data.some(i=>i.subtotal>2147483647)) return tolak("Nominal melampaui batas",400);
   await tx.$queryRaw`SELECT "id" FROM "Pesanan" WHERE "id" = ${booking.pesananId} FOR UPDATE`;

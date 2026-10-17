@@ -36,6 +36,12 @@ model Membership {
   discountPercent Int       @default(10)
   isActive        Boolean   @default(true)
   joinedAt        DateTime  @default(now())
+  berlakuMulai DateTime? @db.Timestamptz(3)
+  berlakuSampai DateTime? @db.Timestamptz(3)
+  penjualan PenjualanMembership[]
+  penggunaan PenggunaanMembership[]
+  bookingBerbayar Booking[] @relation("MembershipBooking")
+  pesananBerbayar Pesanan[] @relation("MembershipPesanan")
 }
 
 model Pengguna {
@@ -87,9 +93,14 @@ model Layanan {
   dibuatPada  DateTime      @default(now())
   itemPesanan ItemPesanan[]
   itemBooking ItemBooking[]
+  paketMembership PengaturanMembership[]
 }
 
 model Pesanan {
+  membershipBerbayar Membership? @relation("MembershipPesanan",fields:[membershipBerbayarId],references:[id],onDelete:Restrict)
+  membershipBerbayarId Int?
+  snapshotManfaat Json?
+  invoiceManfaat String? @unique
   id               Int                    @id @default(autoincrement())
   nomorPesanan     String                 @unique
   pelangganId      Int?
@@ -260,6 +271,11 @@ enum StatusPermohonanMembership {
 }
 
 model Booking {
+  membershipBerbayar Membership? @relation("MembershipBooking",fields:[membershipBerbayarId],references:[id],onDelete:Restrict)
+  membershipBerbayarId Int?
+  memberBebasDp Boolean @default(false)
+  identitasMemberPada DateTime? @db.Timestamptz(3)
+  snapshotManfaat Json?
   sumberBooking         String @default("AKUN")
   aksesTamu             AksesBookingTamu?
   id                    Int @id @default(autoincrement())
@@ -606,4 +622,53 @@ model RiwayatProfilPelanggan {
   dibuatPada DateTime @default(now()) @db.Timestamptz(3)
   profil ProfilPelanggan @relation(fields:[profilId],references:[id],onDelete:Restrict)
   @@index([profilId, dibuatPada])
+}
+
+model PengaturanMembership {
+ id Int @id
+ harga Int @default(550000)
+ layananGratisId Int?
+ layananGratis Layanan? @relation(fields:[layananGratisId],references:[id],onDelete:Restrict)
+ diubahPada DateTime @default(now()) @db.Timestamptz(3)
+}
+model PenjualanMembership {
+ id Int @id @default(autoincrement())
+ membershipId Int
+ membership Membership @relation(fields:[membershipId],references:[id],onDelete:Restrict)
+ penggunaId Int
+ kunci String @unique
+ sidik String
+ nominal Int
+ metode String
+ status String @default("PENDING")
+ jumlahDiterima Int?
+ referensi String?
+ providerOrderId String? @unique
+ providerTransactionId String? @unique
+ statusProvider String?
+ urlQris String?
+ kedaluwarsaPada DateTime? @db.Timestamptz(3)
+ buktiProvider Json?
+ dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+ dibayarPada DateTime? @db.Timestamptz(3)
+ periodeMulai DateTime? @db.Timestamptz(3)
+ periodeSampai DateTime? @db.Timestamptz(3)
+ @@index([membershipId,dibuatPada])
+}
+model PenggunaanMembership {
+ id Int @id @default(autoincrement())
+ membershipId Int
+ membership Membership @relation(fields:[membershipId],references:[id],onDelete:Restrict)
+ bookingId Int? @unique
+ pesananId Int @unique
+ selesaiPada DateTime @db.Timestamptz(3)
+ rincian Json
+}
+
+model AuditPaketMembership {
+ id Int @id @default(autoincrement())
+ penggunaId Int
+ sebelum Json
+ sesudah Json
+ dibuatPada DateTime @default(now()) @db.Timestamptz(3)
 }

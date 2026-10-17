@@ -33,15 +33,15 @@ export const ambilDashboardFinal = (filter:Filter, waktuUji?:Date) => basisData.
       COALESCE((SELECT sum(CASE WHEN t.tujuan='REFUND' THEN -t.nominal ELSE t.nominal END) FROM sah t WHERE t."bookingId"=b.id),0) net,
       COALESCE((SELECT sum(t.nominal) FROM sah t WHERE t."bookingId"=b.id AND t.tujuan<>'REFUND'),0) bruto,
       EXISTS(SELECT 1 FROM "TransaksiPembayaranBooking" t WHERE t."bookingId"=b.id AND t.status='SUCCEEDED' AND NOT EXISTS(SELECT 1 FROM sah s WHERE s.id=t.id)) "tidakSah",
-      (SELECT count(*)>0 AND COALESCE(sum(t.nominal),0)>=b."nominalDp" FROM sah t WHERE t."bookingId"=b.id AND t.tujuan='DP' AND t.kanal='MIDTRANS'
+      (b."memberBebasDp" OR (SELECT count(*)>0 AND COALESCE(sum(t.nominal),0)>=b."nominalDp" FROM sah t WHERE t."bookingId"=b.id AND t.tujuan='DP' AND t.kanal='MIDTRANS'
         AND (t."roundKonfirmasiPada"=CASE WHEN b."sumberBooking"='TAMU' THEN b."dibuatPada" ELSE b."dikonfirmasiPada" END OR t."roundKonfirmasiPada"=b."dpDibawaDariRound")
-        AND t."dibayarPada" IS NOT NULL AND t."deadlinePada" IS NOT NULL AND t."dibayarPada"<=t."deadlinePada") "dpSah",
+        AND t."dibayarPada" IS NOT NULL AND t."deadlinePada" IS NOT NULL AND t."dibayarPada"<=t."deadlinePada")) "dpSah",
       COALESCE((SELECT r."dibuatPada" FROM "RiwayatBooking" r WHERE r."bookingId"=b.id AND r.aksi='RESCHEDULE' ORDER BY r.id DESC LIMIT 1),b."dibuatPada")+${menitKonfirmasi}*interval '1 minute' "deadlineKonfirmasi"
     FROM "Booking" b JOIN "Pelanggan" c ON c.id=b."pelangganId" LEFT JOIN "Pesanan" p ON p.id=b."pesananId"
   ), walkin AS (
     SELECT 'WALK_IN'::text jenis,p.id,NULL::int "bookingId",p.id "pesananId",p."nomorPesanan" nomor,COALESCE(f.nama,c.nama,'Pelanggan Anonim') pelanggan,p."checkInTime" AT TIME ZONE 'UTC' jadwal,
       p.status::text status,p."statusPembayaran"::text "statusPembayaran",
-      (i.id IS NOT NULL AND i."jumlahDiterima">=0 AND i.kembalian>=0 AND i."jumlahDiterima"-i.kembalian=p.total) "receiptSah"
+      ((p.total=0 AND p."invoiceManfaat" IS NOT NULL) OR (i.id IS NOT NULL AND i."jumlahDiterima">=0 AND i.kembalian>=0 AND i."jumlahDiterima"-i.kembalian=p.total)) "receiptSah"
     FROM "Pesanan" p LEFT JOIN "Pelanggan" c ON c.id=p."pelangganId" LEFT JOIN "ProfilPelanggan" f ON f.id=p."profilPelangganId" LEFT JOIN "Pembayaran" i ON i."pesananId"=p.id
     WHERE NOT EXISTS(SELECT 1 FROM "Booking" b WHERE b."pesananId"=p.id)
   ), valid AS (

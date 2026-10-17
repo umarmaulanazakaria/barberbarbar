@@ -12,6 +12,7 @@ const pilihanHasil = { id: true, nomorPesanan: true, status: true, statusPembaya
 const pesanGagal: Record<string, string> = {
   PELANGGAN_TIDAK_DITEMUKAN: "Pelanggan tidak ditemukan. Pilih kembali pelanggan.",
   PELANGGAN_DIBLOKIR: "Pelanggan diblokir dan tidak dapat membuat pesanan.",
+  IDENTITAS_MEMBER_WAJIB: "Konfirmasi pencocokan nama dan nomor HP member yang hadir sebelum membuat pesanan.",
   PROFIL_DIARSIPKAN: "Profil diarsipkan. Minta Admin memulihkannya sebelum membuat pesanan.",
   HP_PROFIL_WAJIB: "Nomor HP profil wajib dilengkapi oleh Admin.",
   PROFIL_TIDAK_SESUAI: "Profil tidak sesuai. Pilih kembali pelanggan.",
@@ -52,7 +53,7 @@ export const simpanWalkInDashboard = async (data: DataWalkIn, penggunaId: number
       const profil = await simpanProfilDalamTransaksi(tx, { nama: data.pelanggan.nama, nomorTelepon: data.pelanggan.nomorTelepon, email: null, catatan: null, konfirmasiDuplikat: data.pelanggan.konfirmasiDuplikat }, penggunaId);
       pelangganId = profil.pelangganId; profilPelangganId = profil.id;
     }
-    const hasil = await buatPesananDalamTransaksi(tx, { pelangganId, profilPelangganId, barberId: data.barberId, items: data.items }, penggunaId, data);
+    const hasil = await buatPesananDalamTransaksi(tx, { pelangganId, profilPelangganId, konfirmasiMember: data.konfirmasiMember===true, barberId: data.barberId, items: data.items }, penggunaId, data);
     // Lempar agar pelanggan baru ikut rollback jika katalog/penugasan berubah.
     if (!hasil.berhasil) throw new KesalahanWalkIn(409, hasil.alasan, pesanGagal[hasil.alasan] ?? "Pesanan belum dapat dibuat.");
     await tx.permintaanWalkIn.create({ data: { penggunaId, kunci: kunciIdempotensi, sidikPermintaan: sidik, pesananId: hasil.data.id } });

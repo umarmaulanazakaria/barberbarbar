@@ -1,3 +1,4 @@
+import { terapkanManfaat } from "./manfaat-membership.service.js";
 import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { randomUUID } from "node:crypto";
 import basisData from "../lib/prisma.js";
@@ -7,6 +8,7 @@ import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 
 export const kolomBooking = {
+  memberBebasDp:true, membershipBerbayarId:true, identitasMemberPada:true,
   id: true, nomorBooking: true, status: true, mulaiPada: true, selesaiPada: true, zonaWaktu: true,
   durasiMenit: true, barberPilihanId: true, pesananId: true, subtotal: true, membershipAktif: true,
   discountPercent: true, diskon: true, total: true, dpPersen: true, nominalDp: true, catatan: true,
@@ -31,7 +33,7 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
     if (!pelanggan || pelanggan.status !== "AKTIF") return { status: "AKUN_TIDAK_AKTIF" } as const;
     const layanan = await transaksi.layanan.findMany({ where: { id: { in: data.items.map(item => item.layananId) }, aktif: true } });
     if (layanan.length !== data.items.length) return { status: "DATA_TIDAK_VALID" } as const;
-    const items = data.items.map(item => {
+    let items = data.items.map(item => {
       const sumber = layanan.find(l => l.id === item.layananId)!;
       return { layananId: sumber.id, namaLayanan: sumber.nama, durasiMenit: sumber.durasiMenit,
         harga: sumber.harga, qty: item.qty, subtotal: sumber.harga * item.qty };
@@ -45,21 +47,29 @@ export const buatBookingPelanggan = async (pelangganId: number, data: DataBuatBo
     if (data.barberPilihanId && !aktif.some(b => b.id === data.barberPilihanId)) return { status: "DATA_TIDAK_VALID" } as const;
     const rentang = { mulaiPada, selesaiPada };
     if (!await kapasitasLintasBooking(transaksi, rentang, { pelangganId, barberId: data.barberPilihanId })) return { status: "JADWAL_TIDAK_TERSEDIA" } as const;
+    let manfaat: Awaited<ReturnType<typeof terapkanManfaat>> | null=null;
+    const member=pelanggan.membership;
+    if(member?.isActive && member.berlakuMulai && member.berlakuMulai<=mulaiPada && member.berlakuSampai && member.berlakuSampai>mulaiPada && await transaksi.penjualanMembership.count({where:{membershipId:member.id,status:"SUCCEEDED"}})){
+      manfaat=await terapkanManfaat(transaksi,items,member.memberCode,mulaiPada);
+      if(manfaat.gratis && await transaksi.booking.count({where:{membershipBerbayarId:member.id,status:{in:["AWAITING_DP","PENDING_CONFIRMATION","CONFIRMED","CHECKED_IN","IN_SERVICE"]},items:{some:{layananId:manfaat.snapshot.layananGratisId,harga:0}}}}))return {status:"JADWAL_TIDAK_TERSEDIA"} as const;
+      items=manfaat.items;
+    }
     const subtotal = items.reduce((jumlah, item) => jumlah + item.subtotal, 0);
-    const membershipAktif = pelanggan.membership?.isActive === true;
+    const membershipAktif = !!manfaat;
     // Kontrak F4: ACTIVE selalu 10%, tidak mengikuti diskon kustom operator.
     // API/pesanan operator existing tidak diubah (kebijakan F3 tetap berlaku).
-    const discountPercent = membershipAktif ? 10 : 0;
+    const discountPercent = 0;
     const diskon = Math.floor(subtotal * discountPercent / 100);
     const total = subtotal - diskon;
-    const nominalDp = Math.ceil(total / 2); // Rupiah bulat; setidaknya 50%.
+    const nominalDp = manfaat ? 0 : Math.ceil(total / 2); // Rupiah bulat; setidaknya 50%.
     if (![subtotal, total, nominalDp].every(angka => Number.isSafeInteger(angka) && angka >= 0 && angka <= 2_147_483_647)) {
       return { status: "DATA_TIDAK_VALID" } as const;
     }
     const booking = await transaksi.booking.create({ data: {
+      ...(manfaat?{membershipBerbayarId:manfaat.member.id,memberBebasDp:true,snapshotManfaat:manfaat.snapshot,status:"CONFIRMED",dikonfirmasiPada:sekarang}:{}),
       nomorBooking: `BKG-${randomUUID()}`, pelangganId, dibuatPada: sekarang, barberPilihanId: data.barberPilihanId ?? null,
       mulaiPada, selesaiPada, zonaWaktu: zonaBooking, durasiMenit, subtotal, membershipAktif,
-      discountPercent, diskon, total, dpPersen: 50, nominalDp, catatan: data.catatan ?? null,
+      discountPercent, diskon, total, dpPersen: manfaat?0:50, nominalDp, catatan: data.catatan ?? null,
       items: { create: items },
     }, select: kolomBooking });
     return { status: "BERHASIL", booking } as const;

@@ -62,6 +62,7 @@ export const buatSnapBooking = async (id: number, pelangganId: number, tujuan: "
     if (ulang && (ulang.bookingId !== id || ulang.tujuan !== tujuan || ulang.nominal !== jumlah || ulang.status !== "PENDING")) return gagal("Kunci pembayaran sudah digunakan");
     const aktif = ulang ?? await tx.transaksiPembayaranBooking.findFirst({ where: { bookingId: id, tujuan, kanal: "MIDTRANS", status: "PENDING",
       ...(tujuan === "DP" ? { roundKonfirmasiPada: booking.sumberBooking === "TAMU" ? booking.dibuatPada : booking.dikonfirmasiPada } : {}) }, include: { snap: true } });
+    if (aktif?.referensiProvider?.startsWith("BBOPS-")) return gagal("QRIS operator masih aktif; rekonsiliasi transaksi tersebut dahulu");
     if (aktif?.snap) return { baru: false as const, attempt: aktif.snap, transaksiId: aktif.id };
     const ledger = aktif ?? await tx.transaksiPembayaranBooking.create({ data: { bookingId: id, tujuan, kanal: "MIDTRANS", nominal: jumlah,
       kunciIdempotensi: kunci, sidikPermintaan: sidik({ id, tujuan, jumlah }),

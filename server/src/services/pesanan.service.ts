@@ -1,3 +1,4 @@
+import { pembayaranOperasionalPending } from "../lib/reservasi-pembayaran.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { kapasitasLintasBooking } from "../lib/kapasitas-lintas-booking.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
@@ -162,7 +163,31 @@ export const bayarPesanan = async (
   }
   if (pesanan.status !== "COMPLETED") return { berhasil: false, alasan: "BELUM_SELESAI" } as const;
 
-  const hasil = await basisData.$transaction(async (tx) => {
+  const hasil = await basisData.$transaction(tx => bayarWalkInDalamTransaksi(tx, id, data));
+
+  if (hasil.tipe === "SUDAH_DIBAYAR") {
+    return { berhasil: false, alasan: "SUDAH_DIBAYAR" } as const;
+  }
+
+  if (hasil.tipe === "JUMLAH_KURANG") {
+    return { berhasil: false, alasan: "JUMLAH_KURANG" } as const;
+  }
+
+  return { berhasil: true, data: hasil.data } as const;
+};
+
+export const ambilSemuaInvoice = async () => {
+  return basisData.pembayaran.findMany({
+    include: {
+      pesanan: {
+        include: { pelanggan: true, barber: true, items: true },
+      },
+    },
+    orderBy: { dibayarPada: "desc" },
+  });
+};
+
+export const bayarWalkInDalamTransaksi = async (tx: Prisma.TransactionClient, id: number, data: { metode: MetodePembayaran; jumlahDiterima: number; catatan?: string | undefined }, operasionalId?: number) => {
     // Kunci order yang sama sebelum membaca total terakhir. Ini mencegah
     // pembayaran beradu dengan penambahan/perubahan service di payment modal.
     const dikunci = await tx.pesanan.updateMany({
@@ -177,6 +202,7 @@ export const bayarPesanan = async (
     if (dikunci.count !== 1) {
       return { tipe: "SUDAH_DIBAYAR" } as const;
     }
+    if (await pembayaranOperasionalPending(tx, id, operasionalId)) throw new KesalahanPembayaranBooking(409, "QRIS masih aktif; periksa status provider sebelum menerima pembayaran lain");
     // Jika F7 mengaitkan booking ketika request legacy sedang menunggu row lock,
     // jangan masuk ke pencatatan kasir biasa yang belum memahami DP.
     if (await tx.booking.findUnique({ where: { pesananId: id }, select: { id: true } })) {
@@ -221,26 +247,4 @@ export const bayarPesanan = async (
       tipe: "BERHASIL",
       data: { pembayaran, pesanan: pesananBaru },
     } as const;
-  });
-
-  if (hasil.tipe === "SUDAH_DIBAYAR") {
-    return { berhasil: false, alasan: "SUDAH_DIBAYAR" } as const;
-  }
-
-  if (hasil.tipe === "JUMLAH_KURANG") {
-    return { berhasil: false, alasan: "JUMLAH_KURANG" } as const;
-  }
-
-  return { berhasil: true, data: hasil.data } as const;
-};
-
-export const ambilSemuaInvoice = async () => {
-  return basisData.pembayaran.findMany({
-    include: {
-      pesanan: {
-        include: { pelanggan: true, barber: true, items: true },
-      },
-    },
-    orderBy: { dibayarPada: "desc" },
-  });
 };

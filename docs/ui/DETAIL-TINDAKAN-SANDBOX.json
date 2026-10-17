@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "provider": "MIDTRANS_SANDBOX_GET_STATUS",
+  "order_id": "BBOPS-22f8cedd-ef84-407c-b9b0-a6475012cbc4",
+  "transaction_id": "a541934c-5819-4e0e-9365-14c7661cc92d",
+  "nominal": 5000,
+  "statusProvider": "settlement",
+  "invoice": "INV-236703547-258",
+  "replay": 2,
+  "autoClose": true,
+  "gambarResmi": true,
+  "catatan": "Fixture PostgreSQL terisolasi, UI source asli; rekonsiliasi provider nyata. Replay HTTP lokal memakai signature dari payload Get Status; bukan bukti delivery internet webhook."
+}

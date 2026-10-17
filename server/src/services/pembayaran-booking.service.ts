@@ -103,7 +103,10 @@ const finalisasi = finalisasiInvoiceDalamTransaksi;
 
 export const bayarPelunasanKasirBooking = (id: number, penggunaId: number, data: {
   metode: MetodePembayaran; jumlahDiterima: number; kunciIdempotensi: string; catatan?: string | undefined;
-}, retry = true) => basisData.$transaction(async tx => {
+}, retry = true) => basisData.$transaction(tx => bayarPelunasanKasirDalamTransaksi(tx, id, penggunaId, data, retry), { isolationLevel: "ReadCommitted" });
+export const bayarPelunasanKasirDalamTransaksi = async (tx: Prisma.TransactionClient, id: number, penggunaId: number, data: {
+  metode: MetodePembayaran; jumlahDiterima: number; kunciIdempotensi: string; catatan?: string | undefined;
+}, retry = true) => {
   await kunciJadwalBooking(tx);
   let booking = await ambil(tx, id);
   if (booking.pesananId !== null) {
@@ -130,7 +133,7 @@ export const bayarPelunasanKasirBooking = (id: number, penggunaId: number, data:
   const sesudah = await bacaRingkasan(tx, booking);
   await finalisasi(tx, booking, sesudah, kembali);
   return { transaksi, ringkasan: await bacaRingkasan(tx, booking) };
-}, { isolationLevel: "ReadCommitted" });
+};
 
 export const finalisasiInvoiceBooking = (id: number) => basisData.$transaction(async tx => {
   await kunciJadwalBooking(tx); const booking = await ambil(tx, id);

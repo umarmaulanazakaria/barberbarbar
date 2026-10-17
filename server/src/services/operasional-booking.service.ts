@@ -171,13 +171,13 @@ export const checkInBooking = (id: number, penggunaId?: number, waktuUji?: Date)
   await catat(tx, booking, "CHECK_IN", "CHECKED_IN", { penggunaId });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });
 });
-export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: number) => transaksiBooking(async tx => {
+export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: number, gantiOlehAdmin = false) => transaksiBooking(async tx => {
   const booking = await ambil(tx, id);
   if (booking.status !== "CHECKED_IN") return tolak("Booking belum check-in dengan prasyarat yang valid");
   await pastikanCustomerAktif(tx, booking);
-  if (await tx.usulanBarberBooking.findFirst({ where: { bookingId: id, status: "PENDING" } })) return tolak("Usulan barber belum diputuskan customer");
+  if (!gantiOlehAdmin && await tx.usulanBarberBooking.findFirst({ where: { bookingId: id, status: "PENDING" } })) return tolak("Usulan barber belum diputuskan customer");
   const pilihan = booking.barberDisetujuiId ?? booking.barberPilihanId;
-  if (pilihan !== null && pilihan !== barberId) return tolak("Barber belum disetujui customer");
+  if (!gantiOlehAdmin && pilihan !== null && pilihan !== barberId) return tolak("Barber belum disetujui customer");
   await validasiSlot(tx, booking, booking.mulaiPada, booking.selesaiPada, barberId);
   await pastikanDpProviderSah(tx, id);
   if (!penggunaId) return tolak("Operator belum login",401);
@@ -187,6 +187,11 @@ export const mulaiLayananBooking = (id: number, barberId: number, penggunaId?: n
     barberId, status: "IN_SERVICE", subtotal: booking.subtotal, discountPercent: booking.discountPercent, diskon: booking.diskon,
     total: booking.total, items: { create: sumber.items.map(({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal }) =>
       ({ layananId,namaLayanan,durasiMenit,harga,qty,subtotal })) }, riwayatStatus: { create: { status: "IN_SERVICE", penggunaId } } } });
+  if (gantiOlehAdmin) {
+    // Hanya endpoint Dashboard ADMIN yang memasok flag ini; kontrak Staff lama tetap.
+    await tx.usulanBarberBooking.updateMany({ where: { bookingId: id, status: "PENDING" }, data: { status: "CANCELLED", diputuskanPada: await waktuDatabaseBooking(tx) } });
+    if (pilihan !== barberId) await catat(tx, booking, "ADMIN_ASSIGN_BARBER", booking.status, { penggunaId }, { barberSebelumnya: pilihan, barberBaru: barberId, sumber: "DASHBOARD_CHECK_IN" });
+  }
   await tx.booking.update({ where: { id }, data: { status: "IN_SERVICE", barberFinalId: barberId, pesananId: pesanan.id, layananMulaiPada: await waktuDatabaseBooking(tx) } });
   await catat(tx, booking, "START", "IN_SERVICE", { penggunaId }, { barberId, pesananId: pesanan.id });
   return tx.booking.findUniqueOrThrow({ where: { id }, select: kolomBooking });

@@ -1,3 +1,4 @@
+import { pembayaranOperasionalPending } from "../lib/reservasi-pembayaran.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import basisData from "../lib/prisma.js";
 
@@ -21,6 +22,7 @@ const kunciPesananSebelumPembayaran = async (
     data: { diperbaruiPada: new Date() },
   });
 
+  if (hasil.count === 1 && await pembayaranOperasionalPending(tx, pesananId)) return false;
   return hasil.count === 1;
 };
 

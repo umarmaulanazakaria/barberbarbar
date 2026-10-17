@@ -55,6 +55,7 @@ model Pengguna {
   transaksiBooking TransaksiPembayaranBooking[]
   keputusanRefund PermohonanRefundBooking[]
   permintaanWalkIn PermintaanWalkIn[]
+  pembayaranOperasional PembayaranOperasional[]
 }
 
 enum Role {
@@ -109,6 +110,7 @@ model Pesanan {
   riwayatStatus    RiwayatStatusPesanan[]
   booking          Booking?
   permintaanWalkIn PermintaanWalkIn?
+  pembayaranOperasional PembayaranOperasional[]
 
   @@index([status])
   @@index([statusPembayaran])
@@ -154,6 +156,7 @@ model Pembayaran {
   dibayarPada    DateTime         @default(now())
   pesanan        Pesanan          @relation(fields: [pesananId], references: [id], onDelete: Restrict)
   invoiceBooking InvoiceBooking?
+  operasional PembayaranOperasional?
 
   @@index([dibayarPada])
 }
@@ -401,6 +404,7 @@ model TransaksiPembayaranBooking {
   transaksiAsal TransaksiPembayaranBooking? @relation("RefundTransaksiBooking", fields: [transaksiAsalId], references: [id], onDelete: Restrict)
   refund TransaksiPembayaranBooking[] @relation("RefundTransaksiBooking")
   snap PercobaanSnapBooking?
+  operasional PembayaranOperasional?
   permohonanRefund PermohonanRefundBooking[] @relation("SumberRefundBooking")
   hasilRefund PermohonanRefundBooking? @relation("HasilRefundBooking")
   @@index([bookingId, status, tujuan])
@@ -538,4 +542,35 @@ model PermintaanWalkIn {
   pesanan         Pesanan  @relation(fields: [pesananId], references: [id], onDelete: Restrict)
 
   @@unique([penggunaId, kunci])
+}
+
+model PembayaranOperasional {
+  id Int @id @default(autoincrement())
+  pesananId Int
+  penggunaId Int
+  metode MetodePembayaran
+  status StatusTransaksiBooking @default(PENDING)
+  nominal Int
+  jumlahDiterima Int?
+  kembalian Int?
+  referensi String? @db.VarChar(300)
+  kunciIdempotensi String @unique @db.VarChar(128)
+  sidikPermintaan String @db.Char(64)
+  providerOrderId String? @unique
+  providerTransactionId String? @unique
+  urlQris String?
+  kedaluwarsaPada DateTime? @db.Timestamptz(3)
+  faseProvider String?
+  statusProvider String?
+  buktiHash String? @db.Char(64)
+  terverifikasiPada DateTime? @db.Timestamptz(3)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  dibayarPada DateTime? @db.Timestamptz(3)
+  transaksiBookingId Int? @unique
+  pembayaranId Int? @unique
+  pesanan Pesanan @relation(fields:[pesananId],references:[id],onDelete:Restrict)
+  pengguna Pengguna @relation(fields:[penggunaId],references:[id],onDelete:Restrict)
+  transaksiBooking TransaksiPembayaranBooking? @relation(fields:[transaksiBookingId],references:[id],onDelete:Restrict)
+  pembayaran Pembayaran? @relation(fields:[pembayaranId],references:[id],onDelete:Restrict)
+  @@index([pesananId, dibuatPada])
 }

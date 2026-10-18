@@ -6,9 +6,9 @@ Sistem operasional barbershop untuk pembelajaran, portofolio dan demo lokal. Rep
 
 Tiga aplikasi memakai satu API Express/Prisma dan PostgreSQL yang sama. Admin memakai desain **Admin Minimal**, Customer memakai **mobile-first**, Staff memakai **Minimal V3**. Harga, slot, kelayakan Member, keputusan operasional dan pembayaran ditetapkan backend. Socket.IO hanya memberi sinyal refetch REST.
 
-- [Admin Web dan Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/feature/project5-integration)
-- [React Native Staff](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/feature/project5-integration)
-- [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/feat/project5-react-web-mobile-first)
+- [Admin Web dan Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/main)
+- [React Native Staff](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/main)
+- [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/main)
 
 ## Teknologi dan fitur
 
@@ -85,7 +85,7 @@ JWT CUSTOMER terpisah dari operator. Tindakan khusus ADMIN tetap diperiksa backe
 
 ## Batas verifikasi
 
-Audit 18 Oktober 2026 memisahkan snapshot commit dari WIP lokal. TypeScript / build bukan bukti seluruh alur UI atau pembayaran provider. Lihat [laporan audit pusat](https://github.com/umarmaulanazakaria/barberbarbar/blob/feature/project5-integration/docs/audit/AUDIT-SISTEM-TERKINI.md). Pengujian integrasi memakai PostgreSQL fixture dan provider mock; bukan settlement Sandbox baru. Perangkat Android/iOS dan printer fisik belum diuji dalam audit ini. Advisory dependency masih terbuka. **Belum siap dinyatakan rilis penuh; bukan Production.**
+Audit 18 Oktober 2026 memisahkan snapshot commit dari WIP lokal. TypeScript / build bukan bukti seluruh alur UI atau pembayaran provider. Lihat [laporan audit pusat](https://github.com/umarmaulanazakaria/barberbarbar/blob/main/docs/audit/AUDIT-SISTEM-TERKINI.md). Pengujian integrasi memakai PostgreSQL fixture dan provider mock; bukan settlement Sandbox baru. Perangkat Android/iOS dan printer fisik belum diuji dalam audit ini. Advisory dependency masih terbuka. **Belum siap dinyatakan rilis penuh; bukan Production.**
 
 ## Panduan terbaru dan arsip
 
@@ -99,3 +99,7 @@ Laporan lama tetap disimpan sebagai snapshot saat ditulis. Jumlah suite, migrati
 ## Remediasi dependency terbaru
 
 Prisma diperbarui ke7.10.1 dan audit Backend kini 0. Admin tetap 2 advisory Router; upgrade major memerlukan keputusan. Staff 44 →37 laporan; Customer tetap 0. [Rincian dan bukti remediasi](docs/audit/REMEDIASI-KEAMANAN.md). Angka laporan audit sebelumnya merupakan baseline historis.
+
+## Versi demo pada main
+
+Branch `main` memuat snapshot fitur terbaru yang digabungkan dengan tetap mempertahankan riwayat. Verifikasi rilis memakai build/TypeScript dan fixture/mock lokal; tidak membuat transaksi nyata atau mengubah data operasional. Jalankan demo dengan konfigurasi lokal dan Midtrans Sandbox existing. Pengujian perangkat HP, printer fisik dan pembayaran provider langsung tidak diklaim lulus dari pengujian ini. WIP lokal tetap terpisah dari versi GitHub.

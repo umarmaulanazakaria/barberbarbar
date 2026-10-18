@@ -33,7 +33,7 @@ const proses = [
     { cwd: direktoriServer, stdio: "inherit" },
   ),
   // Batasi watch ke hasil compiler; perubahan node_modules bukan pemicu restart.
-  spawn(process.execPath, ["--watch-path=dist", "--watch-preserve-output", "dist/server.js"], {
+  spawn(process.execPath, ["--watch-path=" + path.join(direktoriServer, "dist"), "--watch-preserve-output", path.join(direktoriServer, "dist", "server.js")], {
     cwd: direktoriServer,
     stdio: "inherit",
   }),

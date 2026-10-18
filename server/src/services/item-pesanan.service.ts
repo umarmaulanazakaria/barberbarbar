@@ -1,3 +1,6 @@
+import { memilikiSlotLayanan, snapshotSlotLayanan } from "../lib/slot-layanan.js";
+import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { pembayaranOperasionalPending } from "../lib/reservasi-pembayaran.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import basisData from "../lib/prisma.js";
 
@@ -21,6 +24,7 @@ const kunciPesananSebelumPembayaran = async (
     data: { diperbaruiPada: new Date() },
   });
 
+  if (hasil.count === 1 && await pembayaranOperasionalPending(tx, pesananId)) return false;
   return hasil.count === 1;
 };
 
@@ -29,7 +33,15 @@ const hitungUlang = async (
   pesananId: number,
 ) => {
   const pesanan = await tx.pesanan.findUnique({ where: { id: pesananId } });
-  const items = await tx.itemPesanan.findMany({ where: { pesananId } });
+  let items = await tx.itemPesanan.findMany({ where: { pesananId } });
+  if(pesanan?.membershipBerbayarId){
+    const m=await tx.membership.findUniqueOrThrow({where:{id:pesanan.membershipBerbayarId}}),catalogue=await tx.layanan.findMany({where:{id:{in:items.map(i=>i.layananId)}}});
+    const regular=items.map(i=>{const l=catalogue.find(l=>l.id===i.layananId)!;return{...i,harga:l.harga,subtotal:l.harga*i.qty}});
+    const manfaat=await terapkanManfaat(tx,regular,m.memberCode,pesanan.checkInTime);
+    for(const i of manfaat.items)await tx.itemPesanan.update({where:{id:i.id},data:{harga:i.harga,subtotal:i.subtotal}});
+    await tx.pesanan.update({where:{id:pesananId},data:{snapshotManfaat:memilikiSlotLayanan(pesanan.snapshotManfaat)?snapshotSlotLayanan(manfaat.snapshot):manfaat.snapshot}});
+    items=await tx.itemPesanan.findMany({where:{pesananId}});
+  }
   const subtotal = items.reduce((jumlah, item) => jumlah + item.subtotal, 0);
   const diskon = Math.floor(
     subtotal * ((pesanan?.discountPercent ?? 0) / 100),

@@ -22,5 +22,5 @@ async function jalan(folder) {
     if (isi !== asli) await writeFile(f, isi);
   }
 }
-for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) await jalan(path.join(stage, r));
+for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web']) await jalan(path.join(stage, r));
 console.log('PASS tautan relatif dokumentasi dipetakan ke lokasi baru; bukti historis dipertahankan.');

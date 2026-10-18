@@ -93,6 +93,7 @@ export interface RiwayatStatus {
 }
 
 export interface Pesanan {
+  invoiceManfaat?: string | null;
   booking?: { id: number; nomorBooking: string } | null;
   id: number;
   nomorPesanan: string;
@@ -117,18 +118,6 @@ export interface Pesanan {
 
 export interface Invoice extends Pembayaran {
   pesanan: Pesanan;
-}
-
-export interface DashboardData {
-  waiting: number;
-  inService: number;
-  completedUnpaid: number;
-  paidToday: number;
-  pelanggan: number;
-  barberAktif: number;
-  layananAktif: number;
-  revenueToday: number;
-  pesananTerbaru: Pesanan[];
 }
 
 export interface ReportData {

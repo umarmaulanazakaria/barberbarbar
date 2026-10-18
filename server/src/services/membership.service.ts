@@ -21,13 +21,14 @@ export const ambilMembershipBerdasarkanId = async (id: number) => {
 // Digunakan flow operator dan approval customer: satu sumber benefit/kode member.
 export const buatMembershipDalamTransaksi = async (
   transaksi: Prisma.TransactionClient,
-  data: { pelangganId: number; discountPercent?: number | undefined; isActive?: boolean | undefined },
+  data: { pelangganId: number; discountPercent?: number | undefined; isActive?: boolean | undefined; tundaNomor?: boolean },
 ) => {
   await transaksi.$queryRaw`SELECT pg_advisory_xact_lock(7353, 1)::text`;
   const dibuat = await transaksi.membership.create({ data: {
     pelangganId: data.pelangganId, memberCode: `TEMP-${randomUUID()}`,
     discountPercent: data.discountPercent ?? 10, isActive: data.isActive ?? true,
   } });
+  if (data.tundaNomor) return transaksi.membership.findUniqueOrThrow({ where: { id: dibuat.id }, include: { pelanggan: true } });
   let nomorKode = dibuat.id;
   let memberCode = formatKodeMembership(nomorKode);
   while (await transaksi.membership.findUnique({ where: { memberCode } })) {

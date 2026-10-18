@@ -14,3 +14,16 @@ coverage/
 **/.env.*
 !**/.env.example
 !**/.env.sample
+
+# Hasil sementara pengujian browser lokal.
+client/test-results/
+client/playwright-report/
+
+# Rahasia dan arsip lokal; migration SQL tetap dilacak.
+.env
+*.pem
+*.key
+*.dump
+*.backup
+*.zip
+backups/

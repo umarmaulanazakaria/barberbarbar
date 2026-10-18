@@ -7,6 +7,7 @@ import App from "./App";
 import { ToastProvider } from "./context/ToastContext";
 // @ts-ignore CSS files are handled by the bundler.
 import "./index.css";
+import "./admin.css";
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5000, retry: 1 } },
 });

@@ -3,6 +3,7 @@
 param([string]$Stage2 = '', [switch]$Ngrok, [switch]$TanpaNgrok,
       [switch]$HanyaBackend, [switch]$Periksa)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'identitas-node.ps1')
 $kunci = $null
 $memilikiKunci = $false
 function Pemilik-Port([int]$Port) {
@@ -12,27 +13,42 @@ function Pemilik-Port([int]$Port) {
     if ($ids.Count -eq 1) { return Get-CimInstance Win32_Process -Filter "ProcessId=$($ids[0])" }
 }
 function Pastikan-Identitas($Proses, [string]$Berkas, [string]$Nama) {
-    if (-not $Proses -or -not $Proses.ExecutablePath -or
-        (Split-Path $Proses.ExecutablePath -Leaf) -ne 'node.exe' -or
-        -not $Proses.CommandLine -or
-        $Proses.CommandLine.Replace('/', '\') -notmatch ('(?i)(?:^|\s|")' + [Regex]::Escape($Berkas.Replace('/', '\')) + '(?:"|\s|$)')) {
-        throw "${Nama}: identitas tidak cocok dengan entrypoint absolut workspace. Tidak menjalankan duplikat atau menghentikan proses. Periksa PID secara manual."
+    $identitas = Baca-IdentitasNode $Proses
+    if (-not $identitas -or $identitas.Entry -ine (Jalur-Normal $Berkas)) {
+        throw "${Nama}: identitas proses tidak cocok atau tidak dapat diverifikasi. Tidak menjalankan duplikat atau menghentikan proses. Periksa PID secara manual."
     }
     Write-Host "[AKTIF] $Nama PID $($Proses.ProcessId)"
 }
+function Tunggu-Node([string]$Nama, [string]$Berkas, [int]$Port, [int]$Percobaan = 40) {
+    for ($i=0; $i -lt $Percobaan; $i++) {
+        $pemilik = Pemilik-Port $Port
+        if ($pemilik) {
+            try { Pastikan-Identitas $pemilik $Berkas $Nama }
+            catch {
+                $segar = Get-CimInstance Win32_Process -Filter "ProcessId=$($pemilik.ProcessId)" -ErrorAction Stop
+                if ($segar -and $segar.CreationDate -eq $pemilik.CreationDate) { throw }
+                # Proses sudah berganti ketika watcher restart: tunggu, jangan spawn.
+                Start-Sleep -Milliseconds 250
+                continue
+            }
+            $ulang = Pemilik-Port $Port
+            if ($ulang -and $ulang.ProcessId -eq $pemilik.ProcessId -and $ulang.CreationDate -eq $pemilik.CreationDate) { return }
+        }
+        Start-Sleep -Milliseconds 250
+    }
+    throw "$Nama belum siap pada port $Port; startup/restart belum selesai. Tidak membuat instance tambahan."
+}
 function Mulai-Node([string]$Nama, [string]$Berkas, [string]$Folder, [int]$Port) {
     $pemilik = Pemilik-Port $Port
-    if ($pemilik) { Pastikan-Identitas $pemilik $Berkas $Nama; return }
+    if ($pemilik -or ($Nama -eq 'backend' -and (Cari-WatcherBackend $Berkas))) {
+        Tunggu-Node $Nama $Berkas $Port
+        return
+    }
     if ($Periksa) { throw "$Nama belum aktif pada port $Port." }
     Start-Process -FilePath $script:node -ArgumentList ('"' + $Berkas + '"') -WorkingDirectory $Folder `
         -WindowStyle Hidden -RedirectStandardOutput (Join-Path $script:log "$Nama.out.log") `
         -RedirectStandardError (Join-Path $script:log "$Nama.err.log") | Out-Null
-    for ($i=0; $i -lt 60; $i++) {
-        Start-Sleep -Milliseconds 250
-        $pemilik = Pemilik-Port $Port
-        if ($pemilik) { Pastikan-Identitas $pemilik $Berkas $Nama; return }
-    }
-    throw "$Nama belum siap; periksa log privat $script:log."
+    Tunggu-Node $Nama $Berkas $Port 60
 }
 function Periksa-Webhook([string]$Origin) {
     & $script:node (Join-Path $script:backend 'scripts\periksa-webhook-development.mjs') $Origin
@@ -43,7 +59,7 @@ function Mulai-Aplikasi([string]$Nama, [string]$Folder, [string]$Program, [strin
         Write-Host "[LEWATI] $Nama port $Port sudah dipakai; tidak membuat proses kedua."
         return
     }
-    if ($Periksa) { return }
+    if ($Periksa) { throw "$Nama belum aktif pada port $Port; mode Periksa tidak memulai proses." }
     Start-Process -FilePath $Program -ArgumentList $Argumen -WorkingDirectory $Folder -WindowStyle Hidden `
         -RedirectStandardOutput (Join-Path $script:log "$Nama.out.log") `
         -RedirectStandardError (Join-Path $script:log "$Nama.err.log") | Out-Null
@@ -67,7 +83,7 @@ try {
     if (-not $Periksa) { New-Item -ItemType Directory -Force -Path $log | Out-Null }
     $entry = Join-Path $backend 'dist\server.js'
     $existing = Pemilik-Port 3000
-    if (-not $existing -and -not $Periksa) {
+    if (-not $existing -and -not $Periksa -and -not (Cari-WatcherBackend $entry)) {
         Push-Location $backend
         try { & npm.cmd run build; if ($LASTEXITCODE -ne 0) { throw 'Build backend gagal.' } }
         finally { Pop-Location }
@@ -77,10 +93,12 @@ try {
     if ($respons.pesan -ne 'Barbershop Management API berjalan') { throw 'Respons backend tidak sesuai.' }
     Periksa-Webhook 'http://127.0.0.1:3000'
     # Proxy tetap lokal; hanya satu route POST JSON dapat diteruskan.
-    Mulai-Node 'proxy-webhook' (Join-Path $backend 'scripts\jalankan-proxy-webhook.mjs') $backend 3001
-    Periksa-Webhook 'http://127.0.0.1:3001'
+    if (-not $Periksa -or $Ngrok -or (Pemilik-Port 3001)) {
+        Mulai-Node 'proxy-webhook' (Join-Path $backend 'scripts\jalankan-proxy-webhook.mjs') $backend 3001
+        Periksa-Webhook 'http://127.0.0.1:3001'
+    } else { Write-Host '[OPSIONAL] Proxy webhook 3001 belum aktif; pembayaran/tunnel tidak dinyatakan siap.' }
     $tunnelAda = $null -ne (Pemilik-Port 4040)
-    if ($Ngrok -or $tunnelAda) {
+    if ($Ngrok -or ($tunnelAda -and -not $Periksa -and -not $TanpaNgrok)) {
         if (-not $tunnelAda) {
             if ($Periksa) { throw 'Ngrok belum aktif.' }
             $exe = (Get-Command ngrok.exe -ErrorAction SilentlyContinue).Source
@@ -110,12 +128,14 @@ try {
     if (-not $HanyaBackend) {
         $npmCli = Join-Path (Split-Path $node -Parent) 'node_modules\npm\bin\npm-cli.js'
         Mulai-Aplikasi 'web' (Join-Path $repo 'client') $node @(('"'+$npmCli+'"'),'run','dev') 5173
-        foreach ($app in @(@{Nama='staff';Repo='barberbarbar-mobile';Port=8081},@{Nama='customer';Repo='barberbarbar-customer';Port=8082})) {
+        Mulai-Aplikasi 'customer-web' (Join-Path $akar 'barberbarbar-customer-web') $node @(('"'+$npmCli+'"'),'run','dev') 5175
+        foreach ($app in @(@{Nama='staff';Repo='barberbarbar-mobile';Port=8081})) {
             $folder = Join-Path $akar $app.Repo
             Mulai-Aplikasi $app.Nama $folder $node @(('"'+(Join-Path $folder 'node_modules\expo\bin\cli')+'"'),'start','--lan','--port',[string]$app.Port) $app.Port
         }
     }
-    Write-Host "[SIAP] Backend 3000; proxy 3001. Log privat: $log"
+    Write-Host "[SIAP] Backend 3000. Log privat: $log"
+    if (-not $HanyaBackend) { Write-Host '[APLIKASI] Web Admin http://127.0.0.1:5173; Customer Web http://127.0.0.1:5175; Expo Staff 8081. Customer Native merupakan arsip dan tidak dijalankan.' }
     Write-Host 'Backend existing tidak di-build/restart otomatis. Laptop/tunnel mati berarti webhook tidak tersedia; bukan uptime Production.'
 } catch { Write-Error $_.Exception.Message -ErrorAction Continue; exit 1 }
 finally { if ($memilikiKunci) { $kunci.ReleaseMutex() }; if ($kunci) { $kunci.Dispose() } }

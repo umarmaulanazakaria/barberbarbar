@@ -11,7 +11,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 
-const hasil = await build({ stdin: { contents: `export * from './src/lib/sinkronisasi-realtime'; export * from './src/lib/booking'; export { AuthProvider } from './src/context/AuthContext'; export { ToastProvider } from './src/context/ToastContext'; export { default as BookingPage } from './src/pages/BookingPage'; export { default as DetailBookingPage } from './src/pages/DetailBookingPage'; export { default as RefundPage } from './src/pages/RefundPage'; export { default as OrderDetailModal } from './src/components/OrderDetailModal'; export { default as PaymentModal } from './src/components/PaymentModal'; export { default as PermohonanMembershipAdmin } from './src/components/PermohonanMembershipAdmin';`, resolveDir: process.cwd(), sourcefile: "pengujian-web.ts" }, bundle: true, write: false, platform: "node", format: "esm", packages: "external", jsx: "automatic" });
+const hasil = await build({ stdin: { contents: `export * from './src/lib/sinkronisasi-realtime'; export * from './src/lib/booking'; export { AuthProvider } from './src/context/AuthContext'; export { ToastProvider } from './src/context/ToastContext'; export { default as TabelPesananTerpadu } from './src/components/TabelPesananTerpadu'; export { default as DetailBookingPage } from './src/pages/DetailBookingPage'; export { default as OrderDetailModal } from './src/components/OrderDetailModal'; export { default as PaymentModal } from './src/components/PaymentModal'; export { default as PermohonanMembershipAdmin } from './src/components/PermohonanMembershipAdmin';`, resolveDir: process.cwd(), sourcefile: "pengujian-web.ts" }, bundle: true, write: false, platform: "node", format: "esm", packages: "external", jsx: "automatic" });
 const file = path.resolve("node_modules/.cache/pengujian-web.mjs");
 await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, hasil.outputFiles[0].text);
 let total = 0, server, stop, sub;
@@ -39,9 +39,9 @@ try {
   assert.equal(mod.izinBooking({ ...b, status: "IN_SERVICE" }, uang).lunasi, false);
   assert.equal(mod.izinBooking({ ...b, status: "COMPLETED" }, { ...uang, balance: 0 }).lunasi, false);
   assert.equal(mod.izinBooking({ ...b, status: "COMPLETED" }, { ...uang, transaksi: [{ tujuan: "PELUNASAN", status: "PENDING" }] }).lunasi, false);
-  for (const status of ["PROCESSING", "SUCCEEDED", "UNSUPPORTED", "REJECTED", "PENDING_APPROVAL"]) assert.equal(mod.bolehRetryRefund(status), false);
-  assert.equal(mod.bolehRetryRefund("FAILED"), true);
-  pass("Pelunasan COMPLETED/OVERDUE, pending online, lunas dan refund tanpa retry PROCESSING");
+  assert.equal(mod.bolehRetryRefund, undefined);
+  assert.equal(mod.izinBooking({ ...b, status: "CONFIRMED" }, uang).tolak, false);
+  pass("Pelunasan COMPLETED/OVERDUE, pending online, lunas dan penolakan booking berbayar diblokir");
 
   const signal = { id: 1, aksi: "UPDATE", versi: "100", waktu: new Date().toISOString(), refetch: true };
   for (const jenis of mod.jenisSinyal) {
@@ -89,20 +89,23 @@ try {
   qc.setQueryData(["bookings"], [b]); qc.setQueryData(["booking", 1], b); qc.setQueryData(["booking-payments", 1], uang);
   qc.setQueryData(["barbers"], [{ id: 1, nama: "Barber dummy", aktif: true }]); qc.setQueryData(["services"], [{ id: 1, nama: "Layanan dummy", aktif: true, harga: 10000 }]);
   const render = component => renderToStaticMarkup(React.createElement(QueryClientProvider, { client: qc }, React.createElement(MemoryRouter, null, React.createElement(mod.AuthProvider, null, React.createElement(mod.ToastProvider, null, component)))));
-  let html = render(React.createElement(mod.BookingPage)); assert.ok(html.includes("Customer dummy") && html.includes("BOOKING-DUMMY"));
-  qc.setQueryData(["refund-requests"], [{ id: 99, bookingId: 1, nominal: 2000, status: "PROCESSING", alasan: "Dummy", dibuatPada: new Date().toISOString(), kodeProvider: "202" }]);
-  html = render(React.createElement(mod.RefundPage)); assert.ok(html.includes("Sedang Diproses") && html.includes("Tunggu konfirmasi sebelum mencoba kembali")); assert.ok(!html.includes("Periksa dan coba kembali") && !html.includes("Setujui pengembalian dana"));
-  roleSaatIni = "STAFF"; html = render(React.createElement(mod.RefundPage)); assert.ok(html.includes("hanya dapat dikelola admin")); assert.ok(!html.includes("202"));
+  const entri = { jenis: "BOOKING", id: b.id, bookingId: b.id, pesananId: null, nomor: b.nomorBooking, nomorPesanan: null, pelanggan: b.pelanggan.nama, barber: null, jadwal: b.mulaiPada, checkIn: null, status: b.status, statusPembayaran: uang.statusPembayaran, total: b.total, nomorInvoice: null };
+  let html = render(React.createElement(mod.TabelPesananTerpadu, { data: [entri], tampilan: "pesanan" })); assert.ok(html.includes("Customer dummy") && html.includes("rincianBooking=1"));
+  assert.ok(!html.includes("Booking Pelanggan"));
+  assert.equal(mod.RefundPage, undefined);
   roleSaatIni = "ADMIN";
   const order = { id: 1, nomorPesanan: "ORDER-DUMMY", status: "IN_SERVICE", statusPembayaran: "UNPAID", checkInTime: new Date().toISOString(), dibuatPada: new Date().toISOString(), pelanggan: { nama: "Customer dummy", nomorTelepon: "Dummy" }, barber: null, items: b.items.map(i => ({ ...i, id: i.layananId })), subtotal: 10000, total: 10000, diskon: 0, discountPercent: 0, pembayaran: null, riwayatStatus: [], booking: { id: 1, nomorBooking: b.nomorBooking } };
   qc.setQueryData(["order", 1], order);
   html = render(React.createElement(mod.OrderDetailModal, { orderId: 1, onClose() {} })); assert.ok(html.includes("Kelola booking")); assert.ok(!html.includes("Selesaikan Layanan") && !html.includes("Buka Pembayaran"));
   assert.ok(!render(React.createElement(mod.PaymentModal, { order, open: true, onClose() {} })).includes("Jumlah Diterima"));
   qc.setQueryData(["order", 1], { ...order, booking: null }); html = render(React.createElement(mod.OrderDetailModal, { orderId: 1, onClose() {} })); assert.ok(html.includes("Selesaikan Layanan"));
-  pass("Render UI booking/refund PROCESSING, STAFF ditolak, pesanan booking dialihkan dan walk-in dipertahankan");
+  pass("Render UI tanpa workflow refund, pesanan booking dialihkan dan walk-in dipertahankan");
   const renderDetail = () => renderToStaticMarkup(React.createElement(QueryClientProvider, { client: qc }, React.createElement(MemoryRouter, { initialEntries: ["/bookings/1"] }, React.createElement(mod.AuthProvider, null, React.createElement(mod.ToastProvider, null, React.createElement(Routes, null, React.createElement(Route, { path: "/bookings/:id", element: React.createElement(mod.DetailBookingPage) })))))));
-  html = renderDetail(); assert.ok(html.includes("Konfirmasi booking") && html.includes("Alasan penolakan"));
+  html = renderDetail(); assert.ok(html.includes("Konfirmasi booking") && !html.includes("Alasan penolakan"));
+  qc.setQueryData(["booking-payments", 1], { ...uang, dpTerverifikasi: false, jumlahDibayar: 0 });
+  html = renderDetail(); assert.ok(html.includes("Alasan penolakan"));
   assert.match(html, /<button[^>]*disabled=""[^>]*>Tolak booking<\/button>/);
+  qc.setQueryData(["booking-payments", 1], uang);
   qc.setQueryData(["booking", 1], { ...b, status: "CHECKED_IN", usulanBarber: [{ id: 1, barberId: 1, status: "PENDING", alasan: "Dummy" }] });
   html = renderDetail(); assert.ok(html.includes("Menunggu persetujuan pelanggan")); assert.match(html, /<button[^>]*disabled=""[^>]*>Mulai layanan<\/button>/);
   qc.setQueryData(["booking", 1], { ...b, status: "COMPLETED", pesananId: 1 }); qc.setQueryData(["booking-payments", 1], { ...uang, statusPembayaran: "OVERDUE" });

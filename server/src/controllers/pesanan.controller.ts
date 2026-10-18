@@ -48,8 +48,13 @@ export const tambah = async (req: Request, res: Response) => {
   const hasil = await tambahPesanan(validasi.data, req.pengguna.id);
   if (!hasil.berhasil) {
     const pesan: Record<string, string> = {
+      JADWAL_TIDAK_TERSEDIA: "Kapasitas sedang direservasi booking; pilih waktu lain",
       PELANGGAN_TIDAK_DITEMUKAN: "Pelanggan tidak ditemukan",
       PELANGGAN_DIBLOKIR: "Pelanggan diblokir",
+      IDENTITAS_MEMBER_WAJIB: "Nama dan nomor HP member yang hadir wajib dicocokkan dan dikonfirmasi.",
+      PROFIL_DIARSIPKAN: "Profil pelanggan diarsipkan. Minta Admin memulihkan profil.",
+      HP_PROFIL_WAJIB: "Nomor HP profil wajib dilengkapi oleh Admin.",
+      PROFIL_TIDAK_SESUAI: "Profil pelanggan tidak sesuai dengan identitas pesanan.",
       BARBER_TIDAK_DITEMUKAN: "Barber tidak ditemukan",
       BARBER_TIDAK_AKTIF: "Barber tidak aktif",
       LAYANAN_TIDAK_DITEMUKAN: "Ada layanan yang tidak ditemukan",

@@ -1,0 +1,73 @@
+import { skemaRencanaBooking, siapkanRencanaBookingWeb } from "./rencana-booking-web.service.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
+import { kebijakanBookingTamu } from "../lib/kebijakan-booking-tamu.js";
+import {konfigurasiSnapPublik} from "../lib/midtrans.js";
+﻿import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { z } from "zod";
+import basisData from "../lib/prisma.js";
+import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
+import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
+import { lepaskanTamuKedaluwarsa } from "../lib/kapasitas-lintas-booking.js";
+import { KesalahanPembayaranBooking, ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
+import { buatSnapBooking, sinkronkanPembayaranTamu } from "./midtrans-booking.service.js";
+
+const tolak = (pesan:string,kode=400,kodeKesalahan?:string):never=>{throw new KesalahanPembayaranBooking(kode,pesan,kodeKesalahan);};
+const hash=(v:string)=>createHash("sha256").update(v).digest("hex");
+const telepon=(s:string)=>{const n=s.replace(/[\s()-]/g,"");return n.startsWith("08")?"+62"+n.slice(1):n.startsWith("62")?"+"+n:n;};
+export const skemaGuest=z.object({...skemaRencanaBooking.shape,nama:z.string().trim().min(2).max(80).optional(),nomorTelepon:z.string().max(24).transform(telepon).pipe(z.string().regex(/^\+628\d{7,11}$/)).optional(),totalDiharapkan:z.number().int().nonnegative().max(2147483647).optional(),
+  kunciIdempotensi:z.uuid()}).strict().refine(d=>new Set(d.items.map(i=>i.layananId)).size===d.items.length)
+  .refine(d=>!!d.nomorMember||!!d.nama&&!!d.nomorTelepon);
+export type DataGuest=z.infer<typeof skemaGuest>;
+export const buatBookingTamu=async(data:DataGuest,tokenSesiHash?:string)=>basisData.$transaction(async tx=>{
+  await kunciJadwalBooking(tx);
+  const sekarang=await waktuDatabaseBooking(tx);
+  const sidik=hash(JSON.stringify({...data,items:[...data.items].sort((a,b)=>a.layananId-b.layananId)}));
+  const lama=await tx.aksesBookingTamu.findUnique({where:{kunciIdempotensi:data.kunciIdempotensi},select:{id:true}});
+  if(lama)return tolak("Permintaan ini sudah diterima. Periksa booking pada browser yang sama; jangan membuat pembayaran ulang.",409,"PERMINTAAN_SUDAH_DITERIMA");
+  await lepaskanTamuKedaluwarsa(tx,sekarang);
+  const {items,manfaat,total,mulaiPada,selesaiPada}=await siapkanRencanaBookingWeb(tx,data);
+  if(data.totalDiharapkan!==undefined&&data.totalDiharapkan!==total)return tolak("Harga berubah. Perbarui checkout sebelum membuat Booking.",409,"HARGA_BERUBAH");
+  const durasiMenit=slotLayananMenit;
+  const identitas=manfaat?{id:manfaat.member.pelangganId}:await tx.pelanggan.create({data:{nama:data.nama!,nomorTelepon:`TAMU-${randomUUID()}`}});
+  const namaBooking=manfaat?"Booking Member":data.nama!,teleponBooking=manfaat?"":data.nomorTelepon!;
+  const token=randomBytes(32).toString("hex"),deadlineDp=new Date(sekarang.getTime()+kebijakanBookingTamu.deadlineDpMenit*60000);
+  const booking=await tx.booking.create({data:{nomorBooking:`BKG-${randomUUID()}`,sumberBooking:"TAMU",pelangganId:identitas.id,profilPelangganId:manfaat?.member.pelanggan.profil?.id??null,barberPilihanId:data.barberPilihanId??null,status:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,
+    ...(manfaat?{membershipBerbayarId:manfaat.member.id,memberBebasDp:true,snapshotManfaat:{...manfaat.snapshot,pemesananCukupNomorMember:true},dikonfirmasiPada:sekarang}:{}),
+    mulaiPada,selesaiPada,durasiMenit,subtotal:total,total,membershipAktif:!!manfaat,discountPercent:0,diskon:0,dpPersen:manfaat?0:kebijakanBookingTamu.dpPersen,nominalDp:manfaat?0:Math.ceil(total*kebijakanBookingTamu.dpPersen/100),deadlineDp:manfaat?null:deadlineDp,
+    items:{create:items},aksesTamu:{create:{tokenHash:hash(token),kunciIdempotensi:data.kunciIdempotensi,sidikPermintaan:sidik,nama:namaBooking,nomorTelepon:teleponBooking,kedaluwarsaPada:new Date(selesaiPada.getTime()+30*86400000),...(tokenSesiHash?{sesi:{create:{tokenHash:tokenSesiHash,sumber:"SEMENTARA",versiAkses:1,kedaluwarsaPada:new Date(sekarang.getTime()+24*3600000)}}}:{})}},
+    riwayat:{create:{aksi:manfaat?"MEMBER_GUEST_CONFIRMED":"GUEST_CREATED",statusSebelum:manfaat?"CONFIRMED":"AWAITING_DP",statusSetelah:manfaat?"CONFIRMED":"AWAITING_DP",dibuatPada:sekarang,rincian:{sumber:"WEB_TAMU"}}}},select:{id:true,nomorBooking:true,deadlineDp:true}});
+  return{token,tautanPribadi:`#/b/${token}`,booking,serverTime:sekarang.toISOString()};
+},{isolationLevel:"ReadCommitted"});
+
+export const verifikasiAksesTamu=async(token:string)=>{
+  if(!/^[0-9a-f]{64}$/.test(token))return tolak("Tautan pribadi tidak valid atau tidak tersedia.",404);
+  return basisData.$transaction(async tx=>{
+    await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+    const sekarang=await waktuDatabaseBooking(tx);
+    const akses=await tx.aksesBookingTamu.findUnique({where:{tokenHash:hash(token)},select:{bookingId:true,kedaluwarsaPada:true,booking:{select:{sumberBooking:true}}}});
+    if(!akses||akses.booking.sumberBooking!=="TAMU"||akses.kedaluwarsaPada<=sekarang)return tolak("Tautan pribadi tidak valid atau tidak tersedia.",404);
+    return akses.bookingId;
+  });
+};
+export const detailBookingTamu=async(id:number)=>{
+  await basisData.$transaction(async tx=>{await kunciJadwalBooking(tx);await lepaskanTamuKedaluwarsa(tx,await waktuDatabaseBooking(tx));});
+  return basisData.$transaction(async tx=>{
+    await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
+    const serverTime=await waktuDatabaseBooking(tx);
+    const booking=await tx.booking.findUniqueOrThrow({where:{id},select:{memberBebasDp:true,nomorBooking:true,status:true,mulaiPada:true,selesaiPada:true,durasiMenit:true,dibuatPada:true,deadlineDp:true,deadlinePelunasan:true,
+      barberFinal:{select:{nama:true}},barberDisetujui:{select:{nama:true}},barberPilihan:{select:{nama:true}},dikonfirmasiPada:true,checkInPada:true,layananMulaiPada:true,layananSelesaiPada:true,
+      items:{select:{namaLayanan:true,layananId:true,qty:true,harga:true,subtotal:true,durasiMenit:true}},pesanan:{select:{items:{select:{namaLayanan:true,layananId:true,qty:true,harga:true,subtotal:true,durasiMenit:true}}}},aksesTamu:{select:{nama:true,nomorTelepon:true,kedaluwarsaPada:true}}}});
+    const ringkasan=await bacaRingkasanPembayaran(tx,await ambilBookingPembayaran(tx,id),serverTime);
+    const {pesanan,barberFinal,barberDisetujui,barberPilihan,...rincian}=booking;
+    return {booking:{...rincian,barber:barberFinal?.nama??barberDisetujui?.nama??barberPilihan?.nama??null,items:pesanan?.items??booking.items},ringkasan,serverTime:serverTime.toISOString()};
+  },{isolationLevel:"RepeatableRead"});
+};
+export const checkoutTamu=async(id:number,tujuan:"DP"|"PELUNASAN",kunci:string)=>{
+  const b=await basisData.booking.findUniqueOrThrow({where:{id},select:{pelangganId:true}});
+  return {...await buatSnapBooking(id,b.pelangganId,tujuan,kunci),...konfigurasiSnapPublik()};
+};
+export const sinkronTamu=async(id:number)=>{
+  const transaksi=await basisData.transaksiPembayaranBooking.findMany({where:{bookingId:id,kanal:"MIDTRANS",tujuan:{in:["DP","PELUNASAN"]},status:"PENDING"},select:{id:true},take:4});
+  for(const t of transaksi)await sinkronkanPembayaranTamu(t.id);
+  return detailBookingTamu(id);
+};

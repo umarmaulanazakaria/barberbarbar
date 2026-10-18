@@ -1,166 +1,43 @@
-import { statusRamah } from '../lib/teks';
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ambilRiwayat, judulStatusArsip, labelPembayaranArsip, type EntriRiwayat } from "../lib/riwayat-pesanan";
+import { useHariOperasional } from "../lib/pesanan-terpadu";
+import { statusRamah } from "../lib/teks";
+import { Button, Card, Empty, ErrorState, Input, LoadingState, Select } from "../components/ui";
+import RincianRiwayatDrawer from "../components/RincianRiwayatDrawer";
+import "./HistoryFinal.css";
 
-import OrderDetailModal from "../components/OrderDetailModal";
-import {
-  Card,
-  Empty,
-  ErrorState,
-  Input,
-  LoadingState,
-  PageTitle,
-} from "../components/ui";
-import { api } from "../lib/api";
-import { rupiah, tanggal } from "../lib/format";
-import type { Pesanan } from "../types";
+const pilihan = (s: string | null, nilai: readonly string[], awal: string) => s && nilai.includes(s) ? s : awal;
+const waktu = (iso: string | null) => iso ? <><strong>{new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).format(new Date(iso))}<small className="rh-wib"> WIB</small></strong><small>{new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "short", year: "numeric" }).format(new Date(iso))}</small></> : <span>Belum tercatat</span>;
+function Jenis({ b }: { b: EntriRiwayat }) { return <span className={`rh-badge rh-kind ${b.jenis === "BOOKING" ? "booking" : "walkin"}`}>{b.jenis === "BOOKING" ? "Booking" : "Walk-in"}</span>; }
+function Akhir({ b }: { b: EntriRiwayat }) { return <span className={`rh-badge rh-status ${b.statusAkhir.toLowerCase()}`}>{judulStatusArsip[b.statusAkhir]}</span>; }
+function Bayar({ b }: { b: EntriRiwayat }) { return <span className={`rh-badge rh-payment ${b.statusPembayaran === "PAID" ? "paid" : "unpaid"}`}>{labelPembayaranArsip[b.statusPembayaran] ?? statusRamah(b.statusPembayaran)}</span>; }
 
 export default function HistoryPage() {
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-
-  const {
-    data = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["orders", "history"],
-    queryFn: async () => (await api.get<Pesanan[]>("/orders/history")).data,
-  });
-
-  const filteredOrders = useMemo(() => {
-    const keyword = search.trim().toLocaleLowerCase("id-ID");
-    const from = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null;
-    const to = dateTo ? new Date(`${dateTo}T23:59:59.999`) : null;
-
-    return data.filter((order) => {
-      const orderDate = new Date(order.diperbaruiPada);
-      if (from && orderDate < from) return false;
-      if (to && orderDate > to) return false;
-      if (!keyword) return true;
-
-      return [
-        order.nomorPesanan,
-        order.pelanggan.nama,
-        order.pelanggan.nomorTelepon,
-        order.barber?.nama ?? "",
-        order.pembayaran?.metode ?? "",
-        ...order.items.map((item) => item.namaLayanan),
-      ]
-        .join(" ")
-        .toLocaleLowerCase("id-ID")
-        .includes(keyword);
-    });
-  }, [data, search, dateFrom, dateTo]);
-
-  return (
-    <>
-      <PageTitle
-        title="Riwayat Pesanan"
-        subtitle="Riwayat pesanan yang telah selesai dan lunas"
-      />
-      <Card className="overflow-hidden">
-        <div className="grid gap-3 border-b border-slate-200 p-4 lg:grid-cols-[1fr_180px_180px]">
-          <div className="relative">
-            <Search
-              size={17}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Cari pesanan, pelanggan, barber, atau layanan..."
-              className="pl-9"
-            />
-          </div>
-          <Input
-            type="date"
-            value={dateFrom}
-            onChange={(event) => setDateFrom(event.target.value)}
-            aria-label="Riwayat dari tanggal"
-          />
-          <Input
-            type="date"
-            value={dateTo}
-            onChange={(event) => setDateTo(event.target.value)}
-            aria-label="Riwayat sampai tanggal"
-          />
-        </div>
-
-        <div className="overflow-x-auto">
-          {isLoading ? (
-            <LoadingState text="Memuat riwayat pesanan..." />
-          ) : isError ? (
-            <ErrorState
-              text="Riwayat pesanan belum dapat dimuat."
-              onRetry={() => void refetch()}
-            />
-          ) : !filteredOrders.length ? (
-            <Empty
-              text={
-                search || dateFrom || dateTo
-                  ? "Tidak ada riwayat pesanan yang sesuai filter"
-                  : "Belum ada riwayat pesanan selesai"
-              }
-            />
-          ) : (
-            <table className="w-full min-w-[760px] text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500">
-                <tr>
-                  <th className="px-4 py-3">Nomor Pesanan</th>
-                  <th>Pelanggan</th>
-                  <th>Barber</th>
-                  <th>Tanggal</th>
-                  <th>Layanan</th>
-                  <th>Total</th>
-                  <th>Pembayaran</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.map((order) => (
-                  <tr
-                    key={order.id}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Buka pesanan ${order.nomorPesanan}`}
-                    onClick={() => setSelectedOrderId(order.id)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        setSelectedOrderId(order.id);
-                      }
-                    }}
-                    className="group cursor-pointer border-t border-slate-100 transition-all duration-200 hover:bg-indigo-50/70 hover:shadow-[inset_4px_0_0_#4f46e5] focus-visible:bg-indigo-50/70 focus-visible:outline-none focus-visible:shadow-[inset_4px_0_0_#4f46e5] active:bg-indigo-100/70"
-                  >
-                    <td className="px-4 py-3 font-bold text-indigo-600">
-                      <span className="inline-flex transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
-                        {order.nomorPesanan}
-                      </span>
-                    </td>
-                    <td>{order.pelanggan.nama}</td>
-                    <td>{order.barber?.nama ?? "Belum ditentukan"}</td>
-                    <td>{tanggal(order.diperbaruiPada)}</td>
-                    <td>
-                      {order.items.reduce((total, item) => total + item.qty, 0)}{" "}
-                      layanan
-                    </td>
-                    <td className="font-bold">{rupiah(order.total)}</td>
-                    <td>{statusRamah(order.pembayaran?.metode ?? null)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </Card>
-      <OrderDetailModal
-        orderId={selectedOrderId}
-        onClose={() => setSelectedOrderId(null)}
-      />
-    </>
-  );
+  const [params, aturParams] = useSearchParams(), [serverTime, aturServerTime] = useState<string>();
+  const jenis = pilihan(params.get("jenis"), ["SEMUA", "BOOKING", "WALK_IN"], "SEMUA"), periode = pilihan(params.get("periode"), ["HARI_INI", "TUJUH_HARI", "TIGA_PULUH_HARI", "RENTANG"], "TIGA_PULUH_HARI"), status = pilihan(params.get("status"), ["SEMUA", "COMPLETED", "CANCELLED", "EXPIRED"], "SEMUA");
+  const cari = params.get("cari") ?? "", [kata, aturKata] = useState(cari.trim());
+  const nomor = Number(params.get("halaman")), halaman = Number.isSafeInteger(nomor) && nomor > 0 && nomor <= 100000 ? nomor : 1;
+  const mulai = params.get("mulai") ?? "", selesai = params.get("selesai") ?? "", sah = periode !== "RENTANG" || !!mulai && !!selesai && mulai <= selesai;
+  const hari = useHariOperasional(serverTime);
+  useEffect(() => { const t = setTimeout(() => aturKata(cari.trim()), 250); return () => clearTimeout(t); }, [cari]);
+  const filter = { jenis, periode, status, cari: kata, halaman, batas: 20, ...(periode === "RENTANG" ? { mulai, selesai } : {}) };
+  const daftar = useQuery({ queryKey: ["orders", "riwayat", hari, filter], queryFn: ({ signal }) => ambilRiwayat(filter, signal), enabled: sah && kata === cari.trim(), placeholderData: keepPreviousData, refetchInterval: 15000 });
+  useEffect(() => { if (daftar.data && !daftar.isPlaceholderData) { aturServerTime(daftar.data.serverTime); if (daftar.data.halaman !== halaman) aturParams(p => { const q = new URLSearchParams(p); q.set("halaman", String(daftar.data.halaman)); return q; }, { replace: true }); } }, [daftar.data, daftar.isPlaceholderData, halaman, aturParams]);
+  const ubah = (k: string, v: string) => aturParams(p => { const q = new URLSearchParams(p); if (v) q.set(k, v); else q.delete(k); q.delete("halaman"); return q; });
+  const keHalaman = (n: number) => aturParams(p => { const q = new URLSearchParams(p); q.set("halaman", String(n)); return q; });
+  const tujuan = (b: EntriRiwayat) => { const q = new URLSearchParams(params); for (const k of ["rincianBooking", "rincianPesanan", "pesananId"]) q.delete(k); q.set(b.jenis === "BOOKING" ? "rincianBooking" : "rincianPesanan", String(b.id)); return `?${q}`; };
+  const d = daftar.data, menunggu = daftar.isPending || daftar.isPlaceholderData || kata !== cari.trim();
+  const tanggal = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${d?.hariIni ?? hari}T00:00:00+07:00`));
+  return <div className="riwayat-final"><header className="rh-header"><div><span className="rh-eyebrow">ARSIP / OPERASIONAL</span><h1>Riwayat Pesanan</h1><p>Seluruh pesanan yang sudah selesai, dibatalkan, atau kedaluwarsa.</p></div><div className="rh-date"><CalendarDays size={17} /><span>{tanggal}<small>Hari operasional · WIB</small></span></div></header>
+    <Card className="rh-panel"><div className="rh-tabs" role="tablist" aria-label="Jenis riwayat">{[["SEMUA", "Semua"], ["BOOKING", "Booking"], ["WALK_IN", "Walk-in"]].map(([kode, nama], i) => <button key={kode} id={`riwayat-tab-${kode}`} role="tab" tabIndex={jenis === kode ? 0 : -1} aria-selected={jenis === kode} aria-controls="daftar-riwayat" onClick={() => ubah("jenis", kode)} onKeyDown={e => { if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) { e.preventDefault(); const n = e.key === "Home" ? 0 : e.key === "End" ? 2 : (i + (e.key === "ArrowRight" ? 1 : 2)) % 3, k = ["SEMUA", "BOOKING", "WALK_IN"][n]; ubah("jenis", k); document.getElementById(`riwayat-tab-${k}`)?.focus(); } }}>{nama}</button>)}</div>
+      <div className="rh-filters"><label className="rh-search"><Search size={16} aria-hidden="true" /><Input aria-label="Cari riwayat pesanan" placeholder="Cari pelanggan, nomor pesanan, atau telepon…" maxLength={100} value={cari} onChange={e => ubah("cari", e.target.value)} /></label><Select aria-label="Periode riwayat" value={periode} onChange={e => ubah("periode", e.target.value)}><option value="HARI_INI">Hari Ini</option><option value="TUJUH_HARI">7 Hari</option><option value="TIGA_PULUH_HARI">30 Hari</option><option value="RENTANG">Rentang Khusus</option></Select><Select aria-label="Status akhir" value={status} onChange={e => ubah("status", e.target.value)}><option value="SEMUA">Semua Status</option><option value="COMPLETED">Selesai</option><option value="CANCELLED">Dibatalkan</option><option value="EXPIRED">Kedaluwarsa</option></Select></div>
+      {periode === "RENTANG" && <div className="rh-range"><label>Dari tanggal<Input type="date" aria-label="Dari tanggal" value={mulai} max={selesai || undefined} onChange={e => ubah("mulai", e.target.value)} /></label><span aria-hidden="true">—</span><label>Sampai tanggal<Input type="date" aria-label="Sampai tanggal" value={selesai} min={mulai || undefined} onChange={e => ubah("selesai", e.target.value)} /></label><small>Berdasarkan waktu penutupan · WIB</small></div>}
+      {d && d.tanpaWaktuPenutupan > 0 && <p className="rh-notice" role="status">{d.tanpaWaktuPenutupan} arsip tidak memiliki waktu penutupan terverifikasi. Arsip tersebut belum dapat dikelompokkan dalam rentang tanggal; perlu pemeriksaan data historis.</p>}
+      <div id="daftar-riwayat" role="tabpanel" aria-labelledby={`riwayat-tab-${jenis}`} aria-busy={sah && daftar.isFetching}>{!sah ? <p className="rh-validation" role="alert">Pilih tanggal awal dan akhir yang valid. Tanggal awal tidak boleh melebihi tanggal akhir.</p> : daftar.isError ? <ErrorState text="Riwayat pesanan belum dapat dimuat. Data belum dapat dipastikan." onRetry={() => void daftar.refetch()} /> : menunggu ? <LoadingState text="Memuat riwayat pesanan…" /> : d && !d.data.length ? <Empty text="Tidak ada riwayat pesanan sesuai filter." /> : d && <><div className="rh-table"><table><colgroup>{[23,10,15,15,12,16,9].map((n, i) => <col key={i} style={{ width: `${n}%` }} />)}</colgroup><thead><tr>{["PELANGGAN", "JENIS", "JADWAL / DATANG", "WAKTU PENUTUPAN", "STATUS AKHIR", "PEMBAYARAN", "AKSI"].map(k => <th key={k}>{k}</th>)}</tr></thead><tbody>{d.data.map(b => <tr key={`${b.jenis}:${b.id}`}><td><strong>{b.pelanggan}</strong><small>{b.nomor}</small></td><td><Jenis b={b} /></td><td>{waktu(b.jadwal)}</td><td>{waktu(b.penutupan)}</td><td><Akhir b={b} /></td><td><Bayar b={b} /></td><td><Link className="rh-detail" to={tujuan(b)} aria-label={`Detail ${b.nomor}`}>Detail<ChevronRight size={13} /></Link></td></tr>)}</tbody></table></div><div className="rh-mobile">{d.data.map(b => <Link key={`${b.jenis}:${b.id}`} to={tujuan(b)} className="rh-mobile-card" aria-label={`Detail ${b.nomor}`}><div><strong>{b.pelanggan}</strong><Jenis b={b} /></div><small>{b.nomor}</small><div className="rh-mobile-time"><span>Ditutup</span>{waktu(b.penutupan)}</div><footer><Akhir b={b} /><Bayar b={b} /><ChevronRight size={16} /></footer></Link>)}</div></>}</div>
+      {sah && !menunggu && !daftar.isError && d && <footer className="rh-pagination"><span>Menampilkan <strong>{d.total ? (d.halaman - 1) * 20 + 1 : 0}–{Math.min(d.halaman * 20, d.total)}</strong> dari <strong>{d.total}</strong> pesanan</span><nav aria-label="Halaman riwayat"><Button variant="ghost" disabled={d.halaman <= 1 || daftar.isFetching} onClick={() => keHalaman(d.halaman - 1)}><ChevronLeft size={15} /><span>Sebelumnya</span></Button>{Array.from({ length: Math.min(3, d.totalHalaman) }, (_, i) => Math.min(Math.max(1, d.halaman - 1), Math.max(1, d.totalHalaman - 2)) + i).map(n => <button key={n} aria-label={`Halaman ${n}`} aria-current={n === d.halaman ? "page" : undefined} disabled={daftar.isFetching} onClick={() => keHalaman(n)}>{n}</button>)}<Button variant="ghost" disabled={d.halaman >= d.totalHalaman || daftar.isFetching} onClick={() => keHalaman(d.halaman + 1)}><span>Berikutnya</span><ChevronRight size={15} /></Button></nav></footer>}
+    </Card><RincianRiwayatDrawer />
+  </div>;
 }

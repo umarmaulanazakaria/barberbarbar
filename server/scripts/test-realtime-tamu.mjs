@@ -1,0 +1,71 @@
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes,createHash} from 'node:crypto';
+import {createServer} from 'node:http';
+import {once} from 'node:events';
+import {io} from 'socket.io-client';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+if(!/^\/bb_guest_20261016_[a-f0-9]{8}$/.test(new URL(process.env.DATABASE_URL??'').pathname))throw Error('Wajib database fixture guest existing');
+process.env.GUEST_BOOKING_ENABLED='true';
+process.env.GUEST_WEB_ORIGINS='http://localhost:5175';
+process.env.MIDTRANS_MERCHANT_ID='fixture-realtime-tamu';
+process.env.MIDTRANS_SERVER_KEY=randomBytes(32).toString('hex');
+process.env.MIDTRANS_CLIENT_KEY='fixture-client';process.env.MIDTRANS_IS_PRODUCTION='false';
+const {default:db}=await import('../dist/lib/prisma.js'),{default:app}=await import('../dist/app.js');
+const {pasangRealtime}=await import('../dist/realtime/server.js'),{gerbangMidtrans}=await import('../dist/lib/midtrans.js');
+const {asalWebTamu}=await import('../dist/lib/asal-web-tamu.js');
+const models=['pelanggan','akunPelanggan','pengguna','barber','layanan','membership','pesanan','itemPesanan','pembayaran','riwayatStatusPesanan','passwordResetToken','permohonanPengaitanAkun','permohonanMembership','booking','itemBooking','usulanBarberBooking','riwayatBooking','transaksiPembayaranBooking','buktiProviderBooking','invoiceBooking','percobaanSnapBooking','permohonanRefundBooking','aksesBookingTamu','sesiBookingTamu'];
+for(const m of models)assert.equal(await db[m].count(),0,'Fixture harus kosong');
+const tag='rt-tamu-'+randomUUID(),clients=[],provider=new Map(),asal={...gerbangMidtrans};
+let server,rt,alamat,barber,layanan,admin,staff,total=0;
+const pass=s=>console.log('PASS REALTIME TAMU '+(++total)+': '+s);
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+const tunggu=async f=>{for(let i=0;i<200;i++){if(await f())return;await delay(25)}throw Error('TIMEOUT_REALTIME_TAMU')};
+const waktu=()=>new Date(Date.now()+7*3600000).toISOString().slice(0,19).replace('T',' ');
+const api=async(p,method='GET',body,cookie='',token='')=>{const r=await fetch(alamat+p,{method,headers:{Origin:'http://localhost:5175','Content-Type':'application/json',...(cookie?{Cookie:cookie}:{}),...(token?{Authorization:'Bearer '+token}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return{status:r.status,body:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]}};
+const baru=async n=>{const r=await api('/guest/bookings/session','POST',{nama:tag,nomorTelepon:'081234567890',mulaiPada:new Date(Date.now()+7*3600000+n*86400000).toISOString().slice(0,10)+'T10:00:00+07:00',items:[{layananId:layanan.id,qty:1}],kunciIdempotensi:randomUUID()});assert.equal(r.status,201);return{...r,id:r.body.booking.id}};
+const socket=(auth,cookie='',origin='http://localhost:5175',transports=['websocket'])=>{const s=io(alamat,{autoConnect:false,reconnection:false,transports,auth,extraHeaders:{...(origin?{Origin:origin}:{}),...(cookie?{Cookie:cookie}:{})}});s.events=[];s.onAny((jenis,data)=>s.events.push({jenis,data}));clients.push(s);return s};
+const sambung=async s=>{const p=once(s,'connect');s.connect();await p;return s};
+const tolak=async s=>{const p=once(s,'connect_error');s.connect();await p;assert.equal(s.connected,false);s.disconnect()};
+const event=(s,jenis,id)=>s.events.filter(e=>e.jenis===jenis&&e.data.id===id);
+gerbangMidtrans.buatSnap=async p=>{provider.set(p.transaction_details.order_id,{order_id:p.transaction_details.order_id,transaction_id:randomUUID(),merchant_id:process.env.MIDTRANS_MERCHANT_ID,gross_amount:p.transaction_details.gross_amount+'.00',currency:'IDR',transaction_status:'pending',status_code:'201',payment_type:'gopay',transaction_time:waktu()});return{token:'fixture-'+randomUUID(),redirect_url:'https://app.sandbox.midtrans.com/snap/v2/fixture'}};
+gerbangMidtrans.status=async id=>structuredClone(provider.get(id));gerbangMidtrans.refund=async()=>{throw Error('Provider nyata dilarang')};
+async function bayar(g,tujuan){const r=await api('/guest/bookings/session/checkout','POST',{tujuan,kunciIdempotensi:randomUUID()},g.cookie);assert.equal(r.status,200);const tr=await db.transaksiPembayaranBooking.findUniqueOrThrow({where:{id:r.body.transaksiId}}),p=provider.get(tr.referensiProvider);p.status_code='200';p.transaction_status='settlement';p.settlement_time=waktu();const body={...p,signature_key:createHash('sha512').update(p.order_id+p.status_code+p.gross_amount+process.env.MIDTRANS_SERVER_KEY).digest('hex')};assert.equal((await api('/midtrans/notifications','POST',body)).status,200);return body}
+try{
+ barber=await db.barber.create({data:{nama:tag}});layanan=await db.layanan.create({data:{nama:tag,harga:10000,durasiMenit:30}});
+ const hash=await bcrypt.hash('fixture-realtime-guest-only',10);
+ for(const role of ['ADMIN','STAFF']){const p=await db.pengguna.create({data:{name:tag,email:tag+'-'+role+'@example.invalid',passwordHash:hash,role,...(role==='STAFF'?{barberId:barber.id}:{})}});if(role==='ADMIN')admin=p;else staff=p}
+ server=createServer(app);rt=pasangRealtime(server);await rt.siap;server.listen(0,'127.0.0.1');await once(server,'listening');alamat='http://127.0.0.1:'+server.address().port;
+ const aToken=jwt.sign({id:admin.id,role:'ADMIN'},process.env.JWT_SECRET),sToken=jwt.sign({id:staff.id,role:'STAFF'},process.env.JWT_SECRET);
+ const so=await sambung(socket({token:aToken})),ss=await sambung(socket({token:sToken}));
+ const a=await baru(3),b=await baru(4);await tunggu(()=>event(so,'booking.changed',a.id).length&&event(ss,'booking.changed',a.id).length);pass('Create guest setelah commit terlihat oleh socket ADMIN dan STAFF existing');
+ const sa=await sambung(socket({tipe:'TAMU'},a.cookie)),sb=await sambung(socket({tipe:'TAMU'},b.cookie));
+ const asalLan=asalWebTamu().find(o=>/^http:\/\/(?:10\.|192\.168\.|172\.)/.test(o));
+ if(asalLan){const r=await fetch(alamat+'/guest/bookings/session/current',{headers:{Origin:asalLan,Cookie:a.cookie}});assert.equal(r.status,200);const lan=await sambung(socket({tipe:'TAMU'},a.cookie,asalLan));assert.ok(rt.io.sockets.sockets.get(lan.id).rooms.has('booking:'+a.id));lan.disconnect();pass('Origin LAN adapter lokal diterima REST dan Socket.IO dengan sesi sah; room tetap scoped')}
+ else console.log('NOT RUN Origin LAN: adapter privat tidak tersedia');
+ const ruang=rt.io.sockets.sockets.get(sa.id).rooms;assert.ok(ruang.has('booking:'+a.id));assert.ok(!ruang.has('operator:all'));assert.ok(!ruang.has('catalog:authenticated'));
+ assert.deepEqual(await sa.timeout(2000).emitWithAck('booking.subscribe',{bookingId:b.id}),{berhasil:false});assert.deepEqual(await sa.timeout(2000).emitWithAck('room.join',{room:'booking:'+b.id}),{berhasil:false});pass('Sesi server menentukan satu room; ID diketahui dan room.join tidak dapat melompati booking');
+ for(const s of [socket({tipe:'TAMU'}),socket({tipe:'TAMU'},'bb_guest_session=invalid'),socket({tipe:'TAMU',bookingId:b.id},a.cookie),socket({tipe:'TAMU'},a.cookie,''),socket({tipe:'TAMU'},a.cookie,'http://localhost:5173'),socket({tipe:'TAMU'},a.cookie,'https://evil.invalid')])await tolak(s);
+ pass('Tanpa cookie, cookie salah, manipulasi auth, Origin kosong/operator/asing ditolak');
+ const poll=await sambung(socket({tipe:'TAMU'},a.cookie,'http://localhost:5175',['polling']));poll.disconnect();
+ const cors=await fetch(alamat+'/socket.io/?EIO=4&transport=polling',{headers:{Origin:'http://localhost:5175'}});assert.equal(cors.headers.get('access-control-allow-origin'),'http://localhost:5175');assert.equal(cors.headers.get('access-control-allow-credentials'),'true');pass('Polling dan WebSocket terautentikasi; CORS origin eksplisit dan credentials');
+ const before=sa.events.length;await assert.rejects(db.$transaction(async tx=>{await tx.booking.update({where:{id:a.id},data:{catatan:'rollback-only'}});throw Error('ROLLBACK_FIXTURE')}));await delay(250);assert.equal(sa.events.length,before);pass('Rollback database tidak mengirim event sukses');
+ await db.booking.update({where:{id:b.id},data:{catatan:'only-booking-b'}});await tunggu(()=>event(sb,'booking.changed',b.id).length);await delay(100);assert.equal(event(sa,'booking.changed',b.id).length,0);pass('Booking B tidak bocor ke sesi A meskipun data kontak sama');
+ const payload=await bayar(a,'DP');await tunggu(()=>event(sa,'payment.changed',a.id).length&&event(sa,'booking.changed',a.id).length);
+ const current=await api('/guest/bookings/session/current','GET',undefined,a.cookie);assert.equal(current.body.booking.status,'CONFIRMED');assert.equal(current.body.ringkasan.dpTerverifikasi,true);assert.ok((await api('/guest/bookings/session/tracking','POST',{},a.cookie)).body.kode);assert.equal(event(sb,'payment.changed',a.id).length,0);pass('Settlement MOCK terverifikasi memicu event scoped; REST CONFIRMED dan tracking sah');
+ await api('/midtrans/notifications','POST',payload);await api('/midtrans/notifications','POST',payload);assert.equal(await db.transaksiPembayaranBooking.count({where:{bookingId:a.id,status:'SUCCEEDED'}}),1);
+ for(const [action,body]of [['check-in',{}],['start',{barberId:barber.id}],['complete',{}]])assert.equal((await api('/bookings/'+a.id+'/'+action,'POST',body,'',sToken)).status,200);
+ await tunggu(()=>sa.events.some(e=>e.jenis==='order.changed'));assert.equal((await api('/guest/bookings/session/current','GET',undefined,a.cookie)).body.booking.status,'COMPLETED');
+ await bayar(a,'PELUNASAN');await tunggu(()=>sa.events.some(e=>e.jenis==='payment.changed'&&e.data.aksi==='INVOICE_FINAL'));
+ assert.equal((await api('/guest/bookings/session/invoice','GET',undefined,a.cookie)).body.ringkasan.balance,0);assert.equal(await db.invoiceBooking.count({where:{bookingId:a.id}}),1);pass('Staff check-in/barber/start/complete, order event, pelunasan dan invoice tanpa double-credit');
+ for(const e of sa.events.filter(e=>e.jenis.endsWith('.changed')))assert.deepEqual(Object.keys(e.data).sort(),['aksi','id','refetch','versi','waktu']);pass('Payload event hanya invalidasi tanpa kontak, kode tracking, cookie, Snap atau nominal');
+ const revoked=once(sa,'disconnect');const recovery=await api('/bookings/'+a.id+'/tracking/reissue','POST',{identitasDiverifikasi:true,alasan:'Fixture verifikasi identitas secara langsung'},'',aToken);assert.equal(recovery.status,200);await revoked;await tolak(socket({tipe:'TAMU'},a.cookie));
+ const fresh=await api('/guest/bookings/session/track','POST',{kode:recovery.body.kode});assert.equal(fresh.status,200);const recovered=await sambung(socket({tipe:'TAMU'},fresh.cookie));pass('Rotasi ADMIN mencabut socket/sesi lama; pemulihan sah mendapatkan koneksi baru');
+ const expired=once(recovered,'disconnect');await db.sesiBookingTamu.updateMany({where:{bookingId:a.id},data:{kedaluwarsaPada:new Date(0)}});await expired;await tolak(socket({tipe:'TAMU'},fresh.cookie));pass('Sesi expired diputus dan handshake ulang ditolak');
+ console.log('TOTAL '+total+' kelompok REALTIME TAMU PASS; provider MOCK, bukan Sandbox nyata.');
+}finally{
+ for(const s of clients)s.disconnect();await rt?.hentikan();Object.assign(gerbangMidtrans,asal);
+ const books=layanan?await db.booking.findMany({where:{items:{some:{layananId:layanan.id}}},select:{id:true,pelangganId:true,pesananId:true}}):[],ids=books.map(x=>x.id),orders=books.flatMap(x=>x.pesananId?[x.pesananId]:[]);
+ await db.$transaction(async tx=>{await tx.sesiBookingTamu.deleteMany({where:{bookingId:{in:ids}}});await tx.aksesBookingTamu.deleteMany({where:{bookingId:{in:ids}}});await tx.invoiceBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.transaksiPembayaranBooking.deleteMany({where:{bookingId:{in:ids}}});await tx.booking.deleteMany({where:{id:{in:ids}}});await tx.pembayaran.deleteMany({where:{pesananId:{in:orders}}});await tx.pesanan.deleteMany({where:{id:{in:orders}}});await tx.pelanggan.deleteMany({where:{id:{in:books.map(x=>x.pelangganId)}}});await tx.pengguna.deleteMany({where:{id:{in:[admin?.id,staff?.id].filter(Boolean)}}});if(layanan)await tx.layanan.delete({where:{id:layanan.id}});if(barber)await tx.barber.delete({where:{id:barber.id}})});
+ for(const m of models)assert.equal(await db[m].count(),0,'Cleanup fixture tidak lengkap');await db.$disconnect();console.log('PASS cleanup24: hanya fixture suite dibersihkan');
+}

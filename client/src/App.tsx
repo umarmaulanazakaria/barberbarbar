@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
@@ -12,9 +12,7 @@ import HistoryPage from "./pages/HistoryPage";
 import InvoicesPage from "./pages/InvoicesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
-import BookingPage from "./pages/BookingPage";
 import DetailBookingPage from "./pages/DetailBookingPage";
-import RefundPage from "./pages/RefundPage";
 export default function App() {
   return (
     <Routes>
@@ -28,14 +26,15 @@ export default function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/bookings" element={<BookingPage />} />
-        <Route path="/bookings/:id" element={<DetailBookingPage />} />
-        <Route path="/refunds" element={<RefundPage />} />
+        <Route path="/bookings" element={<Navigate to="/orders?jenis=BOOKING&periode=SEMUA" replace />} />
+        <Route path="/bookings/:id" element={<RuteBookingLama />} />
+        <Route path="/orders/booking/:id" element={<DetailBookingPage />} />
+        <Route path="/refunds" element={<Navigate to="/" replace />} />
         <Route path="/orders/new" element={<Navigate to="/orders" replace />} />
-        <Route path="/orders/:id" element={<Navigate to="/orders" replace />} />
+        <Route path="/orders/:id" element={<RutePesananLama />} />
         <Route
           path="/orders/:id/payment"
-          element={<Navigate to="/orders" replace />}
+          element={<RutePesananLama />}
         />
         <Route path="/customers" element={<CustomersPage />} />
         <Route path="/membership" element={<MembershipPage />} />
@@ -50,3 +49,5 @@ export default function App() {
     </Routes>
   );
 }
+function RuteBookingLama(){const {id}=useParams();return <Navigate to={`/orders/booking/${id}`} replace/>;}
+function RutePesananLama(){const {id}=useParams();return <Navigate to={`/orders?pesananId=${id}`} replace/>;}

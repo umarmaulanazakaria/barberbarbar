@@ -1,205 +1,45 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowRight,
-  Clock3,
-  Scissors,
-  UserRoundCheck,
-  UsersRound,
-  WalletCards,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import NewOrderModal from "../components/NewOrderModal";
-import OrderDetailModal from "../components/OrderDetailModal";
-import { api } from "../lib/api";
-import RingkasanBookingDashboard from "../components/RingkasanBookingDashboard";
-import type { DashboardData } from "../types";
-import { rupiah, waktu } from "../lib/format";
-import {
-  Button,
-  Card,
-  Empty,
-  ErrorState,
-  LoadingState,
-  PageTitle,
-  StatusBadge,
-} from "../components/ui";
+﻿import TambahWalkInDrawer from "../components/TambahWalkInDrawer";
+import { useEffect, useState } from "react";
+import { keepPreviousData, useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useLocation } from "react-router-dom";
+import { CalendarDays, ChevronDown, Clock3, RefreshCw, Scissors, WalletCards } from "lucide-react";
+import { Button, ContentPanel, Empty, ErrorState, Input, LoadingState, StatCard, StatusBadge } from "../components/ui";
+import { ambilDashboardFinal, type AktivitasDashboard, type KategoriDashboard, type KodePerhatian } from "../lib/dashboard-final";
+import { useHariOperasional, waktuWib } from "../lib/pesanan-terpadu";
+import { rupiah } from "../lib/format";
+import "./DashboardFinal.css";
 
-export default function DashboardPage() {
-  const [newOrderOpen, setNewOrderOpen] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+function useTujuanRincian(){const lokasi=useLocation();return (b:AktivitasDashboard)=>{const p=new URLSearchParams(lokasi.search);p.delete("rincianBooking");p.delete("rincianPesanan");p.set(b.bookingId!==null?"rincianBooking":"rincianPesanan",String(b.bookingId??b.pesananId));return `?${p}`;};}
+function StatusPelayanan({baris}:{baris:AktivitasDashboard}){const label=baris.status==="AWAITING_DP"?"Menunggu DP":baris.jenis==="BOOKING"&&baris.status==="CONFIRMED"&&baris.statusPembayaran==="DP_PAID"?"Menunggu check-in":baris.status==="COMPLETED"?"Selesai":undefined;return <StatusBadge value={baris.status} label={label}/>;}
+function StatusFinansial({status}:{status:string}){const label:Record<string,string>={AWAITING_DP:"Belum dibayar",DP_PAID:"DP terverifikasi",PAID:"Lunas",UNPAID:"Belum lunas"};return <StatusBadge value={status} label={label[status]}/>;}
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: async () => (await api.get<DashboardData>("/dashboard")).data,
-    refetchInterval: 15000,
-  });
-
-  const cards = [
-    ["Menunggu", data?.waiting ?? 0, Clock3],
-    ["Sedang Dilayani", data?.inService ?? 0, Scissors],
-    ["Layanan Selesai, Belum Lunas", data?.completedUnpaid ?? 0, WalletCards],
-    ["Pembayaran Hari Ini", data?.paidToday ?? 0, UserRoundCheck],
-  ] as const;
-
-  return (
-    <>
-      <PageTitle
-        title="Dashboard"
-        subtitle="Ringkasan operasional barbershop hari ini"
-        action={
-          <Button onClick={() => setNewOrderOpen(true)}>+ Pesanan Baru</Button>
-        }
-      />
-
-      <RingkasanBookingDashboard />
-      {isLoading ? (
-        <Card>
-          <LoadingState text="Memuat dashboard..." />
-        </Card>
-      ) : isError ? (
-        <Card>
-          <ErrorState
-            text="Dashboard belum dapat dimuat."
-            onRetry={() => void refetch()}
-          />
-        </Card>
-      ) : (
-        <>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {cards.map(([label, value, Icon]) => (
-              <Card key={label} className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="grid size-10 place-items-center rounded-lg bg-indigo-50 text-indigo-600">
-                    <Icon size={19} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-500">{label}</div>
-                    <div className="text-2xl font-black text-slate-900">
-                      {value}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="mt-4 grid gap-4 xl:grid-cols-[1.6fr_.8fr]">
-            <Card className="overflow-hidden">
-              <div className="flex items-center justify-between border-b px-5 py-4">
-                <div>
-                  <div className="font-bold">Pesanan Terbaru</div>
-                  <div className="text-xs text-slate-400">Aktivitas terbaru</div>
-                </div>
-                <Link
-                  to="/orders"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-100 hover:shadow-sm active:translate-y-0"
-                >
-                  Lihat semua <ArrowRight size={14} />
-                </Link>
-              </div>
-
-              <div className="overflow-x-auto">
-                {!data?.pesananTerbaru.length ? (
-                  <Empty text="Belum ada pesanan terbaru" />
-                ) : (
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3">Pesanan</th>
-                        <th>Pelanggan</th>
-                        <th>Barber</th>
-                        <th>Status</th>
-                        <th>Pembayaran</th>
-                        <th>Check-in</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.pesananTerbaru.map((o) => (
-                        <tr
-                          key={o.id}
-                          role="link"
-                          tabIndex={0}
-                          aria-label={`Buka pesanan ${o.nomorPesanan}`}
-                          onClick={() => setSelectedOrderId(o.id)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              setSelectedOrderId(o.id);
-                            }
-                          }}
-                          className="group cursor-pointer border-t border-slate-100 transition-all duration-200 hover:bg-indigo-50/70 hover:shadow-[inset_4px_0_0_#4f46e5] focus-visible:bg-indigo-50/70 focus-visible:outline-none focus-visible:shadow-[inset_4px_0_0_#4f46e5] active:bg-indigo-100/70"
-                        >
-                          <td className="px-4 py-3 font-bold text-indigo-600">
-                            <span className="inline-flex transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
-                              {o.nomorPesanan}
-                            </span>
-                          </td>
-                          <td>{o.pelanggan.nama}</td>
-                          <td>{o.barber?.nama ?? "Belum ditentukan"}</td>
-                          <td>
-                            <StatusBadge value={o.status} />
-                          </td>
-                          <td>
-                            <StatusBadge value={o.statusPembayaran} />
-                          </td>
-                          <td>{waktu(o.checkInTime)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </Card>
-
-            <div className="space-y-4">
-              <Card className="p-5">
-                <div className="flex items-center gap-3">
-                  <div className="grid size-10 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
-                    <WalletCards size={19} />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-500">Pendapatan Hari Ini</div>
-                    <div className="text-xl font-black text-slate-900">
-                      {rupiah(data?.revenueToday ?? 0)}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-5">
-                <div className="mb-4 flex items-center gap-2 font-bold">
-                  <UsersRound size={17} />
-                  Ringkasan
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <b>{data?.pelanggan ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Pelanggan</div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <b>{data?.barberAktif ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Barber</div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <b>{data?.layananAktif ?? 0}</b>
-                    <div className="text-[10px] text-slate-400">Layanan</div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </>
-      )}
-
-      <NewOrderModal
-        open={newOrderOpen}
-        onClose={() => setNewOrderOpen(false)}
-        onCreated={(orderId) => setSelectedOrderId(orderId)}
-      />
-      <OrderDetailModal
-        orderId={selectedOrderId}
-        onClose={() => setSelectedOrderId(null)}
-      />
-    </>
-  );
+function Aktivitas({data}:{data:AktivitasDashboard[]}){
+ const tujuan=useTujuanRincian();if(!data.length)return <Empty text="Tidak ada aktivitas sesuai pencarian."/>;
+ return <><div className="df-table"><table><colgroup>{[27,24,22,19,8].map((n,i)=><col key={i} style={{width:`${n}%`}}/>)}</colgroup><thead><tr><th>Pelanggan</th><th>Jadwal / Kedatangan</th><th>Status Pelayanan</th><th>Status Pembayaran</th><th>Aksi Detail</th></tr></thead><tbody>{data.map(b=><tr key={`${b.jenis}:${b.id}`} onClick={e=>{if(e.target instanceof Element&&!e.target.closest("a,button"))e.currentTarget.querySelector<HTMLAnchorElement>('a')?.click();}}><td><strong>{b.pelanggan}</strong><small>{b.nomor}</small></td><td>{waktuWib(b.jadwal)}</td><td><StatusPelayanan baris={b}/></td><td><StatusFinansial status={b.statusPembayaran}/></td><td><Link aria-label={`Detail ${b.nomor}`} to={tujuan(b)}>Detail</Link></td></tr>)}</tbody></table></div><div className="df-mobile-list">{data.map(b=><Link key={`${b.jenis}:${b.id}`} to={tujuan(b)} aria-label={`Detail ${b.nomor}`} className="df-mobile-item"><div><strong>{b.pelanggan}</strong><span>Detail →</span></div><small>{b.nomor} · {waktuWib(b.jadwal)}</small><div className="df-status-pair"><span><small>Pelayanan</small><StatusPelayanan baris={b}/></span><span><small>Pembayaran</small><StatusFinansial status={b.statusPembayaran}/></span></div></Link>)}</div></>;
+}
+function DaftarPerhatian({kategori}:{kategori:KategoriDashboard}){
+ const tujuan=useTujuanRincian();const daftar=useInfiniteQuery({queryKey:["dashboard","perhatian",kategori.kode],initialPageParam:1,queryFn:async({pageParam,signal})=>{const data=await ambilDashboardFinal({kategoriPerhatian:kategori.kode,halamanPerhatian:pageParam},signal);return data.perhatian.find(k=>k.kode===kategori.kode)??{...kategori,total:0,halaman:pageParam,data:[]};},getNextPageParam:last=>last.halaman*5<last.total?last.halaman+1:undefined,refetchInterval:15000});
+ const unik=new Map<string,AktivitasDashboard>();for(const halaman of daftar.data?.pages??[])for(const b of halaman.data)unik.set(`${b.jenis}:${b.id}`,b);
+ return <div className="df-issue-body" id={`perhatian-${kategori.kode}`}>{daftar.isPending?<LoadingState text="Memuat perhatian…"/>:daftar.isError?<ErrorState text="Daftar perhatian belum dapat dimuat." onRetry={()=>void daftar.refetch()}/>:<><ul>{[...unik.values()].map(b=><li key={`${b.jenis}:${b.id}`}><Link to={tujuan(b)} aria-label={`Detail perhatian ${b.nomor}`}><div><strong>{b.pelanggan}</strong><span className={`df-kind ${b.jenis==="BOOKING"?"":"walkin"}`}>{b.jenis==="BOOKING"?"Booking":"Walk-in"}</span></div><small>{b.nomor} · {waktuWib(b.jadwal)}</small><p>{b.masalah}</p></Link></li>)}</ul>{!unik.size&&<p className="df-issue-empty">Masalah sudah terselesaikan.</p>}{daftar.hasNextPage&&<Button variant="ghost" disabled={daftar.isFetchingNextPage} onClick={()=>void daftar.fetchNextPage()}>{daftar.isFetchingNextPage?"Memuat…":"Lihat lainnya"}</Button>}</>}</div>;
+}
+export default function DashboardPage(){
+ const [tambahWalkIn,aturTambahWalkIn]=useState(false);
+ const [jenis,aturJenis]=useState<"BOOKING"|"WALK_IN">("BOOKING"),[halaman,aturHalaman]=useState(1),[pagination,aturPagination]=useState(false),[cari,aturCari]=useState(""),[kata,aturKata]=useState(""),[serverTime,aturServerTime]=useState<string>(),[terbuka,aturTerbuka]=useState<KodePerhatian|null>(null);
+ const hari=useHariOperasional(serverTime),klien=useQueryClient();
+ useEffect(()=>{const t=setTimeout(()=>aturKata(cari.trim()),250);return()=>clearTimeout(t);},[cari]);
+ const menungguCari=cari.trim()!==kata;
+ const data=useQuery({queryKey:["dashboard","final",hari,jenis,halaman,kata],queryFn:({signal})=>ambilDashboardFinal({jenis,halaman,cari:kata},signal),enabled:!menungguCari,placeholderData:keepPreviousData,refetchInterval:15000});
+ useEffect(()=>{if(data.data&&!data.isPlaceholderData){aturServerTime(data.data.serverTime);if(data.data.aktivitas.halaman!==halaman)aturHalaman(data.data.aktivitas.halaman);}},[data.data,data.isPlaceholderData,halaman]);
+ const d=data.data,jumlahHalaman=Math.max(1,Math.ceil((d?.aktivitas.total??0)/10));
+ useEffect(()=>{if(d&&terbuka&&!d.perhatian.some(k=>k.kode===terbuka))aturTerbuka(null);},[d,terbuka]);
+ const tanggal=new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"long",year:"numeric"}).format(new Date(`${d?.hariIni??hari}T00:00:00+07:00`));
+ return <div className="dashboard-final"><header className="df-header"><div><h1>Dashboard</h1><p>Pantau booking, walk-in, dan pekerjaan yang perlu ditangani.</p></div><div className="df-header-actions"><button className="wi-launch" onClick={()=>aturTambahWalkIn(true)}>+ Tambah Walk-in</button><div className="df-date"><CalendarDays size={16}/><span>{tanggal}<small>Hari operasional · WIB</small></span><Button variant="ghost" aria-label="Perbarui dashboard" disabled={data.isFetching} onClick={()=>void klien.invalidateQueries({queryKey:["dashboard"]})}><RefreshCw size={16}/></Button></div></div></header>
+ {data.isError?<ErrorState text="Dashboard belum dapat dimuat. Data belum dapat dipastikan." onRetry={()=>void data.refetch()}/>:!d?<LoadingState text="Memuat dashboard…"/>:<>
+ <div className="stat-grid"><StatCard label="Booking Hari Ini" value={d.kpi.bookingHariIni} icon={<CalendarDays size={17}/>} catatan="Termasuk layanan selesai"/><StatCard label="Menunggu Check-in" value={d.kpi.menungguCheckIn} icon={<Clock3 size={17}/>} catatan="Booking dengan DP terverifikasi"/><StatCard label="Sedang Dilayani" value={d.kpi.sedangDilayani} icon={<Scissors size={17}/>} catatan="Booking dan walk-in"/><StatCard label="Pembayaran Diterima Hari Ini" value={rupiah(d.kpi.pembayaranHariIni)} icon={<WalletCards size={17}/>} catatan="DP, pelunasan, dan walk-in"/></div>
+ <div className="df-main-grid"><ContentPanel title="Aktivitas hari ini" description="Booking aktif dan kunjungan walk-in"><div className="df-activity-toolbar"><div role="tablist" aria-label="Jenis aktivitas">{(["BOOKING","WALK_IN"] as const).map(tab=><button key={tab} role="tab" tabIndex={jenis===tab?0:-1} id={`tab-${tab}`} aria-selected={jenis===tab} aria-controls="aktivitas-dashboard" onKeyDown={e=>{if(["ArrowLeft","ArrowRight","Home","End"].includes(e.key)){e.preventDefault();const next=e.key==="Home"?"BOOKING":e.key==="End"?"WALK_IN":jenis==="BOOKING"?"WALK_IN":"BOOKING";aturJenis(next);aturHalaman(1);aturPagination(false);document.getElementById(`tab-${next}`)?.focus();}}} onClick={()=>{aturJenis(tab);aturHalaman(1);aturPagination(false);}}>{tab==="BOOKING"?"Booking":"Walk-in"}</button>)}</div><Input aria-label="Cari aktivitas" placeholder="Cari nama atau nomor…" maxLength={100} value={cari} onChange={e=>{aturCari(e.target.value);aturHalaman(1);}}/></div>
+ <div id="aktivitas-dashboard" role="tabpanel" aria-labelledby={`tab-${jenis}`} aria-busy={data.isFetching||menungguCari}>{menungguCari||data.isPlaceholderData?<LoadingState text="Mencari aktivitas…"/>:<Aktivitas data={d.aktivitas.data}/>}</div>
+ <footer className="df-pagination"><span>{d.aktivitas.total} aktivitas</span>{d.aktivitas.total>10&&(!pagination?<Button variant="ghost" onClick={()=>aturPagination(true)}>Lihat semua</Button>:<nav aria-label="Halaman aktivitas"><Button variant="secondary" disabled={halaman<=1||data.isFetching} onClick={()=>aturHalaman(h=>h-1)}>Sebelumnya</Button><span aria-live="polite">{d.aktivitas.halaman} / {jumlahHalaman}</span><Button variant="secondary" disabled={halaman>=jumlahHalaman||data.isFetching} onClick={()=>aturHalaman(h=>h+1)}>Berikutnya</Button></nav>)}</footer>
+ </ContentPanel><ContentPanel title="Perlu Perhatian" description="Masalah aktif, semua tanggal" className="df-attention">{!d.perhatian.length?<div className="df-attention-empty"><span aria-hidden="true">✓</span><strong>Tidak ada yang perlu ditangani</strong><p>Semua aktivitas berjalan sesuai status terbaru.</p></div>:d.perhatian.map(k=><section className="df-issue" key={k.kode}><button className="df-issue-toggle" aria-expanded={terbuka===k.kode} aria-controls={`perhatian-${k.kode}`} onClick={()=>aturTerbuka(terbuka===k.kode?null:k.kode)}><span className={`df-issue-dot ${k.kode.toLowerCase()}`}/><strong>{k.judul}</strong><span className="df-issue-count">{k.total}</span><ChevronDown size={16}/></button>{terbuka===k.kode&&<DaftarPerhatian kategori={k}/>}</section>)}</ContentPanel></div></>}
+ {tambahWalkIn&&<TambahWalkInDrawer onClose={()=>aturTambahWalkIn(false)}/>}
+ </div>;
 }

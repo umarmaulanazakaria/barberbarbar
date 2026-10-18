@@ -1,0 +1,171 @@
+{
+  "tanggal": "2026-10-18",
+  "lingkungan": "PostgreSQL fixture terisolasi, provider mock/stub; bukan Sandbox nyata",
+  "snapshotBackendSebelumAudit": "5a00ef8",
+  "perbaikan": "Pembatas Reguler terpisah dari kuota nomor Member, tipe middleware eksplisit; suite diselaraskan",
+  "hasil": [
+    {
+      "test": "test-api-publik",
+      "exit": 0,
+      "clean": true,
+      "checks": []
+    },
+    {
+      "test": "test-fondasi-pelanggan",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS: Smoke API operator existing dengan JWT STAFF tetap berhasil",
+        "PASS: Jendela limiter pulih setelah 15 menit dan IP berbeda dipisahkan",
+        "PASS: Pembatasan register: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan login: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan forgot-password: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: Pembatasan reset-password: 429/Retry-After, spoof header tidak melewati batas",
+        "PASS: fixture audit dibersihkan"
+      ]
+    },
+    {
+      "test": "test-penutupan-akun",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS AKUN: Profil biasa kompatibel; identitas wajib password; konflik email/telepon umum dan rollback atomik tanpa mencabut sesi",
+        "PASS AKUN: Email/telepon ternormalisasi; sesi dan token reset lama dicabut; login identitas baru berhasil; akun lain utuh",
+        "PASS AKUN: Ganti password atomik, rollback injeksi, password lama/JWT lama ditolak dan password baru berhasil; operator tidak berubah",
+        "PASS AKUN: Transport MOCK: respons identik, template profesional/link 30 menit, SHA-256, dedup email, single-use, login password lama/baru",
+        "PASS AKUN: Delivery gagal tetap respons umum; token terkait dicabut; tidak ada pesan provider/token di log; akun tetap aktif"
+      ]
+    },
+    {
+      "test": "test-dashboard-final",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS DASHBOARD 6: Perhatian lima entri per halaman; tidak mengklasifikasikan deadline lewat sebagai Menunggu DP",
+        "PASS DASHBOARD 7: Masalah selesai hilang dan kategori nol disembunyikan pada refetch",
+        "PASS DASHBOARD 8: Hari dan waktu pembayaran mengikuti batas UTC+7, termasuk tepat tengah malam",
+        "PASS DASHBOARD 9: Deadline konfirmasi memakai reschedule resmi terakhir, tidak dibuat ulang oleh Dashboard",
+        "PASS DASHBOARD 10: HTTP: snapshot read-only identik, anonymous/CUSTOMER ditolak, operator diizinkan, validasi/no-store dan DTO tanpa secret",
+        "TOTAL 10 kelompok DASHBOARD PASS; read-only endpoint; tidak memanggil provider.",
+        "PASS cleanup: hanya fixture suite, seluruh model kembali kosong."
+      ]
+    },
+    {
+      "test": "test-riwayat-pesanan",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS RIWAYAT 6: Pencarian nama/nomor/telepon ternormalisasi, gabungan filter, injeksi dan page clamp",
+        "PASS RIWAYAT 7: Selesai belum lunas diarsip; pembayaran setelah closure tidak mengubah urutan",
+        "PASS RIWAYAT 8: Detail aktual, receipt sah, invoice tersimpan, layanan dan histori nyata",
+        "PASS RIWAYAT 9: Ledger Booking memakai bukti sah; DP tidak dianggap lunas dan tidak membuat invoice",
+        "PASS RIWAYAT 10: HTTP auth/roles,validasi,DTO list tanpa telepon/rahasia,GET read-only dan tanpa endpoint mutasi",
+        "TOTAL 10 kelompok PASS. Hanya database fixture, tanpa request provider.",
+        "PASS cleanup: hanya ID fixture, seluruh model kembali kosong."
+      ]
+    },
+    {
+      "test": "test-detail-tindakan",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS TINDAKAN 6: Nominal provider tidak cocok ditolak tanpa kredit",
+        "PASS TINDAKAN 7: Booking DP wajib bukti sah, check-in terpisah, ADMIN ganti barber + start atomik/konkuren dan audit, complete resmi",
+        "PASS TINDAKAN 8: QRIS pelunasan Booking hanya balance DB Rp5.000; Snap tidak mengambil alih; satu ledger, balance nol, satu invoice setelah replay",
+        "PASS TINDAKAN 9: Tunai dan transfer pelunasan Booking memakai saldo sesudah DP, ledger/invoice existing dan audit operator tanpa kredit ganda",
+        "PASS TINDAKAN 10: DP link hanya READY/PENDING dengan deadline sah; tidak mengarang link setelah expired/paid",
+        "TOTAL 10 kelompok PASS, fixture dan provider STUB; bukan bukti Sandbox nyata.",
+        "PASS cleanup fixture tanpa reset; seluruh model kembali kosong."
+      ]
+    },
+    {
+      "test": "test-pesanan-terpadu",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS ADMIN 5: Pagination lintas jenis stabil, tidak hilang/duplikat, total tetap pada halaman kosong",
+        "PASS ADMIN 6: Booking masa depan dapat dicari; riwayat booking/walk-in dan rentang hari WIB tetap tersedia",
+        "PASS ADMIN 7: Metrik receipt kasir existing tidak menghitung ledger DP/pending lagi; invoice/status otoritatif dan barber null",
+        "PASS ADMIN 8: Validasi query, SQL parameterized dan DTO tanpa secret/telepon",
+        "PASS ADMIN 9: Mendatang terdekat, minggu depan, pending DP sah dan terminal/expired dikecualikan sebelum pagination",
+        "TOTAL 9 kelompok ADMIN PASS; tidak ada request pembayaran/provider.",
+        "PASS cleanup23: fixture milik suite saja, snapshot identik."
+      ]
+    },
+    {
+      "test": "test-tracking-booking",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS TRACKING 9: Recovery ADMIN wajib verifikasi; STAFF ditolak; sesi lama dicabut, booking/ledger/invoice identik",
+        "PASS TRACKING 10: Kode pengganti tetap scoped; sesi expired ditolak",
+        "PASS TRACKING 11: Akses legacy ditukar cookie tanpa mematikan token legacy existing",
+        "PASS TRACKING 12: Mendatang independen, minggu depan tersedia, urutan terdekat dan terminal dikecualikan",
+        "PASS TRACKING 13: Rate limit brute-force tracking aktif",
+        "TOTAL 13 TRACKING PASS; provider MOCK, bukan provider nyata.",
+        "PASS cleanup24: seluruh fixture milik suite dibersihkan."
+      ]
+    },
+    {
+      "test": "test-realtime-tamu",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS REALTIME TAMU 8: Settlement MOCK terverifikasi memicu event scoped; REST CONFIRMED dan tracking sah",
+        "PASS REALTIME TAMU 9: Staff check-in/barber/start/complete, order event, pelunasan dan invoice tanpa double-credit",
+        "PASS REALTIME TAMU 10: Payload event hanya invalidasi tanpa kontak, kode tracking, cookie, Snap atau nominal",
+        "PASS REALTIME TAMU 11: Rotasi ADMIN mencabut socket/sesi lama; pemulihan sah mendapatkan koneksi baru",
+        "PASS REALTIME TAMU 12: Sesi expired diputus dan handshake ulang ditolak",
+        "TOTAL 12 kelompok REALTIME TAMU PASS; provider MOCK, bukan Sandbox nyata.",
+        "PASS cleanup24: hanya fixture suite dibersihkan"
+      ]
+    },
+    {
+      "test": "test-batas-nomor-member",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS: Reguler tidak memakai kuota Member; kode ternormalisasi lintas IP tetap dibatasi, kode berbeda terpisah, limiter IP tetap aktif."
+      ]
+    },
+    {
+      "test": "test-booking-web-aktual",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS GUEST 8: Race guest vs Native pada satu kapasitas: tepat satu berhasil tanpa double booking",
+        "PASS GUEST 9: Pesanan aktif non-booking ikut menahan kapasitas; linked order tidak dihitung ganda saat start guest",
+        "PASS GUEST 10: Token kedaluwarsa ditolak dan tidak ada panggilan refund provider",
+        "PASS GUEST 11: Qty layanan tidak memperpanjang satu slot 45 menit; kapasitas barber tetap divalidasi",
+        "PASS GUEST 12: Pembatasan percobaan token privat aktif dan berhenti pada HTTP429",
+        "TOTAL 12 kelompok GUEST PASS; PostgreSQL fixture + provider MOCK, bukan Sandbox provider nyata.",
+        "PASS cleanup: seluruh 23 model identik dengan snapshot fixture awal."
+      ]
+    },
+    {
+      "test": "test-member-operasional-aktual",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS MEMBER: nomor numerik, harga authoritative, tanpa nama/HP/DP, slot45, satu gratis aktif; mismatch tidak mengubah harga/status, verifikasi fisik dan check-in resmi.",
+        "PASS MEMBER: kode legacy, status terbaru, bukti terikat aktor/request, Walk-in Member dan replay idempotent; audit operator tanpa NIK/foto.",
+        "PASS WALKIN AKTUAL: quote anonim, satu order saat request bersamaan, tanpa profil duplikat, konflik harga ditolak dan STAFF tidak dapat membuat profil.",
+        "PASS cleanup Member: seluruh ID fixture dibersihkan dan konfigurasi paket identik; tanpa provider."
+      ]
+    },
+    {
+      "test": "test-pemeriksaan-pembayaran",
+      "exit": 0,
+      "clean": true,
+      "checks": [
+        "PASS PAYMENT-CHECK: request concurrent/in-flight digabung, jeda dari selesai, transaksi terpisah, failure cooldown, expiry dan recovery; tanpa DB/provider nyata."
+      ]
+    },
+    {
+      "test": "test-log-aman-e2e",
+      "exit": 0,
+      "clean": true,
+      "checks": []
+    }
+  ]
+}

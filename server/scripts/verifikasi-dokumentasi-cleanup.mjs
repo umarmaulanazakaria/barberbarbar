@@ -17,7 +17,7 @@ async function jalan(folder) {
     }
   }
 }
-for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) await jalan(path.join(stage, r));
+for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web']) await jalan(path.join(stage, r));
 await writeFile('../docs/cleanup/TAUTAN-DOKUMENTASI.json', JSON.stringify({ lokalDiperiksa: hasil.length + rusak.length, valid: hasil.length, rusak, batas: 'Memeriksa keberadaan target tautan Markdown lokal; tidak menguji anchor atau URL eksternal.' }, null, 2));
 console.log(JSON.stringify({ valid: hasil.length, rusak }));
 if (rusak.length) process.exitCode = 1;

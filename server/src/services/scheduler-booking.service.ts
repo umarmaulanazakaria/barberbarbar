@@ -37,7 +37,7 @@ export const prosesDeadlineBooking = async (id: number, opsi: OpsiPengujian = {}
     await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
     return tx.booking.findUnique({ where: { id }, select: { status: true, deadlineDp: true } });
   });
-  if (sebelum?.status === "CONFIRMED" && sebelum.deadlineDp && sebelum.deadlineDp <= waktuAwal) {
+  if ((sebelum?.status === "CONFIRMED" || sebelum?.status === "AWAITING_DP") && sebelum.deadlineDp && sebelum.deadlineDp <= waktuAwal) {
     const pending = await basisData.transaksiPembayaranBooking.findMany({ where: { bookingId: id,
       kanal: "MIDTRANS", tujuan: "DP", status: "PENDING", referensiProvider: { not: null } }, select: { id: true } });
     for (const t of pending) {
@@ -57,7 +57,10 @@ export const prosesDeadlineBooking = async (id: number, opsi: OpsiPengujian = {}
     let deadline: Date;
     let status: StatusBooking;
     const rincian: Record<string, Prisma.InputJsonValue> = {};
-    if (b.status === "PENDING_CONFIRMATION") {
+    if(b.status === "AWAITING_DP" && b.sumberBooking === "TAMU") {
+      if(!b.deadlineDp || sekarang < b.deadlineDp)return null;
+      deadline=b.deadlineDp;jenis="TIMEOUT_DP";status="CANCELLED";rincian.alasan="DP guest belum sah dalam 15 menit sejak pembuatan";
+    } else if (b.status === "PENDING_CONFIRMATION") {
       const batas = await batasKonfirmasiBooking(tx, b);
       deadline = batas.deadline;
       if (sekarang < deadline) return null;
@@ -80,7 +83,7 @@ export const prosesDeadlineBooking = async (id: number, opsi: OpsiPengujian = {}
         jenis = "AUTO_NO_SHOW";
         status = "NO_SHOW";
         rincian.alasan = "Customer belum check-in 15 menit setelah jadwal";
-        rincian.dpHangus = true;
+        rincian.dpHangus = !b.memberBebasDp || (await bacaRingkasanPembayaran(tx,await ambilBookingPembayaran(tx,id))).jumlahDibayar>0;
         rincian.kewajibanPelunasanDihentikan = true;
       }
     } else if (b.status === "COMPLETED") {
@@ -122,6 +125,7 @@ export const pindaiDeadlineBooking = async (opsi: OpsiPengujian = {}) => {
     const kandidat = await basisData.$transaction(async tx => {
       await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`;
       return tx.booking.findMany({ where: { id: { gt: terakhir }, OR: [
+      { status: "AWAITING_DP", deadlineDp: { lte: sekarang } },
       { status: "PENDING_CONFIRMATION", dibuatPada: { lte: new Date(sekarang.getTime() - menitKonfirmasi * 60_000) } },
       { status: "CONFIRMED", OR: [{ deadlineDp: { lte: sekarang } }, { mulaiPada: { lte: new Date(sekarang.getTime() - menitNoShow * 60_000) } }] },
       { status: "COMPLETED", invoice: { is: null }, riwayat: { none: { aksi: "PAYMENT_OVERDUE" } }, OR: [

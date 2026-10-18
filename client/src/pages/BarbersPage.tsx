@@ -1,3 +1,4 @@
+import DrawerKatalog from "../components/DrawerKatalog";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -14,7 +15,6 @@ import {
   Input,
   Label,
   LoadingState,
-  Modal,
   PageTitle,
   SearchableSelect,
   StatusBadge,
@@ -136,7 +136,7 @@ export default function BarbersPage() {
               size={17}
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
             />
-            <Input
+            <Input aria-label="Cari nama atau nomor telepon barber..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari nama atau nomor telepon barber..."
@@ -214,7 +214,7 @@ export default function BarbersPage() {
         </div>
       </Card>
 
-      <Modal
+      <DrawerKatalog
         open={open}
         title={
           edit ? (canManage ? "Ubah Barber" : "Detail Barber") : "Tambah Barber"
@@ -223,16 +223,16 @@ export default function BarbersPage() {
       >
         <div className="space-y-4">
           <div>
-            <Label>Nama</Label>
-            <Input
+            <Label htmlFor="bidang-barberspage-1">Nama</Label>
+            <Input id="bidang-barberspage-1"
               value={nama}
               onChange={(event) => setNama(event.target.value)}
               disabled={!canManage}
             />
           </div>
           <div>
-            <Label>Telepon</Label>
-            <Input
+            <Label htmlFor="bidang-barberspage-2">Telepon</Label>
+            <Input id="bidang-barberspage-2"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               disabled={!canManage}
@@ -254,7 +254,7 @@ export default function BarbersPage() {
               onClick={() => save.mutate()}
               disabled={!nama || save.isPending}
             >
-              {save.isPending ? "Saving..." : "Simpan Barber"}
+              {save.isPending ? "Menyimpan..." : "Simpan Barber"}
             </Button>
           )}
 
@@ -271,7 +271,7 @@ export default function BarbersPage() {
             </div>
           )}
         </div>
-      </Modal>
+      </DrawerKatalog>
 
       <ConfirmDialog
         open={confirmDelete}

@@ -1,18 +1,20 @@
 import basisData from "../lib/prisma.js";
+import { slotLayananMenit } from "../lib/slot-layanan.js";
 export const ambilSemuaLayanan = async () =>
   basisData.layanan.findMany({ orderBy: { nama: "asc" } });
 export const ambilLayananBerdasarkanId = async (id: number) =>
   basisData.layanan.findUnique({ where: { id } });
 export const tambahLayanan = async (data: {
   nama: string;
-  durasiMenit: number;
+  durasiMenit?: number | undefined;
   harga: number;
   aktif?: boolean | undefined;
 }) =>
   basisData.layanan.create({
     data: {
       nama: data.nama,
-      durasiMenit: data.durasiMenit,
+      // Kolom legacy tetap terisi untuk kompatibilitas, bukan tarif waktu per layanan.
+      durasiMenit: slotLayananMenit,
       harga: data.harga,
       aktif: data.aktif ?? true,
     },
@@ -32,7 +34,6 @@ export const ubahLayanan = async (
     where: { id },
     data: {
       ...(data.nama !== undefined && { nama: data.nama }),
-      ...(data.durasiMenit !== undefined && { durasiMenit: data.durasiMenit }),
       ...(data.harga !== undefined && { harga: data.harga }),
       ...(data.aktif !== undefined && { aktif: data.aktif }),
     },

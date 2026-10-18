@@ -1,0 +1,91 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { createServer } from 'node:http';
+import jwt from 'jsonwebtoken';
+if (!/^\/bb_guest_20261016_[a-f0-9]{8}$/.test(new URL(process.env.DATABASE_URL ?? '').pathname)) throw Error('Wajib fixture terisolasi');
+const { default: db } = await import('../dist/lib/prisma.js');
+const { default: app } = await import('../dist/app.js');
+const tag = 'audit-member-' + randomUUID(), ids = { user: [], service: [], customer: [], member: [], book: [], order: [] };
+const dalam = fn => db.$transaction(async tx => { await tx.$executeRaw`SET LOCAL TIME ZONE 'UTC'`; return fn(tx); });
+const models = ['pengguna','pelanggan','profilPelanggan','membership','penjualanMembership','riwayatProfilPelanggan','booking','pesanan','layanan','barber','permintaanWalkIn','penggunaanMembership'];
+for (const m of models) assert.equal(await db[m].count(), 0, 'Fixture harus kosong');
+const paket = await dalam(tx => tx.pengaturanMembership.findUniqueOrThrow({ where: { id: 1 } }));
+let server, barber;
+try {
+  const admin = await db.pengguna.create({ data: { name: tag, email: tag+'@example.invalid', passwordHash: 'fixture-unused', role: 'ADMIN' } }); ids.user.push(admin.id);
+  const staff = await db.pengguna.create({ data: { name: tag, email: 'staff-'+tag+'@example.invalid', passwordHash: 'fixture-unused', role: 'STAFF' } }); ids.user.push(staff.id);
+  const hair = await db.layanan.create({ data: { nama: tag, harga: 30000, durasiMenit: 45 } }); ids.service.push(hair.id);
+  const extra = await db.layanan.create({ data: { nama: tag+' extra', harga: 10000, durasiMenit: 10 } }); ids.service.push(extra.id);
+  barber = await db.barber.create({ data: { nama: tag } });
+  await dalam(tx => tx.pengaturanMembership.update({ where: { id: 1 }, data: { layananGratisId: hair.id } }));
+  const awal = new Date(Date.now()-86400000), akhir = new Date(Date.now()+365*86400000);
+  const customer = await dalam(tx => tx.pelanggan.create({ data: { nama: tag, profil: { create: { nama: tag, nomorTelepon: '081234567891' } }, membership: { create: {
+    memberCode: '18104657', isActive: true, discountPercent: 10, berlakuMulai: awal, berlakuSampai: akhir,
+    penjualan: { create: { penggunaId: admin.id, kunci: randomUUID(), sidik: randomUUID(), nominal: 550000, metode: 'CASH', status: 'SUCCEEDED', jumlahDiterima: 550000, dibayarPada: new Date(), periodeMulai: awal, periodeSampai: akhir } },
+  } } }, include: { membership: true, profil: true } })); ids.customer.push(customer.id); ids.member.push(customer.membership.id);
+  server = createServer(app); await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const auth = role => jwt.sign({ id: role === 'ADMIN' ? admin.id : staff.id, role }, process.env.JWT_SECRET);
+  const api = async (p, body, role) => { const r = await fetch('http://127.0.0.1:'+server.address().port+p, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', ...(role ? { Authorization: 'Bearer '+auth(role) } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) }); return { status: r.status, data: await r.json() }; };
+  const hari = n => new Date(Date.now()+7*3600000+n*86400000).toISOString().slice(0,10)+'T10:00:00+07:00';
+  const rencana = { nomorMember: '18104657', barberPilihanId: barber.id, mulaiPada: hari(1), items: [{ layananId: hair.id, qty: 1 }, { layananId: extra.id, qty: 1 }] };
+  let r = await api('/guest/bookings/quote', rencana); assert.equal(r.status, 200); assert.equal(r.data.total, 9000); assert.equal(r.data.nominalDp, 0); assert.equal(r.data.slotMenit, 45); assert.ok(!/nomorTelepon|pelangganId|memberCode|passwordHash/.test(JSON.stringify(r.data)));
+  r = await api('/guest/bookings', { ...rencana, kunciIdempotensi: randomUUID() }); assert.equal(r.status, 201); const bid = r.data.booking.id; ids.book.push(bid);
+  let b = await db.booking.findUniqueOrThrow({ where: { id: bid } }); assert.equal(b.status, 'CONFIRMED'); assert.equal(b.deadlineDp, null); assert.equal(b.nominalDp, 0); assert.equal(b.total, 9000);
+  r = await api('/guest/bookings/quote', { ...rencana, mulaiPada: hari(2) }); assert.equal(r.status, 409); assert.equal(r.data.kodeKesalahan, 'BOOKING_GRATIS_AKTIF');
+  assert.equal((await api('/bookings/'+bid+'/check-in', {}, 'STAFF')).status, 409);
+  const identity = { pemeriksaanFisik: true, cocok: false };
+  assert.equal((await api('/management/membership-benefits/booking/'+bid+'/identity', identity, 'ADMIN')).status, 200);
+  b = await db.booking.findUniqueOrThrow({ where: { id: bid } }); assert.equal(b.identitasMemberPada, null); assert.equal(b.total, 9000); assert.equal(b.status, 'CONFIRMED');
+  assert.equal((await api('/management/membership-benefits/booking/'+bid+'/identity', { ...identity, cocok: true }, 'STAFF')).status, 200);
+  assert.equal((await api('/bookings/'+bid+'/check-in', {}, 'STAFF')).status, 200);
+  console.log('PASS MEMBER: nomor numerik, harga authoritative, tanpa nama/HP/DP, slot45, satu gratis aktif; mismatch tidak mengubah harga/status, verifikasi fisik dan check-in resmi.');
+  await db.membership.update({ where: { id: customer.membership.id }, data: { memberCode: 'MEM-123456' } });
+  r = await api('/guest/bookings/quote', { ...rencana, nomorMember: 'MEM-123456', items: [{ layananId: extra.id, qty: 1 }], mulaiPada: hari(2) }); assert.equal(r.status, 200); assert.equal(r.data.total, 9000);
+  const key = randomUUID(), physical = { nomorMember: 'MEM-123456', pemeriksaanFisik: true, cocok: true, konteks: { jenis: 'WALK_IN', kunciPermintaan: key } };
+  r = await api('/management/membership-benefits/staff/identity', physical, 'STAFF'); assert.equal(r.status, 200); const proof = r.data.verifikasiId;
+  const walk = { pelanggan: { jenis: 'LAMA', id: customer.profil.id }, konfirmasiMember: true, items: [{ layananId: extra.id, qty: 1, hargaDiharapkan: 10000 }], barberId: null, totalDiharapkan: 9000, kunciIdempotensi: key, verifikasiId: proof };
+  assert.equal((await api('/management/membership-benefits/staff/walk-in', { ...walk, kunciIdempotensi: randomUUID() }, 'STAFF')).status, 409);
+  assert.equal((await api('/management/membership-benefits/staff/walk-in', walk, 'ADMIN')).status, 409);
+  r = await api('/management/membership-benefits/staff/walk-in', walk, 'STAFF'); assert.equal(r.status, 200); const order = (await db.pesanan.findMany({ where: { pelangganId: customer.id } })); ids.order.push(...order.map(p => p.id)); assert.equal(order.length, 1); assert.equal(order[0].total, 9000);
+  assert.equal((await api('/management/membership-benefits/staff/walk-in', walk, 'STAFF')).status, 200); assert.equal(await db.pesanan.count(), 1);
+  await db.membership.update({ where: { id: customer.membership.id }, data: { isActive: false } });
+  r = await api('/guest/bookings/quote', { ...rencana, nomorMember: 'MEM-123456', mulaiPada: hari(3) }); assert.equal(r.status, 409);
+  assert.ok(await db.riwayatProfilPelanggan.count({ where: { profilId: customer.profil.id, penggunaId: staff.id, aksi: 'MEMBER_IDENTITY_PHYSICAL' } }) >= 2);
+  console.log('PASS MEMBER: kode legacy, status terbaru, bukti terikat aktor/request, Walk-in Member dan replay idempotent; audit operator tanpa NIK/foto.');
+  r = await api('/management/membership-benefits/quote', { items: [{ layananId: extra.id, qty: 1 }] }, 'STAFF');
+  assert.equal(r.status, 200); assert.equal(r.data.total, 10000); assert.equal(r.data.member, false);
+  const anon = { pelanggan: { jenis: 'ANONIM' }, items: [{ layananId: extra.id, qty: 1, hargaDiharapkan: 10000 }], barberId: null, totalDiharapkan: 10000, kunciIdempotensi: randomUUID() };
+  const bersamaan = await Promise.all([api('/orders/walk-in', anon, 'STAFF'), api('/orders/walk-in', anon, 'STAFF')]);
+  ids.order.push(...bersamaan.flatMap(v => v.data.data?.id ? [v.data.data.id] : []));
+  assert.deepEqual(bersamaan.map(v => v.status).sort(), [200, 201]);
+  assert.equal(bersamaan[0].data.data.id, bersamaan[1].data.data.id);
+  assert.equal(await db.pelanggan.count(), 1);
+  assert.equal((await api('/orders/walk-in', { ...anon, totalDiharapkan: 1 }, 'STAFF')).status, 409);
+  assert.equal((await api('/management/customers', { nama: tag, nomorTelepon: '081234567899' }, 'STAFF')).status, 403);
+  console.log('PASS WALKIN AKTUAL: quote anonim, satu order saat request bersamaan, tanpa profil duplikat, konflik harga ditolak dan STAFF tidak dapat membuat profil.');
+} catch (error) {
+  console.error('FAIL MEMBER', error.name, error.code ?? '', error.name === 'AssertionError' ? error.message : 'Kesalahan fixture; detail sensitif tidak dicetak');
+  process.exitCode = 1;
+} finally {
+  if (server) await new Promise(r => server.close(r));
+  await dalam(async tx => {
+    const books = await tx.booking.findMany({ where: { pelangganId: { in: ids.customer } }, select: { id: true } });
+    await tx.aksesBookingTamu.deleteMany({ where: { bookingId: { in: books.map(b => b.id) } } });
+    await tx.booking.deleteMany({ where: { id: { in: books.map(b => b.id) } } });
+    const orders = await tx.pesanan.findMany({ where: { OR: [{ pelangganId: { in: ids.customer } }, { id: { in: ids.order } }] }, select: { id: true } });
+    await tx.permintaanWalkIn.deleteMany({ where: { penggunaId: { in: ids.user } } });
+    await tx.pesanan.deleteMany({ where: { id: { in: orders.map(p => p.id) } } });
+    await tx.riwayatProfilPelanggan.deleteMany({ where: { profil: { pelangganId: { in: ids.customer } } } });
+    await tx.penjualanMembership.deleteMany({ where: { membershipId: { in: ids.member } } });
+    await tx.membership.deleteMany({ where: { id: { in: ids.member } } });
+    await tx.profilPelanggan.deleteMany({ where: { pelangganId: { in: ids.customer } } });
+    await tx.pelanggan.deleteMany({ where: { id: { in: ids.customer } } });
+    await tx.pengaturanMembership.update({ where: { id: 1 }, data: { harga: paket.harga, layananGratisId: paket.layananGratisId, diubahPada: paket.diubahPada } });
+    await tx.pengguna.deleteMany({ where: { id: { in: ids.user } } });
+    if (barber) await tx.barber.delete({ where: { id: barber.id } });
+    await tx.layanan.deleteMany({ where: { id: { in: ids.service } } });
+  });
+  for (const m of models) assert.equal(await db[m].count(), 0);
+  assert.deepEqual(await dalam(tx => tx.pengaturanMembership.findUniqueOrThrow({ where: { id: 1 } })), paket);
+  await db.$disconnect(); console.log('PASS cleanup Member: seluruh ID fixture dibersihkan dan konfigurasi paket identik; tanpa provider.');
+}

@@ -10,7 +10,7 @@ datasource db {
 model Pelanggan {
   id                  Int                       @id @default(autoincrement())
   nama                String
-  nomorTelepon        String                    @unique
+  nomorTelepon        String?                   @unique
   alamat              String?
   dibuatPada          DateTime                  @default(now())
   status              StatusPelanggan           @default(AKTIF)
@@ -20,6 +20,7 @@ model Pelanggan {
   permohonanPengaitan PermohonanPengaitanAkun[]
   permohonanMembership PermohonanMembership[]
   booking             Booking[]
+  profil ProfilPelanggan?
 }
 
 enum StatusPelanggan {
@@ -35,6 +36,12 @@ model Membership {
   discountPercent Int       @default(10)
   isActive        Boolean   @default(true)
   joinedAt        DateTime  @default(now())
+  berlakuMulai DateTime? @db.Timestamptz(3)
+  berlakuSampai DateTime? @db.Timestamptz(3)
+  penjualan PenjualanMembership[]
+  penggunaan PenggunaanMembership[]
+  bookingBerbayar Booking[] @relation("MembershipBooking")
+  pesananBerbayar Pesanan[] @relation("MembershipPesanan")
 }
 
 model Pengguna {
@@ -54,6 +61,8 @@ model Pengguna {
   riwayatBooking RiwayatBooking[]
   transaksiBooking TransaksiPembayaranBooking[]
   keputusanRefund PermohonanRefundBooking[]
+  permintaanWalkIn PermintaanWalkIn[]
+  pembayaranOperasional PembayaranOperasional[]
 }
 
 enum Role {
@@ -84,12 +93,17 @@ model Layanan {
   dibuatPada  DateTime      @default(now())
   itemPesanan ItemPesanan[]
   itemBooking ItemBooking[]
+  paketMembership PengaturanMembership[]
 }
 
 model Pesanan {
+  membershipBerbayar Membership? @relation("MembershipPesanan",fields:[membershipBerbayarId],references:[id],onDelete:Restrict)
+  membershipBerbayarId Int?
+  snapshotManfaat Json?
+  invoiceManfaat String? @unique
   id               Int                    @id @default(autoincrement())
   nomorPesanan     String                 @unique
-  pelangganId      Int
+  pelangganId      Int?
   barberId         Int?
   status           StatusPesanan          @default(WAITING)
   statusPembayaran StatusPembayaran       @default(UNPAID)
@@ -101,16 +115,20 @@ model Pesanan {
   total            Int
   dibuatPada       DateTime               @default(now())
   diperbaruiPada   DateTime               @updatedAt
-  pelanggan        Pelanggan              @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
+  pelanggan        Pelanggan?             @relation(fields: [pelangganId], references: [id], onDelete: Restrict)
   barber           Barber?                @relation(fields: [barberId], references: [id], onDelete: Restrict)
   items            ItemPesanan[]
   pembayaran       Pembayaran?
   riwayatStatus    RiwayatStatusPesanan[]
   booking          Booking?
+  permintaanWalkIn PermintaanWalkIn?
+  pembayaranOperasional PembayaranOperasional[]
 
   @@index([status])
   @@index([statusPembayaran])
   @@index([dibuatPada])
+  profilPelangganId Int?
+  profilPelanggan ProfilPelanggan? @relation(fields:[profilPelangganId],references:[id],onDelete:Restrict)
 }
 
 enum StatusPesanan {
@@ -152,6 +170,7 @@ model Pembayaran {
   dibayarPada    DateTime         @default(now())
   pesanan        Pesanan          @relation(fields: [pesananId], references: [id], onDelete: Restrict)
   invoiceBooking InvoiceBooking?
+  operasional PembayaranOperasional?
 
   @@index([dibayarPada])
 }
@@ -252,6 +271,13 @@ enum StatusPermohonanMembership {
 }
 
 model Booking {
+  membershipBerbayar Membership? @relation("MembershipBooking",fields:[membershipBerbayarId],references:[id],onDelete:Restrict)
+  membershipBerbayarId Int?
+  memberBebasDp Boolean @default(false)
+  identitasMemberPada DateTime? @db.Timestamptz(3)
+  snapshotManfaat Json?
+  sumberBooking         String @default("AKUN")
+  aksesTamu             AksesBookingTamu?
   id                    Int @id @default(autoincrement())
   nomorBooking          String @unique
   pelangganId           Int
@@ -301,6 +327,8 @@ model Booking {
   @@index([mulaiPada, selesaiPada])
   @@index([pelangganId, status])
   @@index([barberPilihanId, status])
+  profilPelangganId Int?
+  profilPelanggan ProfilPelanggan? @relation(fields:[profilPelangganId],references:[id],onDelete:Restrict)
 }
 
 model ItemBooking {
@@ -319,6 +347,7 @@ model ItemBooking {
 }
 
 enum StatusBooking {
+  AWAITING_DP
   PENDING_CONFIRMATION
   CONFIRMED
   CHECKED_IN
@@ -396,6 +425,7 @@ model TransaksiPembayaranBooking {
   transaksiAsal TransaksiPembayaranBooking? @relation("RefundTransaksiBooking", fields: [transaksiAsalId], references: [id], onDelete: Restrict)
   refund TransaksiPembayaranBooking[] @relation("RefundTransaksiBooking")
   snap PercobaanSnapBooking?
+  operasional PembayaranOperasional?
   permohonanRefund PermohonanRefundBooking[] @relation("SumberRefundBooking")
   hasilRefund PermohonanRefundBooking? @relation("HasilRefundBooking")
   @@index([bookingId, status, tujuan])
@@ -487,4 +517,158 @@ enum StatusPermohonanRefund {
   FAILED
   SUCCEEDED
   UNSUPPORTED
+}
+
+// Identitas guest tidak pernah ditautkan ke akun berdasarkan nomor HP saja.
+model AksesBookingTamu {
+  id Int @id @default(autoincrement())
+  bookingId Int @unique
+  tokenHash String @unique
+  kunciIdempotensi String @unique
+  sidikPermintaan String
+  nama String
+  nomorTelepon String
+  kedaluwarsaPada DateTime @db.Timestamptz(3)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  trackingHash String? @unique
+  trackingTerenkripsi String?
+  versiAkses Int @default(1)
+  sesi SesiBookingTamu[]
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  @@index([kedaluwarsaPada])
+}
+
+model SesiBookingTamu {
+  id Int @id @default(autoincrement())
+  tokenHash String @unique
+  bookingId Int
+  versiAkses Int
+  sumber String
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  kedaluwarsaPada DateTime @db.Timestamptz(3)
+  akses AksesBookingTamu @relation(fields: [bookingId], references: [bookingId], onDelete: Restrict)
+  @@index([bookingId, versiAkses])
+  @@index([kedaluwarsaPada])
+}
+
+// Kunci pengiriman operator; tidak menyimpan payload pelanggan atau pembayaran.
+model PermintaanWalkIn {
+  id              Int      @id @default(autoincrement())
+  penggunaId      Int
+  kunci           String   @db.VarChar(128)
+  sidikPermintaan String   @db.Char(64)
+  pesananId       Int      @unique
+  dibuatPada      DateTime @default(now()) @db.Timestamptz(3)
+  pengguna        Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Restrict)
+  pesanan         Pesanan  @relation(fields: [pesananId], references: [id], onDelete: Restrict)
+
+  @@unique([penggunaId, kunci])
+}
+
+model PembayaranOperasional {
+  id Int @id @default(autoincrement())
+  pesananId Int
+  penggunaId Int
+  metode MetodePembayaran
+  status StatusTransaksiBooking @default(PENDING)
+  nominal Int
+  jumlahDiterima Int?
+  kembalian Int?
+  referensi String? @db.VarChar(300)
+  kunciIdempotensi String @unique @db.VarChar(128)
+  sidikPermintaan String @db.Char(64)
+  providerOrderId String? @unique
+  providerTransactionId String? @unique
+  urlQris String?
+  kedaluwarsaPada DateTime? @db.Timestamptz(3)
+  faseProvider String?
+  statusProvider String?
+  buktiHash String? @db.Char(64)
+  terverifikasiPada DateTime? @db.Timestamptz(3)
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  dibayarPada DateTime? @db.Timestamptz(3)
+  transaksiBookingId Int? @unique
+  pembayaranId Int? @unique
+  pesanan Pesanan @relation(fields:[pesananId],references:[id],onDelete:Restrict)
+  pengguna Pengguna @relation(fields:[penggunaId],references:[id],onDelete:Restrict)
+  transaksiBooking TransaksiPembayaranBooking? @relation(fields:[transaksiBookingId],references:[id],onDelete:Restrict)
+  pembayaran Pembayaran? @relation(fields:[pembayaranId],references:[id],onDelete:Restrict)
+  @@index([pesananId, dibuatPada])
+}
+
+// Profil operator terdaftar terpisah dari identitas autentikasi/transaksi historis.
+model ProfilPelanggan {
+  id Int @id @default(autoincrement())
+  pelangganId Int @unique
+  nama String
+  nomorTelepon String?
+  email String?
+  catatan String?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  diarsipkanPada DateTime? @db.Timestamptz(3)
+  pelanggan Pelanggan @relation(fields:[pelangganId],references:[id],onDelete:Restrict)
+  pesanan Pesanan[]
+  booking Booking[]
+  riwayat RiwayatProfilPelanggan[]
+  @@index([nomorTelepon])
+  @@index([email])
+}
+model RiwayatProfilPelanggan {
+  id Int @id @default(autoincrement())
+  profilId Int
+  penggunaId Int?
+  aksi String
+  rincian Json?
+  dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+  profil ProfilPelanggan @relation(fields:[profilId],references:[id],onDelete:Restrict)
+  @@index([profilId, dibuatPada])
+}
+
+model PengaturanMembership {
+ id Int @id
+ harga Int @default(550000)
+ layananGratisId Int?
+ layananGratis Layanan? @relation(fields:[layananGratisId],references:[id],onDelete:Restrict)
+ diubahPada DateTime @default(now()) @db.Timestamptz(3)
+}
+model PenjualanMembership {
+ id Int @id @default(autoincrement())
+ membershipId Int
+ membership Membership @relation(fields:[membershipId],references:[id],onDelete:Restrict)
+ penggunaId Int
+ kunci String @unique
+ sidik String
+ nominal Int
+ metode String
+ status String @default("PENDING")
+ jumlahDiterima Int?
+ referensi String?
+ providerOrderId String? @unique
+ providerTransactionId String? @unique
+ statusProvider String?
+ urlQris String?
+ kedaluwarsaPada DateTime? @db.Timestamptz(3)
+ buktiProvider Json?
+ dibuatPada DateTime @default(now()) @db.Timestamptz(3)
+ dibayarPada DateTime? @db.Timestamptz(3)
+ periodeMulai DateTime? @db.Timestamptz(3)
+ periodeSampai DateTime? @db.Timestamptz(3)
+ @@index([membershipId,dibuatPada])
+}
+model PenggunaanMembership {
+ id Int @id @default(autoincrement())
+ membershipId Int
+ membership Membership @relation(fields:[membershipId],references:[id],onDelete:Restrict)
+ bookingId Int? @unique
+ pesananId Int @unique
+ selesaiPada DateTime @db.Timestamptz(3)
+ rincian Json
+}
+
+model AuditPaketMembership {
+ id Int @id @default(autoincrement())
+ penggunaId Int
+ sebelum Json
+ sesudah Json
+ dibuatPada DateTime @default(now()) @db.Timestamptz(3)
 }

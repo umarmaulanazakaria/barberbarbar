@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const skemaTambahPesanan = z.object({
+  konfirmasiMember: z.literal(true).optional(),
   pelangganId: z.number().int().positive(),
   barberId: z.number().int().positive().nullable().optional(),
   items: z

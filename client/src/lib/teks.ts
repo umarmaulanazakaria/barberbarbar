@@ -5,13 +5,14 @@ export function pesanAman(pesan: unknown, pengganti = 'Terjadi kendala. Silakan 
   return pesan;
 }
 const label: Record<string, string> = {
+  MEMBER_CONFIRMED: "Bebas DP Membership", NO_PAYMENT_DUE: "Tanpa Tagihan", VERIFY_MEMBERSHIP_IDENTITY: "Identitas Member Diperiksa", MEMBER_GUEST_CONFIRMED: "Booking Member Dikonfirmasi",
   PENDING_CONFIRMATION: 'Menunggu Konfirmasi', CONFIRMED: 'Booking Dikonfirmasi', CHECKED_IN: 'Sudah Check-in',
   IN_SERVICE: 'Sedang Dilayani', COMPLETED: 'Layanan Selesai', REJECTED: 'Ditolak', CANCELLED: 'Dibatalkan', NO_SHOW: 'Tidak Hadir',
   PENDING_APPROVAL: 'Menunggu Persetujuan', PENDING: 'Menunggu Konfirmasi', PROCESSING: 'Sedang Diproses',
   APPROVED: 'Disetujui', SUCCEEDED: 'Berhasil', FAILED: 'Gagal', EXPIRED: 'Kedaluwarsa', UNSUPPORTED: 'Perlu Penanganan Pengelola',
   AWAITING_DP: 'Menunggu Pembayaran Uang Muka', DP_PAID: 'Uang Muka Terverifikasi', PARTIALLY_PAID: 'Dibayar Sebagian',
   UNPAID: 'Belum Dibayar', PAID: 'Pembayaran Berhasil', OVERDUE: 'Pembayaran Belum Dilunasi',
-  REFUND_REVIEW: 'Pengembalian Dana Sedang Ditinjau', DP_FORFEITED: 'Uang Muka Hangus',
+  REFUND_REVIEW: 'Pembayaran Perlu Ditinjau', DP_FORFEITED: 'Uang Muka Hangus',
   ACTIVE: 'Member Aktif', INACTIVE: 'Nonaktif', NON_MEMBER: 'Belum Menjadi Member', AKTIF: 'Aktif', DIBLOKIR: 'Diblokir',
   WAITING: 'Menunggu', DP: 'Uang Muka', PELUNASAN: 'Pelunasan', REFUND: 'Pengembalian Dana',
   MIDTRANS: 'Online', KASIR: 'Kasir', CASH: 'Tunai', CARD: 'Kartu', TRANSFER: 'Transfer', OTHER: 'Lainnya', QRIS: 'QRIS',

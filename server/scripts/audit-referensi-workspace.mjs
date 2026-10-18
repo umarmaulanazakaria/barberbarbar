@@ -7,7 +7,7 @@ async function jalan(p) { for (const e of await readdir(p, { withFileTypes: true
   if (['node_modules', '.git', 'dist', '.expo', 'generated'].includes(e.name)) continue;
   const f = path.join(p, e.name); if (e.isDirectory()) await jalan(f); else if (/\.(tsx?|mjs|json|html)$/.test(f) && !f.endsWith('package-lock.json') && !f.includes(`${path.sep}finalization${path.sep}`) && !f.includes(`${path.sep}e2e${path.sep}`)) files.push(f);
 } }
-for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer']) await jalan(path.join(stage, r));
+for (const r of ['barberbarbar', 'barberbarbar-mobile', 'barberbarbar-customer-web']) await jalan(path.join(stage, r));
 const sumber = new Map(await Promise.all(files.map(async f => [f, await readFile(f, 'utf8')]))), edges = new Map(), literals = new Map();
 function resolve(f, p) { if (!p.startsWith('.')) return; const base = path.resolve(path.dirname(f), p).replace(/\.js$/, ''); return [base, ...['.ts', '.tsx', '.mjs', '/index.ts', '/index.tsx'].map(x => base + x)].find(x => sumber.has(x)); }
 for (const [file, text] of sumber) {
@@ -25,14 +25,14 @@ for (const [nama, roots, prefix] of [
   ['backend', ['barberbarbar/server/src/server.ts', 'barberbarbar/server/src/seed.ts'], 'barberbarbar/server/src/'],
   ['web', ['barberbarbar/client/src/main.tsx'], 'barberbarbar/client/src/'],
   ['staff', ['barberbarbar-mobile/index.ts'], 'barberbarbar-mobile/src/'],
-  ['customer', ['barberbarbar-customer/index.ts'], 'barberbarbar-customer/src/'],
+  ['customer', ['barberbarbar-customer-web/src/main.tsx'], 'barberbarbar-customer-web/src/'],
 ]) {
   const reached = new Set(), todo = roots.map(f => path.join(stage, f)); while (todo.length) { const f = todo.pop(); if (reached.has(f)) continue; reached.add(f); todo.push(...(edges.get(f) ?? [])); }
   const code = [...sumber.keys()].filter(f => rel(f).startsWith(prefix) && /\.tsx?$/.test(f));
   graph.push({ nama, roots, files: code.length, reachable: code.filter(f => reached.has(f)).length, kandidat: code.filter(f => !reached.has(f)).map(rel), batas: 'Unreached bukan bukti final dead code: declaration global/manual tool/test/external consumer harus ditinjau sebelum penghapusan.' });
 }
 const paket = [];
-for (const folder of ['barberbarbar/server', 'barberbarbar/client', 'barberbarbar-mobile', 'barberbarbar-customer']) {
+for (const folder of ['barberbarbar/server', 'barberbarbar/client', 'barberbarbar-mobile', 'barberbarbar-customer-web']) {
   const pkg = JSON.parse(await readFile(path.join(stage, folder, 'package.json'), 'utf8'));
   for (const nama of Object.keys({ ...pkg.dependencies, ...pkg.devDependencies })) {
     const pengguna = [...literals].filter(([f, strs]) => rel(f).startsWith(folder + '/') && !f.endsWith('package.json') && !f.endsWith('audit-referensi-workspace.mjs') && [...strs].some(s => s === nama || s.startsWith(nama + '/') || s.includes(`node_modules/${nama}/`))).map(([f]) => rel(f));

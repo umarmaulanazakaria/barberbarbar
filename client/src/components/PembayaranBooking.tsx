@@ -40,7 +40,7 @@ export default function PembayaranBooking({ booking }: { booking: Booking }) {
   const nominal = jumlah === "" ? data.balance : Number(jumlah);
   const sah = Number.isSafeInteger(nominal) && nominal >= data.balance && nominal <= 2147483647;
   const terkunci = bayar.isPending || percobaan.current !== null;
-  return <Card aria-busy={bayar.isPending || ringkasan.isFetching} className="space-y-3 p-4">
+  return <Card aria-busy={bayar.isPending || ringkasan.isFetching} className="admin-keuangan space-y-3 p-4">
     <h2 className="font-bold">Pembayaran booking</h2>{data.pembayaranPercobaan === true && <p className="text-xs text-slate-500">Online: {pesanPembayaranPercobaan}</p>}<StatusBadge value={data.statusPembayaran} />
     <dl className="grid grid-cols-2 gap-2 text-sm"><dt>Subtotal tagihan</dt><dd>{rupiah(data.subtotal)}</dd><dt>Diskon booking ({booking.discountPercent}%)</dt><dd>{rupiah(data.diskon)}</dd><dt>Total</dt><dd>{rupiah(data.total)}</dd><dt>DP awal</dt><dd>{rupiah(data.nominalDpAwal)} · {data.dpTerverifikasi ? "Terverifikasi" : "Belum terverifikasi"}</dd><dt>Pembayaran bersih</dt><dd>{rupiah(data.jumlahDibayar)}</dd><dt>Sisa tagihan</dt><dd className="font-bold">{rupiah(data.balance)}</dd><dt>Kelebihan</dt><dd>{rupiah(data.kelebihan)}</dd></dl>
     <p className="text-xs text-slate-500">Uang muka dibayar online. Layanan selesai belum berarti tagihan lunas. Tagihan yang melewati batas waktu tetap dapat dibayar.</p>

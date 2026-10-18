@@ -1,0 +1,5 @@
+.member-kartu-section{margin-block:24px;border-top:1px solid #e2e8f0;padding-top:20px}
+.member-kartu-preview{width:min(100%,410px);margin-block:16px;border-radius:12px;overflow:hidden;box-shadow:0 12px 28px #14213a25;aspect-ratio:85.6/53.98;background:#ffffff}
+.member-kartu-preview img{display:block;width:100%;height:100%;object-fit:contain}
+.member-kartu-actions{display:flex;flex-wrap:wrap;gap:10px;margin-block:16px}
+.member-kartu-catatan{font-size:12px;line-height:1.7;color:#64748b;max-width:55ch}

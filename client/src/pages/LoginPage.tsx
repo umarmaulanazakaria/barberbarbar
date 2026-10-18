@@ -56,8 +56,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-screen bg-[#f4f6fb] lg:grid-cols-2">
-      <div className="hidden bg-gradient-to-br from-[#0b1530] via-[#101d46] to-indigo-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
+    <div className="admin-login grid min-h-screen bg-[#f4f6fb] lg:grid-cols-2">
+      <div className="admin-login-brand hidden bg-gradient-to-br from-[#0b1530] via-[#101d46] to-indigo-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div>
           <img
             src="/barber-barbar-logo.png"
@@ -111,10 +111,10 @@ export default function LoginPage() {
 
           <form onSubmit={submit} className="space-y-4">
             <div>
-              <Label>Email</Label>
+              <Label htmlFor="login-email">Email</Label>
 
               <Input
-                type="email"
+                id="login-email" autoComplete="username" type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -122,10 +122,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label>Kata Sandi</Label>
+              <Label htmlFor="login-password">Kata Sandi</Label>
 
               <Input
-                type="password"
+                id="login-password" autoComplete="current-password" type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -133,7 +133,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg bg-red-50 p-3 text-xs font-medium text-red-600">
+              <div role="alert" className="rounded-lg bg-red-50 p-3 text-xs font-medium text-red-600">
                 {error}
               </div>
             )}

@@ -5,8 +5,8 @@ import type { Role } from "../types";
 export const jenisSinyal = ["booking.changed", "order.changed", "payment.changed", "membership.changed", "refund.changed", "customer.changed", "account-link.changed", "catalog.changed"] as const;
 export type JenisSinyal = typeof jenisSinyal[number];
 export type Sinyal = { id: number; aksi: string; versi: string; waktu: string; refetch: true };
-const akarOperator = ["dashboard", "bookings", "booking", "booking-payments", "orders", "order", "customers", "memberships", "services", "barbers", "invoices", "reports"];
-export const akarSinkronisasi = (role: Role) => role === "ADMIN" ? [...akarOperator, "refund-requests", "membership-requests", "account-link-requests", "barber-staff-accounts"] : akarOperator;
+const akarOperator = ["struk-resmi", "pengaturan-operasional", "dashboard", "bookings", "booking", "booking-payments", "orders", "order", "customers", "memberships", "services", "barbers", "invoices", "reports"];
+export const akarSinkronisasi = (role: Role) => role === "ADMIN" ? [...akarOperator, "membership-requests", "account-link-requests", "barber-staff-accounts"] : akarOperator;
 export function mulaiRealtimeOperator(token: string, role: Role, klien: QueryClient, jendela: Window, dokumen: Document, bukaSocket = () => io({ auth: { token }, autoConnect: false, forceNew: true })) {
   const socket = bukaSocket();
   const bersihkan = pasangSinkronisasi(socket, klien, role, jendela, dokumen);
@@ -27,13 +27,13 @@ export function mulaiRealtimeOperator(token: string, role: Role, klien: QueryCli
   return hentikan;
 }
 export function querySinyal(jenis: JenisSinyal, sinyal: Sinyal, role: Role): QueryKey[] {
-  const umum = [["dashboard"]];
+  const umum = [["dashboard"], ["struk-resmi"], ["invoices"], ["reports"]];
   switch (jenis) {
     case "booking.changed": return [...umum, ["bookings"], ["booking", sinyal.id], ["booking-payments", sinyal.id], ["orders"], ["order"]];
     case "order.changed": return [...umum, ["orders"], ["order", sinyal.id], ["reports"], ["booking"], ["booking-payments"]];
     case "payment.changed": return [...umum, ["bookings"], ["booking-payments", sinyal.id], ["orders"], ["order"], ["invoices"], ["reports"]];
     case "membership.changed": return [...umum, ["memberships"], ["customers"], ...(role === "ADMIN" ? [["membership-requests"]] : [])];
-    case "refund.changed": return role === "ADMIN" ? [...umum, ["refund-requests"], ["booking-payments"], ["orders"], ["order"], ["invoices"], ["reports"]] : [];
+    case "refund.changed": return role === "ADMIN" ? [...umum, ["booking-payments"], ["orders"], ["order"], ["invoices"], ["reports"]] : [];
     case "customer.changed": return [...umum, ["customers"], ["memberships"], ["orders"], ["order"], ["bookings"], ["booking"]];
     case "account-link.changed": return role === "ADMIN" ? [["account-link-requests"], ["customers"], ["dashboard"]] : [];
     case "catalog.changed": return [...umum, ...(sinyal.aksi.toUpperCase().includes("BARBER") ? [["barbers"], ...(role === "ADMIN" ? [["barber-staff-accounts"]] : [])] : sinyal.aksi.toUpperCase().includes("LAYANAN") ? [["services"]] : [["services"], ["barbers"]])];

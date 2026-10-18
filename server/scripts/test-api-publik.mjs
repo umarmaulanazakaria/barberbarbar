@@ -49,7 +49,7 @@ try {
   };
 
   for (const [rute, model, dataDummy, kolom] of [
-    ["/public/services", basisData.layanan, fixture.layanan, ["id", "nama", "harga", "durasiMenit"]],
+    ["/public/services", basisData.layanan, fixture.layanan, ["id", "nama", "harga", "durasiMenit", "slotBookingMenit"]],
     ["/public/barbers", basisData.barber, fixture.barber, ["id", "nama"]],
   ]) {
     const respon = await get(rute);
@@ -65,6 +65,7 @@ try {
     if (rute.endsWith("services")) {
       assert.equal(dummy.harga, 12345);
       assert.equal(dummy.durasiMenit, 17);
+      assert.equal(dummy.slotBookingMenit, 45);
     }
     console.log(`LULUS ${rute}: tanpa JWT, hanya aktif, whitelist field publik`);
   }

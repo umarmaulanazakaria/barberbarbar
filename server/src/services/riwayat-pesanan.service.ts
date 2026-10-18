@@ -11,7 +11,10 @@ const tanggal = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => {
 });
 export const skemaRiwayatPesanan = z.object({
   jenis: z.enum(["SEMUA", "BOOKING", "WALK_IN"]).default("SEMUA"),
-  periode: z.enum(["HARI_INI", "TUJUH_HARI", "TIGA_PULUH_HARI", "RENTANG"]).default("TIGA_PULUH_HARI"),
+  periode: z.enum(["HARI_INI", "TUJUH_HARI", "TIGA_PULUH_HARI", "SEMUA", "RENTANG"]).default("TIGA_PULUH_HARI"),
+  kelompok: z.enum(["SEMUA", "SELESAI", "LAINNYA"]).default("SEMUA"),
+  pembayaran: z.enum(["SEMUA", "PAID", "UNPAID"]).default("SEMUA"),
+  urutan: z.enum(["DESC", "ASC"]).default("DESC"),
   mulai: tanggal.optional(), selesai: tanggal.optional(),
   status: z.enum(["SEMUA", "COMPLETED", "CANCELLED", "EXPIRED"]).default("SEMUA"),
   cari: z.string().trim().max(100).default(""),
@@ -82,17 +85,37 @@ export const daftarRiwayatPesanan = (filter: FilterRiwayat, waktuUji?: Date) => 
   const kandidat = Prisma.sql`${kandidatRiwayat}, cocok AS (SELECT * FROM kandidat WHERE true
     ${filter.jenis === "SEMUA" ? Prisma.empty : Prisma.sql`AND jenis=${filter.jenis}`}
     ${filter.status === "SEMUA" ? Prisma.empty : Prisma.sql`AND "statusAkhir"=${filter.status}`}
+    ${filter.kelompok === "LAINNYA" ? Prisma.sql`AND "statusAkhir"<>'COMPLETED'` : Prisma.empty}
+    ${filter.kelompok === "SELESAI" ? Prisma.sql`AND "statusAkhir"='COMPLETED'` : Prisma.empty}
     ${filter.cari ? Prisma.sql`AND (pelanggan ILIKE ${cari} OR nomor ILIKE ${cari}
       ${digit.length >= 3 ? Prisma.sql`OR regexp_replace(regexp_replace(telepon,'[^0-9]','','g'),'^62','0') LIKE ${"%" + digit + "%"}` : Prisma.empty})` : Prisma.empty}
-    ), tersaring AS (SELECT * FROM cocok WHERE penutupan >= ${dari} AND penutupan < ${sampai})`;
+    ), tersaring AS (SELECT * FROM cocok WHERE ${filter.periode === "SEMUA" ? Prisma.sql`penutupan IS NOT NULL` : Prisma.sql`penutupan >= ${dari} AND penutupan < ${sampai}`})`;
   const [hitung] = await tx.$queryRaw<{ total: bigint; tanpaWaktu: bigint }[]>(Prisma.sql`${kandidat}
     SELECT (SELECT count(*) FROM tersaring) AS total,(SELECT count(*) FROM cocok WHERE penutupan IS NULL) AS "tanpaWaktu"`);
-  const total = Number(hitung!.total), totalHalaman = Math.max(1, Math.ceil(total / 20)), halaman = Math.min(filter.halaman, totalHalaman);
-  const baris = await tx.$queryRaw<BarisRiwayat[]>(Prisma.sql`${kandidat} SELECT ${kolomDaftar} FROM tersaring
-    ORDER BY penutupan DESC,jenis ASC,id DESC LIMIT 20 OFFSET ${(halaman - 1) * 20}`);
+  let total = Number(hitung!.total);
+  const arah = filter.urutan === "ASC" ? Prisma.sql`ASC` : Prisma.sql`DESC`;
+  const uang = new Map<string, Awaited<ReturnType<typeof pembayaranRiwayat>>>();
+  // Pakai klasifikasi pembayaran resmi yang sama dengan detail, tanpa rumus finansial kedua.
+  // Scan bertahap hanya bila filter pembayaran dipakai; respons klien tetap 20 arsip.
+  let lolos: BarisRiwayat[] | null = null;
+  if (filter.pembayaran !== "SEMUA") {
+    lolos = [];
+    for (let offset = 0; offset < total; offset += 100) {
+      const batch = await tx.$queryRaw<BarisRiwayat[]>(Prisma.sql`${kandidat} SELECT ${kolomDaftar} FROM tersaring ORDER BY penutupan ${arah},jenis ASC,id DESC LIMIT 100 OFFSET ${offset}`);
+      for (const b of batch) {
+        const p = await pembayaranRiwayat(tx, b.jenis, b.id, sekarang);
+        const cocok = filter.pembayaran === "PAID" ? p.statusPembayaran === "PAID" : ["UNPAID", "PARTIALLY_PAID", "OVERDUE", "DP_PAID", "AWAITING_DP", "MEMBER_CONFIRMED"].includes(p.statusPembayaran);
+        if (cocok) { lolos.push(b); uang.set(`${b.jenis}:${b.id}`, p); }
+      }
+    }
+    total = lolos.length;
+  }
+  const totalHalaman = Math.max(1, Math.ceil(total / 20)), halaman = Math.min(filter.halaman, totalHalaman);
+  const baris = lolos ? lolos.slice((halaman - 1) * 20, halaman * 20) : await tx.$queryRaw<BarisRiwayat[]>(Prisma.sql`${kandidat} SELECT ${kolomDaftar} FROM tersaring
+    ORDER BY penutupan ${arah},jenis ASC,id DESC LIMIT 20 OFFSET ${(halaman - 1) * 20}`);
   const data = [];
   const metadata = await metadataOperasional(tx, baris);
-  for (const b of baris) data.push({ ...b, ...metadata.get(`${b.jenis}:${b.id}`), statusPembayaran: (await pembayaranRiwayat(tx, b.jenis, b.id, sekarang)).statusPembayaran });
+  for (const b of baris) data.push({ ...b, ...metadata.get(`${b.jenis}:${b.id}`), statusPembayaran: (uang.get(`${b.jenis}:${b.id}`) ?? await pembayaranRiwayat(tx, b.jenis, b.id, sekarang)).statusPembayaran });
   return { data, total, halaman, batas: 20, totalHalaman, tanpaWaktuPenutupan: Number(hitung!.tanpaWaktu), hariIni, serverTime: sekarang.toISOString() };
 });
 

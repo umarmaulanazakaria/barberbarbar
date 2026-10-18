@@ -25,7 +25,12 @@ export const batasiPercobaanPelanggan = (maksimum: number, kunci?: (req: Request
 };
 
 const garamMember = randomBytes(32);
-export const batasiNomorMemberPublik = (maksimum: number) => batasiPercobaanPelanggan(maksimum, req => {
-  const nomor: unknown = req.body?.nomorMember;
-  return typeof nomor === "string" && nomor.trim() ? createHmac("sha256", garamMember).update(nomor.trim().toUpperCase().slice(0, 64)).digest("hex") : undefined;
-});
+export const batasiNomorMemberPublik = (maksimum: number): RequestHandler => {
+  const batasiMember = batasiPercobaanPelanggan(maksimum, req =>
+    createHmac("sha256", garamMember).update(String(req.body.nomorMember).trim().toUpperCase().slice(0, 64)).digest("hex"));
+  return (req, res, next) => {
+    // Request Reguler tetap dibatasi middleware IP pada route, bukan kuota Member.
+    if (typeof req.body?.nomorMember !== "string" || !req.body.nomorMember.trim()) return next();
+    return batasiMember(req, res, next);
+  };
+};

@@ -207,10 +207,10 @@ try {
 
   for (const id of [akunBaru.pelangganId, existing.id, ditolak.id]) {
     const hapus = await http(`/pelanggan/${id}`, "DELETE", undefined, adminSatu);
-    assert.equal(hapus.status, 409);
+    assert.equal(hapus.status, 405);
     assert.ok(await db.pelanggan.findUnique({ where: { id } }));
   }
-  lulus("Penghapusan operator melindungi akun aktif dan riwayat pengaitan");
+  lulus("Penghapusan permanen dinonaktifkan; akun aktif dan riwayat pengaitan utuh");
   const daftarAdmin = await http("/auth/customer/requests", "GET", undefined, adminSatu);
   assert.equal(daftarAdmin.status, 200); aman(daftarAdmin.body);
   lulus("Daftar permohonan ADMIN tidak mengirim hash password");

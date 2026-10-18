@@ -1,153 +1,97 @@
-# BARBER BARBAR — Web Management & Backend
+# BARBER BARBAR — Admin Web & Backend
 
-Web Management dan backend pusat untuk operasional barbershop, melayani Web ADMIN/STAFF, Mobile Staff, dan Customer Web melalui satu API dan satu database PostgreSQL.
+Sistem operasional barbershop untuk pembelajaran, portofolio dan demo lokal. Repository ini menyediakan Web Management bagi ADMIN/STAFF dan backend pusat untuk Customer Web serta React Native Staff.
 
-Project untuk **tugas kuliah, pembelajaran Fullstack, portofolio, dan demonstrasi lokal**; bukan aplikasi Production. Hosting berbayar bukan kebutuhan demo. Mobile berhasil menurut laporan pengguna (**USER-REPORTED**); bukti rinci UI native/checkout Android belum lengkap. Email nyata, refund historis dan advisory tetap dicatat jujur. Lihat [acceptance demo](docs/DEMO-ACCEPTANCE.md).
+## Arsitektur
 
-Hasil terbaru ada di [penutupan acceptance](docs/FINAL-ACCEPTANCE-CLOSURE.md):
-29 suite teknis lulus, perubahan identitas/password dengan autentikasi ulang,
-edit layanan/jumlah pada jadwal ulang, template/transport email mock, serta
-perbaikan race edit Web. Delivery email nyata belum aktif; memilih provider dan
-mengisi sample environment saja tidak otomatis mengirim email. Detail setup
-ada di [panduan reset](server/scripts/RESET-PASSWORD-CUSTOMER.md).
+Tiga aplikasi memakai satu API Express/Prisma dan PostgreSQL yang sama. Admin memakai desain **Admin Minimal**, Customer memakai **mobile-first**, Staff memakai **Minimal V3**. Harga, slot, kelayakan Member, keputusan operasional dan pembayaran ditetapkan backend. Socket.IO hanya memberi sinyal refetch REST.
+
+- [Admin Web dan Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/feature/project5-integration)
+- [React Native Staff](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/feature/project5-integration)
+- [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/feat/project5-react-web-mobile-first)
 
 ## Teknologi dan fitur
 
-- Web: React, TypeScript, Vite, Tailwind CSS, React Query, Socket.IO.
-- Backend: Express, TypeScript, Prisma, PostgreSQL, bcrypt, JWT, Midtrans Sandbox.
-- Pelanggan, barber, layanan, membership, pesanan walk-in, kasir, laporan, dan invoice.
-- Akun CUSTOMER terpisah dari operator; pengaitan akun dan membership memerlukan keputusan ADMIN.
-- Booking multiservice, pemilihan barber, persetujuan usulan, reschedule, pembatalan, dan lifecycle layanan.
-- DP/pelunasan berdasarkan database, ledger idempotent, webhook terverifikasi, dan refund melalui ADMIN.
-- Scheduler deadline persisten; realtime menjadi sinyal refetch. REST/database tetap sumber data utama.
+React, TypeScript, Vite, Tailwind, React Query; Node.js/Express, Prisma, PostgreSQL, bcrypt/JWT; Socket.IO dan Midtrans Sandbox.
 
-## Arsitektur dan folder
+- Dashboard hari ini WIB, aktivitas Booking/Walk-in, perhatian operasional dan daftar mendatang.
+- Pesanan terpadu, detail/tindakan, penentuan barber, check-in, IN_SERVICE dan COMPLETED.
+- Riwayat berdasarkan waktu penutupan dengan pencarian, pagination, jenis dan status pembayaran.
+- Walk-in anonim atau profil existing; quote backend, konfirmasi harga dan idempotensi.
+- Pelanggan, Membership berbayar, Kartu Member, barber dan layanan aktif/inaktif.
+- Verifikasi fisik Kartu Member + KTP dengan audit; koreksi identitas khusus ADMIN. Tidak menyimpan NIK/foto KTP.
+- Invoice/struk, laporan dan pengaturan; Tunai, Transfer serta QRIS sesuai workflow backend.
+- Customer Reguler DP 50%/15 menit; Member layak tanpa DP; satu slot 45 menit per booking.
+- Tracking privat, sesi HttpOnly, webhook terverifikasi dan ledger idempotent.
 
-```text
-client/src/pages/          Halaman operasional Web
-client/src/components/     Komponen antarmuka
-client/scripts/            Integrasi dan browser E2E
-server/src/routes/         API customer dan operator
-server/src/controllers/    Penanganan HTTP
-server/src/services/       Aturan bisnis
-server/src/middleware/     Autentikasi dan validasi
-server/src/realtime/       Otorisasi dan event Socket.IO
-server/prisma/             Schema dan riwayat migration
-server/scripts/            Pengujian, backup, dan audit
-docs/                      Panduan dan bukti audit
-```
+## Struktur
 
-Mobile Staff memakai JWT operator. Customer Web memakai sesi guest HttpOnly tanpa registrasi/login atau pemilihan barber; JWT CUSTOMER tetap tersedia untuk kompatibilitas Native historis. Socket guest memakai cookie sesi terverifikasi dan room booking yang ditentukan server; polling REST tetap menjadi fallback. Harga, snapshot diskon, slot, status, pembayaran, dan invoice divalidasi backend. Callback checkout tidak menetapkan PAID.
+| Folder | Isi |
+| --- | --- |
+| client/src/pages, components | Halaman Admin Minimal dan komponen |
+| client/src/lib | HTTP, autentikasi dan sinkronisasi |
+| server/src/routes, controllers, services | API dan aturan bisnis |
+| server/src/middleware, realtime, lib | Keamanan, Socket.IO dan utilitas |
+| server/prisma | Schema dan migration existing |
+| server/scripts | Pengujian dan perkakas developer |
+| docs | Panduan, desain dan bukti historis |
 
-## Menjalankan lokal
+## Instalasi dan menjalankan
 
-Untuk dependency dan environment yang sudah tersedia, gunakan satu launcher Windows dari folder ini:
+Baseline audit memakai Node.js 24 dan npm dengan dependency existing. Pada clone baru:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\jalankan-barberbarbar.ps1 -HanyaBackend
-# Tambahkan -Ngrok hanya saat menguji pembayaran; forwarding wajib ke proxy 3001.
-# Tambahkan -Periksa untuk pemeriksaan read-only tanpa menjalankan proses baru.
-```
-
-`-Periksa` mengenali backend watcher existing melalui executable, PID/waktu pembuatan,
-argumen entrypoint dan direktori kerja proses, bukan direktori terminal. Path script
-dapat dipanggil dari working directory mana pun. Proxy/tunnel opsional tidak
-dinyatakan siap bila belum aktif; gunakan `-Periksa -Ngrok` untuk pemeriksaan jalur
-pembayaran yang ketat. [Perbaikan launcher dan hasil tes](docs/cleanup/PERBAIKAN-LAUNCHER.md).
-
-Launcher memeriksa identitas backend, memakai port 3000 dan proxy webhook 3001,
-serta tidak menghentikan proses existing. Tanpa `-HanyaBackend`, Web Admin (5173), Customer Web (5175), dan
-Expo Staff (8081) dijalankan bila port kosong. Customer Native dipensiunkan;
-source dan endpoint historis tetap dipertahankan. Panduan pemulihan status, hasil pengujian
-dan batas webhook laptop ada di [audit pembayaran dan antarmuka](docs/PAYMENT-WEBHOOK-UI-COPY-AUDIT.md).
-
-Persyaratan: Node.js/npm sesuai lockfile (baseline Node 24), PostgreSQL, serta `pg_dump`/`pg_restore` untuk backup. Database existing memerlukan konfigurasi pemilik. Dari `server`, pasang dependency lalu buat `.env` berdasarkan `.env.example`:
-
-```powershell
+cd server
 npm.cmd ci
 npm.cmd run prisma:generate
-node node_modules/prisma/build/index.js validate
-node node_modules/prisma/build/index.js migrate status
-npm.cmd run build
-npm.cmd start
+# Buat .env lokal secara privat; gunakan database yang sudah disiapkan.
+npm.cmd run dev
 ```
 
-Development: `npm.cmd run dev`. Backend memakai port 3000 secara default; periksa `GET http://127.0.0.1:3000/public/services`. Tinjau migration sebelum menyiapkan database baru. Jangan menjalankan reset atau seed demo pada data existing.
-
-Dari `client`, pada terminal lain:
+Terminal lain dari repository ini:
 
 ```powershell
+cd client
 npm.cmd ci
-npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run dev
 ```
 
-Buka `http://127.0.0.1:5173`. Vite meneruskan `/api` dan `/socket.io` ke backend yang sama. Build Web: `npm.cmd run build`.
+Backend http://localhost:3000; Admin http://localhost:5173. Admin memakai /api dan proxy /socket.io menuju backend. Jalankan Customer dari repository Customer dengan npm.cmd run dev (5175), Staff dari repository Mobile dengan npm.cmd start. Jangan memakai port Admin untuk Customer.
 
-## Environment
+## Environment privat backend
 
-Isi credential secara manual di `server/.env`; file asli diabaikan Git. Jangan memasukkan credential server ke bundle Web atau `EXPO_PUBLIC_*`.
+Salin server/.env.example secara manual ke server/.env; isi credential sendiri. Contoh berikut hanya placeholder:
 
-| Variabel | Kegunaan |
-|---|---|
-| `DATABASE_URL` | Koneksi PostgreSQL lokal |
-| `JWT_SECRET` | Secret panjang dan acak untuk JWT |
-| `PORT` | Port backend, default 3000 |
-| `MIDTRANS_MERCHANT_ID` | Identitas merchant Sandbox |
-| `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY` | Credential Sandbox, hanya di server |
-| `MIDTRANS_IS_PRODUCTION` | `false`; Production belum diaktifkan |
-| `SOCKET_ALLOWED_ORIGINS` | Origin Web yang diizinkan, dipisahkan koma |
-| `SCHEDULER_BOOKING_AKTIF` | Default aktif; dapat dimatikan untuk inspeksi terkontrol |
-| `SCHEDULER_BOOKING_INTERVAL_MS` | 1.000–60.000 ms, default 15.000 |
-
-Konfigurasi webhook dan batas provider: [panduan Midtrans](docs/audit/F7-SANDBOX.md). Forgot-password belum mengirim email; token tidak dikembalikan endpoint publik.
-
-## Pengujian dan backup
-
-Jalankan pada database uji lokal kosong yang terpisah, dengan schema ditinjau dan backup terbaru. Override DATABASE_URL hanya untuk proses pengujian; jangan arahkan runner ke data aplikasi. Runner memeriksa 22 model sesudah setiap tahap. Hasil baru berada di `server/artifacts/` yang diabaikan Git.
-
-```powershell
-# Dari server; MIDTRANS_IS_PRODUCTION=false
-node scripts/backup-e2e.mjs
-node scripts/jalankan-regresi-e2e.mjs
-node scripts/verifikasi-integritas-e2e.mjs "<folder-backup>"
+```dotenv
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE
+JWT_SECRET=ISI_SECRET_ACAK_PRIVAT
+MIDTRANS_MERCHANT_ID=ISI_MERCHANT_SANDBOX
+MIDTRANS_SERVER_KEY=ISI_SERVER_KEY_SANDBOX
+MIDTRANS_CLIENT_KEY=ISI_CLIENT_KEY_SANDBOX
+MIDTRANS_IS_PRODUCTION=false
+GUEST_BOOKING_ENABLED=false
+BOOKING_TRACKING_ENCRYPTION_KEY=ISI_KUNCI_32_BYTE_BASE64_PRIVAT
+GUEST_WEB_ORIGINS=http://localhost:5175,http://127.0.0.1:5175
+SOCKET_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
-Backup privat berada di `%LOCALAPPDATA%/BARBERBARBAR/database-backups`, di luar Stage 2. Dump, snapshot, environment asli, dan patch privat tidak boleh diunggah. Detail: [panduan pengujian](docs/PENGUJIAN.md).
+Aktifkan booking hanya setelah schema, kunci dan origin benar. Cocokkan origin LAN secara manual. Tidak ada credential backend di VITE_* atau EXPO_PUBLIC_*. Jangan reset/seed database operasional. Migration database existing memerlukan backup, pemeriksaan dan persetujuan tersendiri.
 
-## Integrasi dan dokumentasi
+## Alur dan keamanan
 
-- [Web Management + Backend](https://github.com/umarmaulanazakaria/barberbarbar)
-- [Mobile ADMIN/STAFF](https://github.com/umarmaulanazakaria/barberbarbar-mobile)
-- Customer Web aktif: folder `../barberbarbar-customer-web`, http://127.0.0.1:5175
-- [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer); riwayat Native tersedia pada branch historis dan backup privat.
-- [Keputusan migrasi Customer Web](docs/CUSTOMER-WEB-UTAMA.md)
-- [Integrasi Socket.IO dan Midtrans](docs/INTEGRASI-SOCKET-MIDTRANS.md)
-- Akses Customer Web melalui HP: `../barberbarbar-customer-web/docs/AKSES-HP-LAN.md`. Origin REST/socket development mengikuti IP privat adapter laptop pada port5175; Production tetap memakai allowlist eksplisit.
-- [Panduan ekosistem](docs/README-FINAL.md), [pengujian Android](docs/README-PENGUJIAN-ANDROID.md), [demo](docs/PANDUAN-DEMO.md).
-- [Audit finalisasi historis](docs/audit/F14-AUDIT.md), [audit cleanup terbaru](docs/WORKSPACE-CLEANUP-AUDIT.md).
+Reguler membuat booking tanpa akun, memilih layanan/barber/slot lalu menerima nomor booking. DP dibayar sebelum deadline dari database. Callback Snap tidak mengonfirmasi pembayaran; backend memeriksa provider dan nominal sebelum CONFIRMED. Staff memverifikasi kedatangan, barber dan layanan; saldo aktual menjadi dasar pelunasan dan invoice final. Member aktif memakai manfaat paket sesuai pengaturan, tanpa DP, dengan pemeriksaan fisik di toko.
 
-Branch review: `feature/project5-integration`. Build lokal dan provider MOCK tidak menggantikan acceptance perangkat atau pembayaran provider nyata.
+JWT CUSTOMER terpisah dari operator. Tindakan khusus ADMIN tetap diperiksa backend. Nomor Member tidak menjadi bukti identitas. Kode tracking/link privat harus dirahasiakan. Kompatibilitas refund historis masih ada pada snapshot commit; WIP penghapusannya belum dipublikasikan.
 
-## Demonstrasi dan portofolio
+## Batas verifikasi
 
-[Menjalankan ekosistem](docs/PANDUAN-JALANKAN-DEMO.md) | [Presentasi](docs/PANDUAN-PRESENTASI.md) | [Naskah](docs/NASKAH-DEMO.md) | [Review Git/PR](docs/PORTFOLIO-RELEASE-REVIEW.md).
+Audit 18 Oktober 2026 memisahkan snapshot commit dari WIP lokal. TypeScript / build bukan bukti seluruh alur UI atau pembayaran provider. Lihat [laporan audit pusat](https://github.com/umarmaulanazakaria/barberbarbar/blob/feature/project5-integration/docs/audit/AUDIT-SISTEM-TERKINI.md). Pengujian integrasi memakai PostgreSQL fixture dan provider mock; bukan settlement Sandbox baru. Perangkat Android/iOS dan printer fisik belum diuji dalam audit ini. Advisory dependency masih terbuka. **Belum siap dinyatakan rilis penuh; bukan Production.**
 
-### API utama
+## Panduan terbaru dan arsip
 
-| Kelompok | Fungsi dan akses |
-|---|---|
-| GET `/public/services`, `/public/barbers` | Katalog aktif tanpa login, atribut publik saja |
-| `/auth/customer/*`, `/customer/membership`, `/customer/bookings` | Akun, profil dan data milik CUSTOMER |
-| `/bookings`, `/orders`, `/customers`, `/services`, `/barbers` | Operasional dengan JWT operator |
-| `/membership-requests`, `/refund-requests` | Keputusan khusus ADMIN diperiksa backend |
-| POST `/midtrans/notifications` | Webhook dengan signature dan verifikasi provider |
+- [Panduan teknis dan desain](docs/PANDUAN-SISTEM-TERKINI.md)
+- [Matriks audit dan hasil pengujian](docs/audit/AUDIT-SISTEM-TERKINI.md)
+- [Acceptance historis](docs/FINAL-ACCEPTANCE-CLOSURE.md)
+- [Integrasi Socket.IO/Midtrans historis](docs/INTEGRASI-SOCKET-MIDTRANS.md)
 
-Route -> controller -> service -> Prisma memisahkan HTTP, aturan bisnis dan penyimpanan. PostgreSQL menjadi sumber kebenaran; Socket.IO memberi sinyal refetch REST dalam room berotorisasi.
-
-### Screenshot Web aktual
-
-Web asli di Edge headless dengan fixture database kosong terpisah dan pembayaran **MOCK**. Bukan bukti Android/provider nyata. [Lima gambar dan reproduksi](docs/screenshots/README.md).
-
-![Dashboard Web fixture](docs/screenshots/dashboard.jpg)
-
-![Pembayaran booking fixture lunas](docs/screenshots/payment-management.jpg)
+Laporan lama tetap disimpan sebagai snapshot saat ditulis. Jumlah suite, migration, UI dan bukti provider pada laporan lama tidak otomatis menjadi hasil audit terbaru.

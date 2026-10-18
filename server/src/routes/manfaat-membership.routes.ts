@@ -23,13 +23,21 @@ routerManfaatPublik.post("/member-quote", batasiPercobaanPelanggan(15), batasiNo
   res.set("Cache-Control", "no-store").json(hasil); // Tidak mengembalikan identitas pemilik.
 });
 routerManfaatOperator.post("/quote", async (req, res) => {
-  const d = baca(z.object({ profilId: z.number().int().positive(), items }).strict(), req.body);
+  const d = baca(z.object({ profilId: z.number().int().positive().optional(), items: z.array(items.element).min(1).max(50).refine(v => new Set(v.map(i => i.layananId)).size === v.length) }).strict(), req.body);
   res.set("Cache-Control", "no-store").json(await transaksiProfil(async tx => {
-    const p = await tx.profilPelanggan.findUniqueOrThrow({ where: { id: d.profilId }, include: { pelanggan: { include: { membership: true } } } });
-    const data = await katalog(tx, d.items), m = p.pelanggan.membership, sekarang = await waktuDatabaseBooking(tx);
-    if (!m?.berlakuSampai || m.berlakuSampai <= sekarang || !m.isActive) return { member: false, total: data.reduce((n, i) => n + i.subtotal, 0), items: data };
+    const p = d.profilId === undefined ? null : await tx.profilPelanggan.findUnique({ where: { id: d.profilId }, include: { pelanggan: { include: { membership: true } } } });
+    if (d.profilId !== undefined && (!p || p.diarsipkanPada || p.pelanggan.status !== "AKTIF")) throw new KesalahanProfil(409, "Pilih profil pelanggan aktif.");
+    const data = await katalog(tx, d.items), m = p?.pelanggan.membership, sekarang = await waktuDatabaseBooking(tx);
+    const subtotal = data.reduce((n, i) => n + i.subtotal, 0);
+    const rincian = (member: boolean, aktual: typeof data) => {
+      const total = aktual.reduce((n, i) => n + i.subtotal, 0);
+      if (!Number.isSafeInteger(total) || !Number.isSafeInteger(subtotal) || subtotal > 2147483647 || total > 2147483647) throw new KesalahanProfil(400, "Nominal layanan melampaui batas.");
+      return { member, subtotal, promo: null, diskonMember: subtotal - total, total, items: aktual.map(i => ({ ...i, hargaDiharapkan: data.find(l => l.layananId === i.layananId)!.harga })) };
+    };
+    // Tarif dan manfaat sama dengan pembuatan Pesanan; tidak menciptakan aturan promo baru.
+    if (!m?.berlakuSampai || m.berlakuSampai <= sekarang || !m.isActive) return rincian(false, data);
     const manfaat = await terapkanManfaat(tx, data, m.memberCode, sekarang);
-    return { member: true, total: manfaat.items.reduce((n, i) => n + i.subtotal, 0), items: manfaat.items };
+    return rincian(true, manfaat.items);
   }));
 });
 routerManfaatOperator.get("/booking/:id", async (req, res) => res.set("Cache-Control", "no-store").json(await lihatMemberBooking(id(req.params.id))));

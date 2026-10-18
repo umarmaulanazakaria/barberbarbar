@@ -1,0 +1,58 @@
+{
+  "capturedOn": "2026-10-18",
+  "runtime": "Chrome browser, real application components",
+  "dataSource": "intercepted synthetic API responses; no database/provider",
+  "visualReview": true,
+  "files": [
+    {
+      "file": "dashboard.jpg",
+      "sourceCommit": "8fbdce717b8ef2357bf681a826d8ea2d6c7a604c",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "bytes": 104690,
+      "sha256": "32a3ff97baab7f4ab1d7fb464a75be06ca670c0f88037f8d7071fae3c76ffba7"
+    },
+    {
+      "file": "pesanan.jpg",
+      "sourceCommit": "8fbdce717b8ef2357bf681a826d8ea2d6c7a604c",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "bytes": 100988,
+      "sha256": "6e092e36d9e03421b8c671001d542b0df1bbf7158582275e2fef58c1c5e9beb8"
+    },
+    {
+      "file": "detail.jpg",
+      "sourceCommit": "8fbdce717b8ef2357bf681a826d8ea2d6c7a604c",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "bytes": 105226,
+      "sha256": "a172c96531856bc7e513561317f4f34598623d5dee46291655f4b0445a8b0ddd"
+    },
+    {
+      "file": "membership.jpg",
+      "sourceCommit": "8fbdce717b8ef2357bf681a826d8ea2d6c7a604c",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "bytes": 80384,
+      "sha256": "1f575e6dc72d47c2687bc5529cfc67d47d60b74a552a595ba0278a1047dfcaab"
+    },
+    {
+      "file": "pembayaran.jpg",
+      "sourceCommit": "8fbdce717b8ef2357bf681a826d8ea2d6c7a604c",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "bytes": 156445,
+      "sha256": "8977e04420cb5ef1c6aaadd76b47a91fc8b44ed51b612ae5b352a383080ec086"
+    }
+  ]
+}

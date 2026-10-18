@@ -1,28 +1,71 @@
-# BARBER BARBAR — Admin Web & Backend
+<div align="center">
 
-Sistem operasional barbershop untuk pembelajaran, portofolio dan demo lokal. Repository ini menyediakan Web Management bagi ADMIN/STAFF dan backend pusat untuk Customer Web serta React Native Staff.
+# BARBER BARBAR
 
-## Arsitektur
+**Not Cutting Heads, Just Hair.**
 
-Tiga aplikasi memakai satu API Express/Prisma dan PostgreSQL yang sama. Admin memakai desain **Admin Minimal**, Customer memakai **mobile-first**, Staff memakai **Minimal V3**. Harga, slot, kelayakan Member, keputusan operasional dan pembayaran ditetapkan backend. Socket.IO hanya memberi sinyal refetch REST.
+### Admin Web & Backend
 
-- [Admin Web dan Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/main)
-- [React Native Staff](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/main)
-- [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/main)
+Satu pusat operasional untuk booking, Membership, walk-in, pelayanan dan pembayaran.
 
-## Teknologi dan fitur
+[Admin & Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/main) · [Staff Mobile](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/main) · [Customer Web](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/main)
 
-React, TypeScript, Vite, Tailwind, React Query; Node.js/Express, Prisma, PostgreSQL, bcrypt/JWT; Socket.IO dan Midtrans Sandbox.
+</div>
 
-- Dashboard hari ini WIB, aktivitas Booking/Walk-in, perhatian operasional dan daftar mendatang.
-- Pesanan terpadu, detail/tindakan, penentuan barber, check-in, IN_SERVICE dan COMPLETED.
-- Riwayat berdasarkan waktu penutupan dengan pencarian, pagination, jenis dan status pembayaran.
-- Walk-in anonim atau profil existing; quote backend, konfirmasi harga dan idempotensi.
-- Pelanggan, Membership berbayar, Kartu Member, barber dan layanan aktif/inaktif.
-- Verifikasi fisik Kartu Member + KTP dengan audit; koreksi identitas khusus ADMIN. Tidak menyimpan NIK/foto KTP.
-- Invoice/struk, laporan dan pengaturan; Tunai, Transfer serta QRIS sesuai workflow backend.
-- Customer Reguler DP 50%/15 menit; Member layak tanpa DP; satu slot 45 menit per booking.
-- Tracking privat, sesi HttpOnly, webhook terverifikasi dan ledger idempotent.
+<a href="docs/showcase/dashboard.jpg"><img src="docs/showcase/dashboard.jpg" alt="Dashboard Admin Minimal terbaru dengan data sintetis" width="1200" /></a>
+
+*Dashboard hari ini dalam WIB: aktivitas Booking/Walk-in, status pelayanan dan perhatian operasional.*
+
+> **Tentang gambar:** screenshot diambil ulang dari aplikasi pada source `main` tanggal 18 Oktober 2026. Seluruh respons API untuk capture diintersepsi dengan data sintetis. Tidak ada database atau provider pembayaran yang dihubungi. Status dan nominal contoh adalah ilustrasi UI, **bukan bukti settlement Midtrans**. Tidak ada rekayasa DOM, mockup desain, gambar AI, atau data pelanggan asli. Klik gambar untuk melihat ukuran penuh.
+
+## Di dalam aplikasi
+
+| <a href="docs/showcase/pesanan.jpg"><img src="docs/showcase/pesanan.jpg" alt="Daftar pesanan booking dan walk-in" width="480" /></a> | <a href="docs/showcase/detail.jpg"><img src="docs/showcase/detail.jpg" alt="Drawer detail booking dan ringkasan pembayaran" width="480" /></a> |
+| --- | --- |
+| **Pesanan** — satu daftar untuk booking dan walk-in. | **Detail & tindakan** — pelanggan, jadwal, layanan dan saldo dalam satu panel. |
+
+| <a href="docs/showcase/membership.jpg"><img src="docs/showcase/membership.jpg" alt="Daftar Membership dengan data member sintetis" width="480" /></a> | <a href="docs/showcase/pembayaran.jpg"><img src="docs/showcase/pembayaran.jpg" alt="Panel pembayaran booking dengan nominal sintetis" width="480" /></a> |
+| --- | --- |
+| **Membership** — status aktif, masa berlaku dan pengelolaan paket. | **Pembayaran** — DP, pembayaran diterima dan sisa tagihan dari kontrak backend. |
+
+[Asal gambar, versi dan batas capture](docs/showcase/README.md).
+
+## Tiga aplikasi, satu backend
+
+| Aplikasi | Peran |
+| --- | --- |
+| [Admin Web & Backend](https://github.com/umarmaulanazakaria/barberbarbar/tree/main) | Dashboard operasional, pelanggan, Membership, pesanan, kasir dan laporan. |
+| [React Native Staff](https://github.com/umarmaulanazakaria/barberbarbar-mobile/tree/main) | Pelayanan di toko dengan desain Minimal V3: Beranda, Pesanan, Walk-in, Riwayat dan Profil. |
+| [Customer Web mobile-first](https://github.com/umarmaulanazakaria/barberbarbar-customer/tree/main) | Katalog, booking tanpa akun, pembayaran dan tracking dari browser HP maupun desktop. |
+
+Ketiganya memakai **Express REST API + Prisma + PostgreSQL** yang sama. Socket.IO memberi sinyal untuk mengambil ulang data REST; harga, kelayakan Member dan status pembayaran tetap ditetapkan backend.
+
+## Dari booking sampai layanan selesai
+
+| Alur | Ringkasan |
+| --- | --- |
+| Booking Reguler | Pilih layanan, barber dan jadwal; isi identitas tanpa membuat akun. Satu booking memakai slot **45 menit**. |
+| DP & konfirmasi | **DP 50%**, batas **15 menit** dari backend. Snap Sandbox bukan penentu status; backend memverifikasi provider sebelum booking dikonfirmasi. |
+| Membership | Paket aktif 12 bulan: Haircut + Wash gratis dan layanan lain diskon 10% sesuai kelayakan backend. Booking Member layak tanpa DP; Kartu Member + KTP diperiksa fisik di toko tanpa menyimpan NIK/foto. |
+| Walk-in | Operator membuat pesanan Reguler/Member dari toko, memakai quote dan validasi backend yang sama. |
+| Pelayanan & pembayaran | Check-in, barber final, pelayanan, selesai, pelunasan sesuai saldo backend, lalu invoice final. Tunai, Transfer dan QRIS mengikuti workflow operator; Snap untuk pembayaran online customer. |
+
+## Teknologi
+
+**React 19 · TypeScript · Vite · Tailwind CSS · React Query · Express 5 · Prisma 7 · PostgreSQL · JWT · Socket.IO · Midtrans Sandbox**
+
+## Menjalankan demo
+
+Gunakan Node.js 24, npm dan PostgreSQL lokal yang sudah disiapkan. Backend di port **3000**, Admin di **5173**, Customer di **5175**. Instalasi lengkap ada pada panel teknis di bawah. Jangan menjalankan reset/seed terhadap database operasional; konfigurasi privat hanya di `server/.env`.
+
+## Bukti pengujian dan batas
+
+Finalisasi `main` sebelumnya meluluskan build/TypeScript, validasi Prisma dan **14 suite integrasi fixture/mock**, ditambah 28 pemeriksaan HTTP baca-saja. Pengambilan gambar ini hanya memeriksa render UI dan privasi; tidak mengulang suite atau membuktikan transaksi baru. Perangkat Android/iOS, printer fisik, advisory dependency tersisa dan bukti provider historis mengikuti [audit terkini](docs/audit/AUDIT-SISTEM-TERKINI.md) serta [remediasi](docs/audit/REMEDIASI-KEAMANAN.md).
+
+**Portofolio dan demo tugas magang; bukan klaim siap Production.**
+
+<details>
+<summary><strong>Instalasi, konfigurasi, struktur source dan laporan teknis</strong></summary>
 
 ## Struktur
 
@@ -103,3 +146,5 @@ Prisma diperbarui ke7.10.1 dan audit Backend kini 0. Admin tetap 2 advisory Rout
 ## Versi demo pada main
 
 Branch `main` memuat snapshot fitur terbaru yang digabungkan dengan tetap mempertahankan riwayat. Verifikasi rilis memakai build/TypeScript dan fixture/mock lokal; tidak membuat transaksi nyata atau mengubah data operasional. Jalankan demo dengan konfigurasi lokal dan Midtrans Sandbox existing. Pengujian perangkat HP, printer fisik dan pembayaran provider langsung tidak diklaim lulus dari pengujian ini. WIP lokal tetap terpisah dari versi GitHub.
+
+</details>

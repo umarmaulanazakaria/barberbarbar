@@ -2,6 +2,7 @@ import { z } from "zod";
 import basisData from "../lib/prisma.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
+import { metadataOperasional } from "./metadata-operasional.service.js";
 import { ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
 
 const tanggal = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => {
@@ -90,7 +91,8 @@ export const daftarRiwayatPesanan = (filter: FilterRiwayat, waktuUji?: Date) => 
   const baris = await tx.$queryRaw<BarisRiwayat[]>(Prisma.sql`${kandidat} SELECT ${kolomDaftar} FROM tersaring
     ORDER BY penutupan DESC,jenis ASC,id DESC LIMIT 20 OFFSET ${(halaman - 1) * 20}`);
   const data = [];
-  for (const b of baris) data.push({ ...b, statusPembayaran: (await pembayaranRiwayat(tx, b.jenis, b.id, sekarang)).statusPembayaran });
+  const metadata = await metadataOperasional(tx, baris);
+  for (const b of baris) data.push({ ...b, ...metadata.get(`${b.jenis}:${b.id}`), statusPembayaran: (await pembayaranRiwayat(tx, b.jenis, b.id, sekarang)).statusPembayaran });
   return { data, total, halaman, batas: 20, totalHalaman, tanpaWaktuPenutupan: Number(hitung!.tanpaWaktu), hariIni, serverTime: sekarang.toISOString() };
 });
 

@@ -4,6 +4,7 @@ import { waktuDatabaseBooking, menitKonfirmasi } from "../lib/deadline-booking.j
 import { hariWib, awalWib } from "./pesanan-terpadu.service.js";
 import { ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
 import { z } from "zod";
+import { metadataOperasional } from "./metadata-operasional.service.js";
 
 export const kategoriPerhatian = ["PEMERIKSAAN", "CHECK_IN", "TAGIHAN", "DP"] as const;
 export const skemaDashboard = z.object({
@@ -81,9 +82,10 @@ export const ambilDashboardFinal = (filter:Filter, waktuUji?:Date) => basisData.
     SELECT * FROM bernomor WHERE posisi>CASE WHEN kategori=${filter.kategoriPerhatian??''} THEN ${(halamanPerhatian-1)*5} ELSE 0 END
       AND posisi<=CASE WHEN kategori=${filter.kategoriPerhatian??''} THEN ${halamanPerhatian*5} ELSE 5 END ORDER BY kategori,posisi`);
   const statusUang=new Map<number,string>();
+  const metadata = await metadataOperasional(tx, [...aktivitas, ...perhatian]);
   const dto=async(b:Baris)=>{
     if(b.bookingId!==null&&!statusUang.has(b.bookingId)){const uang=await bacaRingkasanPembayaran(tx,await ambilBookingPembayaran(tx,b.bookingId),sekarang);statusUang.set(b.bookingId,uang.statusPembayaran);}
-    return {jenis:b.jenis,id:b.id,bookingId:b.bookingId,pesananId:b.pesananId,nomor:b.nomor,pelanggan:b.pelanggan,jadwal:b.jadwal.toISOString(),status:b.status,statusPembayaran:b.bookingId!==null?statusUang.get(b.bookingId)!:b.statusPembayaran,...(b.masalah?{masalah:b.masalah}:{})};
+    return {jenis:b.jenis,id:b.id,bookingId:b.bookingId,pesananId:b.pesananId,nomor:b.nomor,pelanggan:b.pelanggan,jadwal:b.jadwal.toISOString(),status:b.status,statusPembayaran:b.bookingId!==null?statusUang.get(b.bookingId)!:b.statusPembayaran,...metadata.get(`${b.jenis}:${b.id}`),...(b.masalah?{masalah:b.masalah}:{})};
   };
   const data=[];for(const b of aktivitas)data.push(await dto(b));
   const kategori=[];for(const kode of kategoriPerhatian){const jumlah=angkaAman(hitungMasalah.find(k=>k.kategori===kode)?.total??0);if(!jumlah)continue;const items=[];for(const b of perhatian.filter(x=>x.kategori===kode))items.push(await dto(b));kategori.push({kode,judul:label[kode],total:jumlah,halaman:kode===filter.kategoriPerhatian?halamanPerhatian:1,data:items});}

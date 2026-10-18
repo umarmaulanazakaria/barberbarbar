@@ -6,6 +6,7 @@ import { terapkanManfaat } from "../services/manfaat-membership.service.js";
 import { lihatMemberBooking, verifikasiMemberBooking } from "../services/verifikasi-member-booking.service.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
 import routerIdentitasStaff from "./identitas-member-staff.routes.js";
+import { lihatIdentitasMemberStaff, putuskanIdentitasMemberStaff } from "../services/identitas-member-staff.service.js";
 export const routerManfaatPublik = Router(), routerManfaatOperator = Router();
 routerManfaatOperator.use("/staff", routerIdentitasStaff);
 const items = z.array(z.object({ layananId: z.number().int().positive(), qty: z.number().int().min(1).max(10) }).strict()).min(1).max(20).refine(v => new Set(v.map(i => i.layananId)).size === v.length);
@@ -32,6 +33,14 @@ routerManfaatOperator.post("/quote", async (req, res) => {
   }));
 });
 routerManfaatOperator.get("/booking/:id", async (req, res) => res.set("Cache-Control", "no-store").json(await lihatMemberBooking(id(req.params.id))));
+// Kontrak Web operator: Member ditentukan dari Booking, bukan identitas kiriman klien.
+routerManfaatOperator.get("/booking/:id/identity", async (req, res) => {
+  res.set("Cache-Control", "no-store").json(await lihatIdentitasMemberStaff(req.pengguna!.id, undefined, id(req.params.id)));
+});
+routerManfaatOperator.post("/booking/:id/identity", async (req, res) => {
+  const d = baca(z.object({ pemeriksaanFisik: z.literal(true), cocok: z.boolean() }).strict(), req.body);
+  res.set("Cache-Control", "no-store").json(await putuskanIdentitasMemberStaff(req.pengguna!.id, { konteks: { jenis: "BOOKING", bookingId: id(req.params.id) }, cocok: d.cocok }));
+});
 routerManfaatOperator.put("/booking/:id", async (req, res) => {
   const d = baca(z.object({ nomorMember: z.string().trim().max(60), nama: z.string().trim().max(100), nomorTelepon: z.string().trim().max(30), hargaNormal: z.boolean(), konfirmasi: z.literal(true) }).strict(), req.body);
   res.json(await verifikasiMemberBooking(id(req.params.id), req.pengguna!.id, d));

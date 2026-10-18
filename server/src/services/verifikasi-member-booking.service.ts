@@ -1,6 +1,6 @@
 import basisData from "../lib/prisma.js";
 import { transaksiProfil, KesalahanProfil } from "./profil-pelanggan.service.js";
-import { terapkanManfaat } from "./manfaat-membership.service.js";
+import { memberLayak, terapkanManfaat } from "./manfaat-membership.service.js";
 import { normalisasiHpWalkIn } from "../schemas/walkin-dashboard.schema.js";
 import { ambilBookingPembayaran, bacaRingkasanPembayaran } from "./pembayaran-booking.service.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
@@ -10,6 +10,8 @@ export const lihatMemberBooking = async (id: number) => {
   return { bebasDp: b.memberBebasDp, diverifikasiPada: b.identitasMemberPada, nomorMember: m?.memberCode ?? null, namaMember: m?.pelanggan.profil?.nama ?? m?.pelanggan.nama ?? null, nomorTeleponMember: m?.pelanggan.profil?.nomorTelepon ?? m?.pelanggan.nomorTelepon ?? null, kontakBooking: b.aksesTamu };
 };
 export const verifikasiMemberBooking = (id: number, penggunaId: number, data: { nomorMember: string; nama: string; nomorTelepon: string; hargaNormal: boolean }) => transaksiProfil(async tx => {
+  const operator = await tx.pengguna.findUnique({ where: { id: penggunaId }, select: { role: true } });
+  if (operator?.role !== "ADMIN") throw new KesalahanProfil(403, "Koreksi Member dan harga normal hanya dapat dilakukan oleh Admin.");
   const b = await tx.booking.findUniqueOrThrow({ where: { id }, include: { items: true } });
   if (!["CONFIRMED", "CHECKED_IN"].includes(b.status) || b.pesananId) throw new KesalahanProfil(409, "Verifikasi atau koreksi member hanya sebelum pelayanan dimulai.");
   if (await tx.transaksiPembayaranBooking.count({ where: { bookingId: id, status: "PENDING" } })) throw new KesalahanProfil(409, "Rekonsiliasi pembayaran pending sebelum mengubah manfaat.");
@@ -18,6 +20,7 @@ export const verifikasiMemberBooking = (id: number, penggunaId: number, data: { 
   let items = b.items.map(i => { const l = katalog.find(l => l.id === i.layananId)!; return { layananId: l.id, namaLayanan: l.nama, durasiMenit: l.durasiMenit, qty: i.qty, harga: l.harga, subtotal: l.harga * i.qty }; });
   const manfaat = data.hargaNormal ? null : await terapkanManfaat(tx, items, data.nomorMember, b.mulaiPada);
   if (manfaat) {
+    await memberLayak(tx, manfaat.member.memberCode, await waktuDatabaseBooking(tx));
     const p = manfaat.member.pelanggan.profil;
     if (normalisasiHpWalkIn(data.nomorTelepon) !== normalisasiHpWalkIn(p?.nomorTelepon ?? manfaat.member.pelanggan.nomorTelepon ?? "") || data.nama.trim().toLocaleLowerCase() !== (p?.nama ?? manfaat.member.pelanggan.nama).trim().toLocaleLowerCase()) throw new KesalahanProfil(409, "Identitas tidak cocok. Periksa Nomor Member atau pilih harga normal.");
     if (b.memberBebasDp && manfaat.member.id === b.membershipBerbayarId) {

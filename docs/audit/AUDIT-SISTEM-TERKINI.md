@@ -105,3 +105,33 @@ Batas lain: email reset nyata belum dikirim; delivery yang diuji mock. Seluruh C
 ## Tindakan rilis
 
 Branch kerja dapat dibagikan untuk review hasil source/build/fixture yang terverifikasi, dengan laporan blocker ini. Jangan merge ke main atau menganggap push sebagai penerimaan rilis. Dokumentasi seluruh repository diperbarui dan ditautkan silang. Tidak menghapus/memindahkan arsip, source, migration, backup atau branch. Tidak menambahkan screenshot yang belum aman. Hasil push/PR/CI harus diverifikasi remote setelah commit.
+
+## Publikasi yang telah diverifikasi
+
+Push normal fast-forward berhasil; SHA remote cocok dengan lokal melalui git ls-remote. README dan dokumen terbaru ketiga repository dibaca kembali melalui GitHub. [Hasil 14 suite final](HASIL-UJI-TERKINI.json) menyimpan exit code, cleanup dan ringkasan assertion tanpa credential/data pelanggan.
+
+| Repository | Snapshot kode/dokumentasi yang sudah dipush | Jumlah commit pada push pertama audit | Status awal yang tetap lokal setelah push |
+| --- | --- | ---: | --- |
+| Admin/Backend | [c982c8f](https://github.com/umarmaulanazakaria/barberbarbar/commit/c982c8f7c3e527daac542a8cd8f382b0f27c45b4) |25|13 file WIP tracked +1 folder untracked; Prisma tetap staged |
+| Staff | [5d2c872](https://github.com/umarmaulanazakaria/barberbarbar-mobile/commit/5d2c87297a0b6cf2fa64f767ff2427787aad801a) |9|4 file WIP |
+| Customer | [8e60cb2](https://github.com/umarmaulanazakaria/barberbarbar-customer/commit/8e60cb2738e8ee079643a1dc0cc58255a961bf82) |8|18 file WIP |
+
+Pencocokan hash WIP dan diff staged setelah push lulus; ahead/behind 0/0 pada ketiga branch. Catatan hasil publikasi ini dicatat melalui commit dokumentasi tambahan pada backend; snapshot kode di tabel tidak berubah. HEAD branch aktual dapat diperiksa melalui GitHub/git log. Tidak mengubah main atau default branch.
+
+**PR belum dibuat:** GitHub menolak create_pull_request pada ketiga repository dengan HTTP 403: Resource not accessible by integration. Simulasi merge tanpa mengubah working tree tidak menemukan konflik pada saat pemeriksaan, tetapi keterbatasan izin integration tetap berlaku. Tidak mencari/mencetak credential atau mengubah izin akun untuk melewati penolakan. Draft review dapat disiapkan manual melalui:
+
+- [Bandingkan Admin/Backend ke main](https://github.com/umarmaulanazakaria/barberbarbar/compare/main...feature/project5-integration)
+- [Bandingkan Staff ke main](https://github.com/umarmaulanazakaria/barberbarbar-mobile/compare/main...feature/project5-integration)
+- [Bandingkan Customer ke main](https://github.com/umarmaulanazakaria/barberbarbar-customer/compare/main...feat/project5-react-web-mobile-first)
+
+Gunakan draft dan cantumkan blocker dependency/perangkat/provider; jangan merge otomatis. Tidak ada workflow .github/workflows pada snapshot yang dipush. Pemeriksaan workflow runs commit melalui connector mengembalikan daftar kosong (wrapper hanya run pemicu PR); ini bukan CI PASS. Endpoint daftar seluruh workflow tidak didukung connector, sehingga tidak menyimpulkan kondisi seluruh konfigurasi GitHub Actions dari respons tersebut.
+
+Cleanup hanya memperketat ignore environment/key/dump/ZIP/backup lokal dan memperbarui dokumentasi; tidak menghapus atau memindahkan file/branch/arsip. Tidak menginstal atau memperbarui dependency.
+
+## File audit yang diubah
+
+- Admin/Backend: .gitignore, README.md, docs/PANDUAN-SISTEM-TERKINI.md, docs/audit/AUDIT-SISTEM-TERKINI.md, docs/audit/HASIL-UJI-TERKINI.json; middleware batas-percobaan-pelanggan; test-api-publik, test-fondasi-pelanggan, test-batas-nomor-member, test-booking-web-aktual dan test-member-operasional-aktual pada server/scripts.
+- Staff: .gitignore, README.md dan docs/OPERASIONAL-TERKINI.md. Tidak mengubah source Mobile.
+- Customer: .gitignore, README.md, docs/INTEGRASI-TERKINI.md dan tests/customer-principal.spec.ts. Tidak mengubah source UI Customer.
+
+Total 18 file unik; source bisnis yang berubah hanya middleware pembatas nomor Member.

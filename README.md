@@ -95,3 +95,7 @@ Audit 18 Oktober 2026 memisahkan snapshot commit dari WIP lokal. TypeScript / bu
 - [Integrasi Socket.IO/Midtrans historis](docs/INTEGRASI-SOCKET-MIDTRANS.md)
 
 Laporan lama tetap disimpan sebagai snapshot saat ditulis. Jumlah suite, migration, UI dan bukti provider pada laporan lama tidak otomatis menjadi hasil audit terbaru.
+
+## Remediasi dependency terbaru
+
+Prisma diperbarui ke7.10.1 dan audit Backend kini 0. Admin tetap 2 advisory Router; upgrade major memerlukan keputusan. Staff 44 →37 laporan; Customer tetap 0. [Rincian dan bukti remediasi](docs/audit/REMEDIASI-KEAMANAN.md). Angka laporan audit sebelumnya merupakan baseline historis.

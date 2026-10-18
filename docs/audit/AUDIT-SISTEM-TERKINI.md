@@ -1,5 +1,7 @@
 # Audit sistem dan GitHub — 18 Oktober 2026
 
+> Pembaruan remediasi keamanan: Backend **5 → 0**, Admin **2 → 2**, Staff **44 → 37**, Customer **0 → 0**; total **51 → 39** package reports, akar unik **8 → 4**. Verifikasi ulang lulus. Rincian, sisa risiko toolchain/runtime dan keputusan Router terdapat pada [laporan remediasi](REMEDIASI-KEAMANAN.md) serta [bukti JSON](REMEDIASI-KEAMANAN.json). Isi audit di bawah dipertahankan sebagai baseline historis sebelum remediasi.
+
 **Keputusan: BELUM SIAP — ADA BLOCKER untuk penerimaan penuh.** Build dan integrasi terpilih lulus; advisory dependency belum dituntaskan, pengujian perangkat/printer/provider nyata belum diulang. Ini bukan klaim Production. Source yang diuji terpisah dari WIP lokal.
 
 ## Snapshot dan keamanan kerja

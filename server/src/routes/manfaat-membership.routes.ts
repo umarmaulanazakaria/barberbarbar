@@ -5,7 +5,9 @@ import { KesalahanProfil, transaksiProfil } from "../services/profil-pelanggan.s
 import { terapkanManfaat } from "../services/manfaat-membership.service.js";
 import { lihatMemberBooking, verifikasiMemberBooking } from "../services/verifikasi-member-booking.service.js";
 import { waktuDatabaseBooking } from "../lib/deadline-booking.js";
+import routerIdentitasStaff from "./identitas-member-staff.routes.js";
 export const routerManfaatPublik = Router(), routerManfaatOperator = Router();
+routerManfaatOperator.use("/staff", routerIdentitasStaff);
 const items = z.array(z.object({ layananId: z.number().int().positive(), qty: z.number().int().min(1).max(10) }).strict()).min(1).max(20).refine(v => new Set(v.map(i => i.layananId)).size === v.length);
 const baca = <T>(s: z.ZodType<T>, v: unknown) => { const p = s.safeParse(v); if (!p.success) throw new KesalahanProfil(400, "Data manfaat Membership tidak valid."); return p.data; };
 const id = (v: unknown) => baca(z.coerce.number().int().positive().max(2147483647), v);

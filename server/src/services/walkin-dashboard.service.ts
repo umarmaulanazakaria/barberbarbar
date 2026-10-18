@@ -4,6 +4,7 @@ import { kunciJadwalBooking } from "../lib/transaksi-booking.js";
 import { KesalahanProfil, simpanProfilDalamTransaksi } from "./profil-pelanggan.service.js";
 import { buatPesananDalamTransaksi } from "./pesanan.service.js";
 import { type DataWalkIn } from "../schemas/walkin-dashboard.schema.js";
+import { pastikanVerifikasiWalkInStaff } from "./identitas-member-staff.service.js";
 
 export class KesalahanWalkIn extends Error {
   constructor(public status: number, public kode: string, pesan: string) { super(pesan); }
@@ -24,7 +25,7 @@ const pesanGagal: Record<string, string> = {
   HARGA_BERUBAH: "Harga atau diskon telah berubah. Periksa total terbaru sebelum mengirim kembali.",
   JADWAL_TIDAK_TERSEDIA: "Kapasitas sedang direservasi booking. Periksa kembali penugasan atau waktu kunjungan.",
 };
-export const simpanWalkInDashboard = async (data: DataWalkIn, penggunaId: number) => {
+export const simpanWalkInDashboard = async (data: DataWalkIn, penggunaId: number, verifikasiFisikId?: number) => {
   const { kunciIdempotensi, ...isi } = data;
   const normal = { ...isi, pelanggan: isi.pelanggan.jenis === "BARU" ? { ...isi.pelanggan, nomorTelepon: isi.pelanggan.nomorTelepon || null } : isi.pelanggan,
     items: [...isi.items].sort((a, b) => a.layananId - b.layananId) };
@@ -53,9 +54,14 @@ export const simpanWalkInDashboard = async (data: DataWalkIn, penggunaId: number
       const profil = await simpanProfilDalamTransaksi(tx, { nama: data.pelanggan.nama, nomorTelepon: data.pelanggan.nomorTelepon, email: null, catatan: null, konfirmasiDuplikat: data.pelanggan.konfirmasiDuplikat }, penggunaId);
       pelangganId = profil.pelangganId; profilPelangganId = profil.id;
     }
+    if (verifikasiFisikId !== undefined) {
+      if (!profilPelangganId || data.konfirmasiMember !== true) throw new KesalahanProfil(409, "Pilih profil Member yang telah diverifikasi.");
+      await pastikanVerifikasiWalkInStaff(tx, penggunaId, profilPelangganId, kunciIdempotensi, verifikasiFisikId);
+    }
     const hasil = await buatPesananDalamTransaksi(tx, { pelangganId, profilPelangganId, konfirmasiMember: data.konfirmasiMember===true, barberId: data.barberId, items: data.items }, penggunaId, data);
     // Lempar agar pelanggan baru ikut rollback jika katalog/penugasan berubah.
     if (!hasil.berhasil) throw new KesalahanWalkIn(409, hasil.alasan, pesanGagal[hasil.alasan] ?? "Pesanan belum dapat dibuat.");
+    if (verifikasiFisikId !== undefined && profilPelangganId) await tx.riwayatProfilPelanggan.create({ data: { profilId: profilPelangganId, penggunaId, aksi: "MEMBER_IDENTITY_USED_WALKIN", rincian: { verifikasiId: verifikasiFisikId, kunciPermintaan: kunciIdempotensi, pesananId: hasil.data.id } } });
     await tx.permintaanWalkIn.create({ data: { penggunaId, kunci: kunciIdempotensi, sidikPermintaan: sidik, pesananId: hasil.data.id } });
     return { diulang: false, data: await tx.pesanan.findUniqueOrThrow({ where: { id: hasil.data.id }, select: pilihanHasil }) };
   }, { isolationLevel: "ReadCommitted", timeout: 20000, maxWait: 20000 });
